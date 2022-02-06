@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_akar_icons_paper"
+            android:id="@+id/ivimage"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvfolio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="15200"/>
+
+            <TextView
+                android:id="@+id/tvtelefono"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="7471130682"/>
+
+            <TextView
+                android:id="@+id/tvfecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="10/09/2021  03:26 p.m."/>
+            <TextView
+                android:id="@+id/tvproblema"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Aquí mi problema"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/black"/>
+
+
+</LinearLayout>

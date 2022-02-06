@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_vector__7_"
+            android:title="@string/notificaciones" />
+        <item
+            android:id="@+id/mensajesFragment"
+            android:icon="@drawable/ic_vector__8_"
+            android:title="@string/mensajes" />
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@drawable/ic_vector__9_"
+            android:title="@string/agenda" />
+
+        <item
+            android:id="@+id/presupuestoFragment"
+            android:icon="@drawable/ic_group"
+            android:title="@string/presupuestos" />
+
+        <item
+            android:id="@+id/historialFragment"
+            android:icon="@drawable/ic_vector__10_"
+            android:title="@string/historial" />
+
+        <item
+            android:id="@+id/cerrar_sesion_nav"
+            android:icon="@drawable/ic_cerrar_sesion"
+            android:title="@string/cerrarSesion" />
+    </group>
+</menu>
