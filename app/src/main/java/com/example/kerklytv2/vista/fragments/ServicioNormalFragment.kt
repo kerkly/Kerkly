@@ -45,6 +45,7 @@ class ServicioNormalFragment : Fragment() {
     private lateinit var recycler: RecyclerView
     lateinit var MiAdapter: AdapterNormalTrabajos
     private lateinit var numeroTelefono: String
+    private lateinit var b: Bundle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,8 @@ class ServicioNormalFragment : Fragment() {
         recycler = v.findViewById(R.id.recycler_trabajoNormal)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
+        b = requireArguments()
+        numeroTelefono = b.getString("numNR").toString()
         getJson()
         return v
     }

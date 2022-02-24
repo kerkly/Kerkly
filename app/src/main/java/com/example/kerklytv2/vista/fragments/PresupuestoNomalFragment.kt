@@ -3,6 +3,7 @@ package com.example.kerklytv2.vista.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.JsonReader
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -67,8 +68,9 @@ class PresupuestoNomalFragment : Fragment() {
         recyclerview = v.findViewById(R.id.recycler_presupuesto_normal)
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager = LinearLayoutManager(context)
-        val intent = context.intent
+       // val intent = context.intent
         numeroTelefono = arguments?.getString("numNR").toString()
+        Toast.makeText(context, "Teléfono: $numeroTelefono", Toast.LENGTH_SHORT).show()
 
         getJSON()
         return v
@@ -97,8 +99,7 @@ class PresupuestoNomalFragment : Fragment() {
                 val postList: ArrayList<com.example.kerklytv2.modelo.Presupuesto> =
                     response.body() as ArrayList<com.example.kerklytv2.modelo.Presupuesto>
 
-                //carsModels = response.body() as ArrayList<presupuestok>
-                Log.d("Lista", postList.toString())
+               // Log.d("Lista", postList.toString())
                 MiAdapter = AdapterPresupuesto(postList)
 
                 MiAdapter.setOnClickListener {
@@ -125,8 +126,7 @@ class PresupuestoNomalFragment : Fragment() {
                     direccion = "$calle $colonia $ext $cp $referencia"
                     nombre = "$n $ap $am"
 
-                    Toast.makeText(context, "Teléfono: $colonia",
-                        Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(context, "Teléfono: $colonia", Toast.LENGTH_SHORT).show()
 
                     val i = Intent(context, Presupuesto::class.java)
                     i.putExtra("Folio", folio)
@@ -134,6 +134,7 @@ class PresupuestoNomalFragment : Fragment() {
                     i.putExtra("Dirección", direccion)
                     i.putExtra("Problema", problema)
                     i.putExtra("Número", numero)
+                    i.putExtra("Normal", true)
                     startActivity(i)
                 }
 
@@ -145,7 +146,8 @@ class PresupuestoNomalFragment : Fragment() {
                     context,
                     "Codigo de respuesta de error: $t",
                     Toast.LENGTH_SHORT
-                ).show();
+                ).show()
+                Log.d("erro", t.toString())
             }
 
         })

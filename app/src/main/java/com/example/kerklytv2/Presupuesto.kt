@@ -3,6 +3,7 @@ package com.example.kerklytv2
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -19,9 +20,11 @@ import androidx.core.app.ActivityCompat
 import com.example.kerklytv2.controlador.TablaDinamica
 import com.example.kerklytv2.interfaces.PagoPInterface
 import com.example.kerklytv2.interfaces.PrecioInterface
+import com.example.kerklytv2.interfaces.PrecioNormalInterface
 import com.example.kerklytv2.modelo.Pdf
 import com.example.kerklytv2.modelo.TablaP
 import com.example.kerklytv2.url.Url
+import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -63,6 +66,7 @@ class Presupuesto : AppCompatActivity() {
     private var direccion = "Mi direccion"
     private var telefono = "7474747474"
     private var correo = "josem_rl@hotmail.com"
+    private var band = false
 
     var databaseReference: DatabaseReference? = null
     var currentDateTimeString: String? = null
@@ -120,8 +124,15 @@ class Presupuesto : AppCompatActivity() {
             p.generarPdf()
             //generarPdf()
             Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
-            mandarPago()
 
+            if (band) {
+                mandarNormalPago()
+            } else {
+                mandarPago()
+            }
+
+            val i = Intent(this, InterfazKerkly::class.java)
+            startActivity(i)
 
         }
 
@@ -132,6 +143,7 @@ class Presupuesto : AppCompatActivity() {
         cliente = b.getString("Nombre").toString()
         direccion = b.get("Dirección").toString()
         telefono = b.get("Número").toString()
+        band = b.getBoolean("Normal")
 
 
 
@@ -148,11 +160,36 @@ class Presupuesto : AppCompatActivity() {
         }
     }
 
-    private fun mandarPago() {
-        //  val intent = intent.extras
-        // val folio  = intent?.get("Folio") as Int
+    private fun mandarNormalPago() {
+        val ROOT_URL = Url().URL
+        val adapter = RestAdapter.Builder()
+            .setEndpoint(ROOT_URL)
+            .build()
+        val api = adapter.create(PrecioNormalInterface::class.java)
+        api.MandarPago(folio, total.toString(),
+            object : Callback<Response?> {
+                override fun success(t: Response?, response: Response?) {
+                    var entrada: BufferedReader?=null
+                    var R = ""
+                    try {
+                        entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
+                        R= entrada.readLine()
+                    }catch (e: Exception){
+                        e.printStackTrace()
+                    }
+                    Toast.makeText(applicationContext, R.toString(), Toast.LENGTH_SHORT).show()
 
-        //var url = url()
+                }
+
+                override fun failure(error: RetrofitError?) {
+                    Toast.makeText(applicationContext, "error" + error.toString(), Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        )
+    }
+
+    private fun mandarPago() {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
@@ -193,7 +230,13 @@ class Presupuesto : AppCompatActivity() {
             for (j in 0 until l.size) {
                 Log.d("lista", l[j])
                 val t = TablaP(l[1], l[2])
-                database.child("Presupuesto $folio").child((i+1).toString()).setValue(t)
+                if (band) {
+                    database.child("Presupuesto Normal $folio").child((i+1).toString()).setValue(t)
+                } else {
+                    database.child("Presupuesto $folio").child((i+1).toString()).setValue(t)
+                }
+
+
             }
         }
         Log.d("Bieeen","todo bien")

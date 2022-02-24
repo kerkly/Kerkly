@@ -49,6 +49,10 @@ class PresupuestosPreviewFragment : Fragment() {
             setPresupuestoUrgente()
         }
 
+        boton_normal.setOnClickListener {
+            setPresupuestoNormal()
+        }
+
         b = arguments
 
 
@@ -65,7 +69,7 @@ class PresupuestosPreviewFragment : Fragment() {
     }
 
     private fun setPresupuestoNormal() {
-        val f = PresupuestoFragment()
+        val f = PresupuestoNomalFragment()
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()

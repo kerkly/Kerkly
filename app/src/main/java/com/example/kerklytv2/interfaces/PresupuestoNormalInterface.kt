@@ -8,7 +8,6 @@ import retrofit2.http.Query
 interface PresupuestoNormalInterface {
 
     @GET("ObtenerPresupuestos.php")
-    // fun getPost(): Call<List<presupuestok?>?>?
     open fun getPost(@Query("Telefono") Telefono: String?):
             Call<List<Presupuesto?>?>?
 }

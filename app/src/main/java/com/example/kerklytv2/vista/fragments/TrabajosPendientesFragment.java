@@ -101,6 +101,7 @@ public class TrabajosPendientesFragment extends Fragment {
 
     private void setServicio() {
         ServicioNormalFragment f = new ServicioNormalFragment();
+        f.setArguments(b);
         int fm = requireActivity().getSupportFragmentManager().beginTransaction().
                 replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit();
     }

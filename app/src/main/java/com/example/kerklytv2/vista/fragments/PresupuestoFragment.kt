@@ -135,6 +135,7 @@ class PresupuestoFragment : Fragment() {
                     i.putExtra("Dirección", direccion)
                     i.putExtra("Problema", problema)
                     i.putExtra("Número", numero)
+                    i.putExtra("Normal", false)
                     startActivity(i)
                 }
 

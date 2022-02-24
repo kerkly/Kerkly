@@ -7,47 +7,47 @@ class Presupuesto {
 
     @SerializedName("problema")
     @Expose
-    var problema: String? = null
+    var problema: String = ""
 
     @SerializedName("telefonoCliente")
     @Expose
-    var telefonoCliente: String? = null
+    var telefonoCliente: String = ""
 
-    @SerializedName("Nombre")
+    @SerializedName("cliente.Nombre")
     @Expose
-    var Nombre: String? = null
+    var Nombre: String = ""
 
-    @SerializedName("Apellido_Paterno")
+    @SerializedName("cliente.Apellido_Paterno")
     @Expose
-    var Apellido_Paterno: String? = null
+    var Apellido_Paterno: String = ""
 
-    @SerializedName("Apellido_Materno")
+    @SerializedName("cliente.Apellido_Materno")
     @Expose
-    var Apellido_Materno: String? = null
+    var Apellido_Materno: String = ""
 
     @SerializedName("Calle")
     @Expose
-    var Calle: String? = null
+    var Calle: String = ""
 
     @SerializedName("Colonia")
     @Expose
-    var Colonia: String? = null
+    var Colonia: String = ""
 
     @SerializedName("No_Exterior")
     @Expose
-    var No_Exterior: String? = null
+    var No_Exterior: String = ""
 
     @SerializedName("Codigo_Postal")
     @Expose
-    var Codigo_Postal: String? = null
+    var Codigo_Postal: String = ""
 
     @SerializedName("Referencia")
     @Expose
-    var Referencia: String? = null
+    var Referencia: String = ""
 
     @SerializedName("fechaP")
     @Expose
-    val fechaP: String? = null
+    var fechaP: String = ""
 
     @SerializedName("idPresupuesto")
     @Expose
