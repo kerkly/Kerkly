@@ -1,9 +1,12 @@
 package com.example.kerklytv2.controlador
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.Presupuesto
@@ -43,9 +46,9 @@ class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.txtFolio.text = datset[position].idPresupuesto.toString()
-        viewHolder.txtTelefono.text = datset[position].telefonoCliente.toString()
-        viewHolder.txtProblema.text = datset[position].problema.toString()
-        viewHolder.txtFecha.text = datset[position].fechaP.toString()
+        viewHolder.txtTelefono.text = datset[position].telefonoCliente
+        viewHolder.txtProblema.text = datset[position].problema
+        viewHolder.txtFecha.text = datset[position].fechaP
     }
 
     // Create new views (invoked by the layout manager)

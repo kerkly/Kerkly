@@ -1,14 +1,21 @@
 package com.example.kerklytv2.controlador
 
+import android.app.Activity
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.TrabajoNormal
+import com.example.kerklytv2.vista.fragments.MensajesFragment
 
-class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>):
+class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: FragmentActivity):
     RecyclerView.Adapter<AdapterNormalTrabajos.ViewHolder>(), View.OnClickListener {
 
     private lateinit var listener: View.OnClickListener
@@ -27,6 +34,10 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>):
             // Define click listener for the ViewHolder's View.
         }
 
+        val img = view.findViewById<ImageView>(R.id.chat_img)
+
+        init {}
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,6 +52,21 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>):
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.txtFolio.text = datset[position].idContrato.toString()
         holder.txtTelefono.text = datset[position].Fecha_Inicio
+
+
+        holder.img.setOnClickListener {
+            val f = MensajesFragment()
+            val b = Bundle()
+            val nombre = "${datset[position].Nombre} ${datset[position].Apellido_Paterno}"
+            val folio = datset[position].idContrato
+
+            b.putString("Nombre", nombre)
+            b.putInt("Contrato", folio)
+            f.arguments = b
+            var fm = activity.supportFragmentManager.beginTransaction().apply {
+                replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
+            }
+        }
     }
 
     override fun getItemCount(): Int {

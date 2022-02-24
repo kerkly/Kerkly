@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
@@ -35,6 +36,10 @@ class MensajesFragment : Fragment() {
     private lateinit var adapter: AdapterChat
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private var folio = 0
+    private lateinit var b: Bundle
+    private lateinit var nombre: String
+    private lateinit var nombre_txt: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +59,18 @@ class MensajesFragment : Fragment() {
         boton = v.findViewById(R.id.boton_chat)
         editText = v.findViewById(R.id.editTextChat)
         recyclerView = v.findViewById(R.id.recycler_chat)
+        nombre_txt = v.findViewById(R.id.txt_nombre_kerkly_chats)
+
+        b = requireArguments()
+
+        folio = b.getInt("Contrato")
+        nombre = b.getString("Nombre").toString()
+
+        nombre_txt.text = nombre
+
 
         firebaseDatabase = FirebaseDatabase.getInstance()
-        databaseReference = firebaseDatabase.getReference("chat")
+        databaseReference = firebaseDatabase.getReference("Chat $folio")
 
         adapter = AdapterChat(requireContext())
 
@@ -74,6 +88,7 @@ class MensajesFragment : Fragment() {
         boton.setOnClickListener {
             //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
             databaseReference.push().setValue(Mensaje(editText.text.toString(), "00:00"))
+            editText.setText("")
         }
 
         databaseReference.addChildEventListener(object : ChildEventListener {

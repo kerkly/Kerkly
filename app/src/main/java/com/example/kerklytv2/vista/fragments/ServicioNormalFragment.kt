@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,6 +47,8 @@ class ServicioNormalFragment : Fragment() {
     lateinit var MiAdapter: AdapterNormalTrabajos
     private lateinit var numeroTelefono: String
     private lateinit var b: Bundle
+   // private lateinit var img: ImageView
+    private var folio = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +66,18 @@ class ServicioNormalFragment : Fragment() {
         val v =  inflater.inflate(R.layout.fragment_servicio_normal, container, false)
         context = requireActivity()
         recycler = v.findViewById(R.id.recycler_trabajoNormal)
+      //  img = v.findViewById(R.id.chat_img)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         b = requireArguments()
         numeroTelefono = b.getString("numNR").toString()
         getJson()
+
+      /*  img.setOnClickListener {
+            Toast.makeText(activity,
+                           "Mi folio es $folio",
+                            Toast.LENGTH_SHORT).show()
+        }*/
         return v
     }
 
@@ -95,10 +105,11 @@ class ServicioNormalFragment : Fragment() {
                         ArrayList<TrabajoNormal>
 
                 Log.d("Lista", postList.toString())
-                MiAdapter = AdapterNormalTrabajos(postList)
+                MiAdapter = AdapterNormalTrabajos(postList, requireActivity())
+
 
                 MiAdapter.setOnClickListener {
-                    val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
+                    folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
                     val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
                     val calle = postList[recycler.getChildAdapterPosition(it)].Calle
                     val cp = postList[recycler.getChildAdapterPosition(it)].Codigo_Postal
