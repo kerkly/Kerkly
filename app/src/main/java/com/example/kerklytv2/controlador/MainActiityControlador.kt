@@ -9,6 +9,7 @@ import com.example.kerklytv2.interfaces.VerificarSesionInterface
 import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.InterfazKerkly
+import com.example.kerklytv2.vista.MainActivity
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
@@ -83,7 +84,10 @@ class MainActiityControlador {
 
                     Log.e("nosee", output)
                     if(output == "0") {
-                        return
+                        val  intent = Intent(contexto, MainActivity::class.java)
+                        intent.putExtra("Telefono", output)
+                        contexto.startActivity(intent)
+                        contexto.finish()
                     } else {
                         val  intent = Intent(contexto, InterfazKerkly::class.java)
                         intent.putExtra("numT", output)

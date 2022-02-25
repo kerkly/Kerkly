@@ -10,6 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KerklyTV2">
         <activity
+            android:name=".PantallaInicio"
+            android:exported="true"
+            android:screenOrientation="fullSensor">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
             android:name=".Presupuesto"
             android:exported="true" />
         <activity
