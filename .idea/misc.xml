@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/drawable/burbuja_char_der.xml" value="0.18" />
+        <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/drawable/burbuja_chat.xml" value="0.18" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/drawable/fondo.xml" value="0.20925925925925926" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/drawable/ic_account_box.xml" value="0.23984375" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/drawable/ic_akar_icons_paper.xml" value="0.23984375" />
@@ -30,7 +32,7 @@
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_historial.xml" value="0.25" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_historial_normal.xml" value="0.22" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_historial_urgente.xml" value="0.2828125" />
-        <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_mensajes.xml" value="0.33" />
+        <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_mensajes.xml" value="0.67" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_presupuesto.xml" value="0.33" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_presupuesto_nomal.xml" value="0.30625" />
         <entry key="..\:/Users/josem/AndroidStudioProjects/KerklyTV2/app/src/main/res/layout/fragment_presupuestos_preview.xml" value="0.30625" />

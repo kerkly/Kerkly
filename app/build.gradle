@@ -73,4 +73,6 @@ dependencies {
 
     implementation files('libs/droidText.0.4.jar')
 
+    implementation 'com.airbnb.android:paris:2.0.0'
+
 }
