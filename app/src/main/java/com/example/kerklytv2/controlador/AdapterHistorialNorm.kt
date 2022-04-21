@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
-import com.example.kerklytv2.modelo.HistorialNormal
+import com.example.kerklytv2.modelo.serial.HistorialNormal
 
 class AdapterHistorialNorm(val datset: ArrayList<HistorialNormal>):
     RecyclerView.Adapter<AdapterHistorialNorm.ViewHolder>(), View.OnClickListener {

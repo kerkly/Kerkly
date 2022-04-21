@@ -1,45 +1,45 @@
-package com.example.kerklytv2.modelo
+package com.example.kerklytv2.modelo.serial
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class HistorialNormal {
+class HistorialUrgencia {
 
-    @SerializedName("Fecha_Inicio")
+    @SerializedName("Fecha_Inicio_NoRegistrado")
     @Expose
-    var Fecha_Inicio: String? = null
+    var Fecha_Inicio_NoRegistrado: String? = null
 
-    @SerializedName("Fecha_Final")
+    @SerializedName("Fecha_Final_NoRegistrado")
     @Expose
-    var Fecha_Final: String? = null
+    var Fecha_Final_NoRegistrado: String? = null
 
-    @SerializedName("idContrato")
+    @SerializedName("idContraNoRegistrado")
     @Expose
-    var idContrato: Int = 0
+    var idContraNoRegistrado: Int = 0
 
-    @SerializedName("Nombre")
+    @SerializedName("nombre_noR")
     @Expose
-    var Nombre: String? = null
+    var nombre_noR: String? = null
 
-    @SerializedName("Apellido_Paterno")
+    @SerializedName("apellidoP_noR")
     @Expose
-    var Apellido_Paterno: String? = null
+    var apellidoP_noR: String? = null
 
-    @SerializedName("Apellido_Materno")
+    @SerializedName("apellidoM_noR")
     @Expose
-    var Apellido_Materno: String? = null
+    var apellidoM_noR: String? = null
 
-    @SerializedName("telefonoCliente")
+    @SerializedName("telefono_NoR")
     @Expose
-    var telefonoCliente: String? = null
+    var telefono_NoR: String? = null
 
     @SerializedName("problema")
     @Expose
     var problema: String? = null
 
-    @SerializedName("idPresupuesto")
+    @SerializedName("idPresupuestoNoRegistrado")
     @Expose
-    var idPresupuesto: Int = 0
+    var idPresupuestoNoRegistrado: Int = 0
 
     @SerializedName("Ciudad")
     @Expose

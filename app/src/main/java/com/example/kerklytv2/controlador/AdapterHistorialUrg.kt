@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 
-import com.example.kerklytv2.modelo.HistorialUrgencia
+import com.example.kerklytv2.modelo.serial.HistorialUrgencia
 
 class AdapterHistorialUrg(val datset: ArrayList<HistorialUrgencia>):
     RecyclerView.Adapter<AdapterHistorialUrg.ViewHolder>(), View.OnClickListener {

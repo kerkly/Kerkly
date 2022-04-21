@@ -12,11 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.AdapterHistorialNorm
-import com.example.kerklytv2.controlador.AdapterHistorialUrg
-import com.example.kerklytv2.interfaces.ObtenerHIstorialUrgenteInterface
 import com.example.kerklytv2.interfaces.ObtenerHistorialInterface
-import com.example.kerklytv2.modelo.HistorialNormal
-import com.example.kerklytv2.modelo.HistorialUrgencia
+import com.example.kerklytv2.modelo.serial.HistorialNormal
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

@@ -67,6 +67,7 @@ class Presupuesto : AppCompatActivity() {
     private var telefono = "7474747474"
     private var correo = "josem_rl@hotmail.com"
     private var band = false
+    private lateinit var btn_ubicacion: MaterialButton
 
     var databaseReference: DatabaseReference? = null
     var currentDateTimeString: String? = null
@@ -91,6 +92,7 @@ class Presupuesto : AppCompatActivity() {
         layout_concepto = findViewById(R.id.layout_concepto)
         layout_pago = findViewById(R.id.layout_pago)
         total_txt = findViewById(R.id.total_txt)
+        btn_ubicacion = findViewById(R.id.btn_ubicacion)
 
         edot_n = findViewById(R.id.editEdicion)
         layour_n = findViewById(R.id.layoutEdcion)
@@ -133,6 +135,10 @@ class Presupuesto : AppCompatActivity() {
 
             val i = Intent(this, InterfazKerkly::class.java)
             startActivity(i)
+
+        }
+
+        btn_ubicacion.setOnClickListener {
 
         }
 

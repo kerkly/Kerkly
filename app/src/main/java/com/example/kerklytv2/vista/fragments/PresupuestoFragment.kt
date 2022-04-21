@@ -9,15 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
 import com.example.kerklytv2.interfaces.PresupuestoInterface
-import com.example.kerklytv2.modelo.PresupuestoDatos
+import com.example.kerklytv2.modelo.serial.PresupuestoDatos
 import com.example.kerklytv2.url.Url
 import retrofit2.Call
 import retrofit2.Callback

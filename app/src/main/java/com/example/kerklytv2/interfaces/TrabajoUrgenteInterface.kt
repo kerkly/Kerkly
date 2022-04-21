@@ -1,6 +1,6 @@
 package com.example.kerklytv2.interfaces
 
-import com.example.kerklytv2.modelo.TrabajoUrgencia
+import com.example.kerklytv2.modelo.serial.TrabajoUrgencia
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

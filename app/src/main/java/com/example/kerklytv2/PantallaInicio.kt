@@ -40,6 +40,7 @@ class PantallaInicio : AppCompatActivity() {
                 //Aqui podriamos realizar algunas comprobaciones iniciales
             }
 
+
             override fun onAnimationEnd(animation: Animation) {
                 controlador.verificarSesion(id, context)
                 /*val i = Intent(applicationContext, MainActivity::class.java)

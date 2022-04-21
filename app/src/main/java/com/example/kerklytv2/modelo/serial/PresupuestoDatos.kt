@@ -1,4 +1,4 @@
-package com.example.kerklytv2.modelo
+package com.example.kerklytv2.modelo.serial
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

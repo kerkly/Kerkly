@@ -1,18 +1,15 @@
 package com.example.kerklytv2.controlador
 
-import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
-import com.example.kerklytv2.modelo.TrabajoNormal
+import com.example.kerklytv2.modelo.serial.TrabajoNormal
 import com.example.kerklytv2.vista.fragments.MensajesFragment
 
 class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: FragmentActivity):

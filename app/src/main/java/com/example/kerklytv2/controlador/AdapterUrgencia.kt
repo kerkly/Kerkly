@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
-import com.example.kerklytv2.modelo.TrabajoUrgencia
+import com.example.kerklytv2.modelo.serial.TrabajoUrgencia
 
 class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
                     RecyclerView.Adapter<AdapterUrgencia.ViewHolder>(), View.OnClickListener {

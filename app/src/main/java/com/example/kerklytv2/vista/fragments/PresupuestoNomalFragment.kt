@@ -3,7 +3,6 @@ package com.example.kerklytv2.vista.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.JsonReader
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,10 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.AdapterPresupuesto
-import com.example.kerklytv2.controlador.ClaseAdapterR
-import com.example.kerklytv2.interfaces.PresupuestoInterface
 import com.example.kerklytv2.interfaces.PresupuestoNormalInterface
-import com.example.kerklytv2.modelo.PresupuestoDatos
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -89,15 +85,15 @@ class PresupuestoNomalFragment : Fragment() {
             .build()
         val presupuestoGET = retrofit.create(PresupuestoNormalInterface::class.java)
         val call = presupuestoGET.getPost(numeroTelefono)
-        call?.enqueue(object : Callback<List<com.example.kerklytv2.modelo.Presupuesto?>?> {
+        call?.enqueue(object : Callback<List<com.example.kerklytv2.modelo.serial.Presupuesto?>?> {
 
             override fun onResponse(
-                call: Call<List<com.example.kerklytv2.modelo.Presupuesto?>?>,
-                response: Response<List<com.example.kerklytv2.modelo.Presupuesto?>?>
+                call: Call<List<com.example.kerklytv2.modelo.serial.Presupuesto?>?>,
+                response: Response<List<com.example.kerklytv2.modelo.serial.Presupuesto?>?>
             ) {
 
-                val postList: ArrayList<com.example.kerklytv2.modelo.Presupuesto> =
-                    response.body() as ArrayList<com.example.kerklytv2.modelo.Presupuesto>
+                val postList: ArrayList<com.example.kerklytv2.modelo.serial.Presupuesto> =
+                    response.body() as ArrayList<com.example.kerklytv2.modelo.serial.Presupuesto>
 
                // Log.d("Lista", postList.toString())
                 MiAdapter = AdapterPresupuesto(postList)
@@ -141,7 +137,7 @@ class PresupuestoNomalFragment : Fragment() {
                 recyclerview.adapter = MiAdapter
             }
 
-            override fun onFailure(call: Call<List<com.example.kerklytv2.modelo.Presupuesto?>?>, t: Throwable) {
+            override fun onFailure(call: Call<List<com.example.kerklytv2.modelo.serial.Presupuesto?>?>, t: Throwable) {
                 Toast.makeText(
                     context,
                     "Codigo de respuesta de error: $t",

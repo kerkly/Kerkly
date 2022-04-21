@@ -58,6 +58,7 @@ class AgendaFragment : Fragment() {
     private var contrato = 0
     private lateinit var layoutHora: TextInputLayout
     private lateinit var layoutFecha: TextInputLayout
+    private lateinit var btn_ubicacion: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +85,7 @@ class AgendaFragment : Fragment() {
         boton = v.findViewById(R.id.btn_agendaGuardar)
         layoutFecha = v.findViewById(R.id.layout_fechaFinal)
         layoutHora = v.findViewById(R.id.layout_horaFinal)
+        btn_ubicacion = v.findViewById(R.id.btn_ubicacion)
 
         val aux = arguments?.get("Fragment")
 
@@ -109,6 +111,10 @@ class AgendaFragment : Fragment() {
                 layoutFecha.error = getString(R.string.campoRequerico)
                 layoutHora.error = getString(R.string.campoRequerico)
             }
+        }
+
+        btn_ubicacion.setOnClickListener {
+
         }
 
 

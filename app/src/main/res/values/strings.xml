@@ -95,4 +95,5 @@
     <string name="historial_urgente">Historial de trabajos urgentes</string>
     <string name="historial_normal">Historial de trabajos</string>
     <string name="mensaje">Mensaje</string>
+    <string name="ubicacion">Ubicación</string>
 </resources>
