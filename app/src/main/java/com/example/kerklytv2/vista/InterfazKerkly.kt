@@ -20,9 +20,10 @@ import androidx.core.view.GravityCompat
 import com.example.kerklytv2.R
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyInterface
+import com.example.kerklytv2.interfaces.ObtenerKerklyaOficiosInterface
 import com.example.kerklytv2.interfaces.SesionAbiertaInterface
 import com.example.kerklytv2.modelo.Kerkly
-import com.example.kerklytv2.modelo.serial.HistorialNormal
+import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.ui.home.HomeFragment
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*
@@ -51,6 +52,7 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var curp: String
     private lateinit var txt_nombre: TextView
     private lateinit var txt_correo: TextView
+    private lateinit var txt_oficios: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +80,7 @@ class InterfazKerkly : AppCompatActivity() {
         val view = navView.getHeaderView(0)
         txt_correo = view.findViewById(R.id.correo_header)
         txt_nombre = view.findViewById(R.id.nombre_header)
+        txt_oficios = view.findViewById(R.id.oficios_header)
 
 
 
@@ -142,7 +145,11 @@ class InterfazKerkly : AppCompatActivity() {
                 }
 
                 override fun failure(error: RetrofitError?) {
-                    TODO("Not yet implemented")
+                    Toast.makeText(
+                        applicationContext,
+                        "Codigo de respuesta de error: $error",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
             })
@@ -191,31 +198,19 @@ class InterfazKerkly : AppCompatActivity() {
     }
 
     private fun setFragmentNotificaciones() {
-        // val args = Bundle()
-        //   val num = b.getString("numT")
-        //     args.putString("numNR", num)
         val f = PresupuestoFragment()
-        //   f.arguments = args
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
 
     private fun setFragmentMensajes() {
-        //  val args = Bundle()
-        //  val num = b.getString("numT")
-        //  args.putString("numNR", num)
         val f = MensajesFragment()
-        //  f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
     }
 
     private fun setFragmentAgenda() {
-        //  val args = Bundle()
-        //  val num = b.getString("numT")
-        //  args.putString("numNR", num)
         val f = PresupuestoFragment()
-        //  f.arguments = args
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
 
@@ -263,6 +258,51 @@ class InterfazKerkly : AppCompatActivity() {
         )
     }
 
+    private fun getOficiosKerkly() {
+        val ROOT_URL = Url().URL
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$ROOT_URL/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val oficios = retrofit.create(ObtenerKerklyaOficiosInterface::class.java)
+        val call = oficios.getOficios_kerkly(curp)
+
+        call?.enqueue(object : Callback<List<OficioKerkly?>?> {
+            override fun onResponse(
+                call: Call<List<OficioKerkly?>?>,
+                response: retrofit2.Response<List<OficioKerkly?>?>
+            ) {
+                val postList: ArrayList<OficioKerkly> = response.body() as ArrayList<OficioKerkly>
+
+                var acumulador = ""
+                for (i in 0 until postList.size){
+                    if(i == (postList.size-1)) {
+                        acumulador += "${postList[i].nombreOficio}"
+                    } else {
+                        acumulador += "${postList[i].nombreOficio}, "
+                    }
+                }
+                println(acumulador)
+                txt_oficios.text = acumulador
+
+            }
+
+            override fun onFailure(call: Call<List<OficioKerkly?>?>, t: Throwable) {
+                Toast.makeText(
+                    applicationContext,
+                    "Codigo de respuesta de error: $t",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
     private fun getKerkly() {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
@@ -297,6 +337,7 @@ class InterfazKerkly : AppCompatActivity() {
                 txt_correo.text = correo
 
                 Log.d("correo", correo)
+                getOficiosKerkly()
             }
 
             override fun onFailure(
@@ -307,9 +348,8 @@ class InterfazKerkly : AppCompatActivity() {
                     applicationContext,
                     "Codigo de respuesta de error: $t",
                     Toast.LENGTH_SHORT
-                ).show();
+                ).show()
             }
-
         })
     }
 }
