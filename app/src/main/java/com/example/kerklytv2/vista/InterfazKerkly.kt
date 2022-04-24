@@ -68,7 +68,7 @@ class InterfazKerkly : AppCompatActivity() {
 
         telefono = b.getString("numT").toString()
 
-        sesion(telefono!!)
+        sesion(telefono)
         getKerkly()
 
 
@@ -177,6 +177,7 @@ class InterfazKerkly : AppCompatActivity() {
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
+        args.putString("Curp", curp)
         val f =
             TrabajosPendientesFragment()
         f.arguments = args
@@ -190,6 +191,7 @@ class InterfazKerkly : AppCompatActivity() {
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
+        args.putString("Curp", curp)
         val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
@@ -218,6 +220,7 @@ class InterfazKerkly : AppCompatActivity() {
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
+        args.putString("Curp", curp)
         val f = HistorialFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()

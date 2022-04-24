@@ -45,6 +45,8 @@ class ServicioNormalFragment : Fragment() {
     private lateinit var b: Bundle
    // private lateinit var img: ImageView
     private var folio = 0
+    private lateinit var curp: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +69,8 @@ class ServicioNormalFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(context)
         b = requireArguments()
         numeroTelefono = b.getString("numNR").toString()
+        curp = arguments?.getString("Curp").toString()
+
         getJson()
 
       /*  img.setOnClickListener {
@@ -144,6 +148,8 @@ class ServicioNormalFragment : Fragment() {
                     b.putString("Fecha", fecha)
                     b.putInt("Contrato", idContrato)
                     b.putString("Fragment", "0")
+                    b.putString("Curp", curp)
+
 
                     val f = AgendaFragment()
                     f.arguments = b

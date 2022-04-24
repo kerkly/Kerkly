@@ -29,6 +29,8 @@ class TrabajosUrgenciaFragment : Fragment() {
     private lateinit var recycler: RecyclerView
     lateinit var MiAdapter: AdapterUrgencia
     private lateinit var numeroTelefono: String
+    private lateinit var curp: String
+
 
 
 
@@ -50,7 +52,7 @@ class TrabajosUrgenciaFragment : Fragment() {
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         numeroTelefono = arguments?.getString("numNR").toString()
-        Log.d("numero", numeroTelefono)
+        curp = arguments?.getString("Curp").toString()
 
         getJson()
         return v
@@ -123,6 +125,7 @@ class TrabajosUrgenciaFragment : Fragment() {
                     b.putString("Fecha", fecha)
                     b.putInt("Contrato", idContrato)
                     b.putString("Fragment", "0")
+                    b.putString("Curp", curp)
 
                     val f = AgendaFragment()
                     f.arguments = b

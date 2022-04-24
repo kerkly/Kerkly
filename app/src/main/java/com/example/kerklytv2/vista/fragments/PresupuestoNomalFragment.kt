@@ -45,6 +45,7 @@ class PresupuestoNomalFragment : Fragment() {
     private var folio = 0
     private lateinit var direccion: String
     private lateinit var nombre: String
+    private lateinit var curp: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +68,9 @@ class PresupuestoNomalFragment : Fragment() {
        // val intent = context.intent
         numeroTelefono = arguments?.getString("numNR").toString()
         Toast.makeText(context, "Teléfono: $numeroTelefono", Toast.LENGTH_SHORT).show()
+
+        curp = arguments?.getString("Curp").toString()
+
 
         getJSON()
         return v
@@ -131,6 +135,8 @@ class PresupuestoNomalFragment : Fragment() {
                     i.putExtra("Problema", problema)
                     i.putExtra("Número", numero)
                     i.putExtra("Normal", true)
+                    i.putExtra("Curp", curp)
+
                     startActivity(i)
                 }
 

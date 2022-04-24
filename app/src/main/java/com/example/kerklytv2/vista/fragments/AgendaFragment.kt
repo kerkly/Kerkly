@@ -16,16 +16,23 @@ import androidx.fragment.app.DialogFragment
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.TimePricker
 import com.example.kerklytv2.interfaces.LoginInterface
+import com.example.kerklytv2.interfaces.ObtenerCoordenadasKekrly
 import com.example.kerklytv2.interfaces.TerminarContratoInterface
+import com.example.kerklytv2.modelo.serial.CoordenadasKerkly
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
@@ -59,6 +66,10 @@ class AgendaFragment : Fragment() {
     private lateinit var layoutHora: TextInputLayout
     private lateinit var layoutFecha: TextInputLayout
     private lateinit var btn_ubicacion: MaterialButton
+    private var latitud = 0.0
+    private var longitud = 0.0
+    private lateinit var curp: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,9 +134,13 @@ class AgendaFragment : Fragment() {
         edit_problema.setText(arguments?.getString("Problema").toString())
         contrato = arguments?.getInt("Contrato")!!
 
+        curp = arguments?.getString("Curp").toString()
+
         var fecha = arguments?.getString("Fecha")
         val hora = fecha?.substring(11,16)
         fecha = fecha?.substring(0,10)
+
+        getCoordenadas()
 
         edit_horInicio.setText(hora)
         edit_fechaInicio.setText(fecha)
@@ -217,6 +232,47 @@ class AgendaFragment : Fragment() {
 
             }
         )
+    }
+
+    private fun getCoordenadas() {
+        val ROOT_URL = Url().URL
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$ROOT_URL/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val coordenadas = retrofit.create(ObtenerCoordenadasKekrly::class.java)
+        val call = coordenadas.getCoordenadas(curp)
+
+        call?.enqueue(object : retrofit2.Callback<List<CoordenadasKerkly?>?> {
+            override fun onResponse(
+                call: Call<List<CoordenadasKerkly?>?>,
+                response: retrofit2.Response<List<CoordenadasKerkly?>?>
+            ) {
+                val postList: ArrayList<CoordenadasKerkly> = response.body() as ArrayList<CoordenadasKerkly>
+                longitud = postList[0].longitud!!
+                latitud = postList[0].latitud!!
+
+                Log.d("latitud", "$latitud")
+                Log.d("longitud", "$longitud")
+
+
+            }
+
+            override fun onFailure(call: Call<List<CoordenadasKerkly?>?>, t: Throwable) {
+                Toast.makeText(
+                    context,
+                    "Codigo de respuesta de error: $t",
+                    Toast.LENGTH_SHORT
+                ).show();
+            }
+
+        })
     }
 
 }

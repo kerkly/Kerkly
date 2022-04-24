@@ -96,4 +96,5 @@
     <string name="historial_normal">Historial de trabajos</string>
     <string name="mensaje">Mensaje</string>
     <string name="ubicacion">Ubicación</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

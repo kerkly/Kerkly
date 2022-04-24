@@ -47,6 +47,7 @@ class PresupuestoFragment : Fragment() {
     private var folio = 0
     private lateinit var direccion: String
     private lateinit var nombre: String
+    private lateinit var curp: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +70,9 @@ class PresupuestoFragment : Fragment() {
         recyclerview.layoutManager= LinearLayoutManager(context)
         val intent = context.intent
         numeroTelefono = arguments?.getString("numNR").toString()
+
+        curp = arguments?.getString("Curp").toString()
+
         getJSON()
         return view
     }
@@ -134,6 +138,7 @@ class PresupuestoFragment : Fragment() {
                     i.putExtra("Problema", problema)
                     i.putExtra("Número", numero)
                     i.putExtra("Normal", false)
+                    i.putExtra("Curp", curp)
                     startActivity(i)
                 }
 

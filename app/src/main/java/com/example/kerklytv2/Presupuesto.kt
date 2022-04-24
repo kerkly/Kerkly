@@ -18,11 +18,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.example.kerklytv2.controlador.TablaDinamica
-import com.example.kerklytv2.interfaces.PagoPInterface
-import com.example.kerklytv2.interfaces.PrecioInterface
-import com.example.kerklytv2.interfaces.PrecioNormalInterface
+import com.example.kerklytv2.interfaces.*
 import com.example.kerklytv2.modelo.Pdf
 import com.example.kerklytv2.modelo.TablaP
+import com.example.kerklytv2.modelo.serial.CoordenadasKerkly
+import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
@@ -33,10 +33,15 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lowagie.text.*
 import com.lowagie.text.pdf.*
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -68,6 +73,12 @@ class Presupuesto : AppCompatActivity() {
     private var correo = "josem_rl@hotmail.com"
     private var band = false
     private lateinit var btn_ubicacion: MaterialButton
+    private lateinit var curp: String
+    private var latitud = 0.0
+    private var longitud = 0.0
+    private var longitudCliente = 15.45
+    private val  latitudCliente = -100.45
+
 
     var databaseReference: DatabaseReference? = null
     var currentDateTimeString: String? = null
@@ -139,17 +150,20 @@ class Presupuesto : AppCompatActivity() {
         }
 
         btn_ubicacion.setOnClickListener {
-
+            val i = Intent(this, MapsActivity::class.java)
+            i.putExtra("Telefono", telefono)
+            startActivity(i)
         }
 
 
-        var b = intent.extras
+        val b = intent.extras
         folio = b?.get("Folio") as Int
         problema = b.get("Problema") as String
         cliente = b.getString("Nombre").toString()
         direccion = b.get("Dirección").toString()
         telefono = b.get("Número").toString()
         band = b.getBoolean("Normal")
+        curp = b.getString("Curp").toString()
 
 
 
@@ -158,6 +172,8 @@ class Presupuesto : AppCompatActivity() {
         header.add("Concepto")
         header.add("Pago")
         tablaDinamica.addHeader(header)
+
+       // getCoordenadas()
 
         inicializarTabla()
 
@@ -329,6 +345,47 @@ class Presupuesto : AppCompatActivity() {
 
         total = tablaDinamica.getTotal()
         total_txt.text = "Total: $$total"
+    }
+
+    private fun getCoordenadas() {
+        val ROOT_URL = Url().URL
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$ROOT_URL/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val coordenadas = retrofit.create(ObtenerCoordenadasKekrly::class.java)
+        val call = coordenadas.getCoordenadas(curp)
+
+        call?.enqueue(object : retrofit2.Callback<List<CoordenadasKerkly?>?> {
+            override fun onResponse(
+                call: Call<List<CoordenadasKerkly?>?>,
+                response: retrofit2.Response<List<CoordenadasKerkly?>?>
+            ) {
+                val postList: ArrayList<CoordenadasKerkly> = response.body() as ArrayList<CoordenadasKerkly>
+                longitud = postList[0].longitud!!
+                latitud = postList[0].latitud!!
+
+                Log.d("latitud", "$latitud")
+                Log.d("longitud", "$longitud")
+
+
+            }
+
+            override fun onFailure(call: Call<List<CoordenadasKerkly?>?>, t: Throwable) {
+                Toast.makeText(
+                    applicationContext,
+                    "Codigo de respuesta de error: $t",
+                    Toast.LENGTH_SHORT
+                ).show();
+            }
+
+        })
     }
 
 

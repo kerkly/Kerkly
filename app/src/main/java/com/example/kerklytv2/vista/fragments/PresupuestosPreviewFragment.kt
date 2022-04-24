@@ -65,7 +65,6 @@ class PresupuestosPreviewFragment : Fragment() {
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
-
     }
 
     private fun setPresupuestoNormal() {
