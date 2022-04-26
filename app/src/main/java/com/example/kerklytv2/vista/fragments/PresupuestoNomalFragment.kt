@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,6 +48,10 @@ class PresupuestoNomalFragment : Fragment() {
     private lateinit var direccion: String
     private lateinit var nombre: String
     private lateinit var curp: String
+    private lateinit var telK: String
+    private lateinit var img: ImageView
+    private lateinit var txt: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +69,8 @@ class PresupuestoNomalFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_presupuesto_nomal, container, false)
         context = requireActivity()
         recyclerview = v.findViewById(R.id.recycler_presupuesto_normal)
+        img = v.findViewById(R.id.img_presupuesto_urgente)
+        txt = v.findViewById(R.id.txt_presupuesto_urgente)
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager = LinearLayoutManager(context)
        // val intent = context.intent
@@ -70,6 +78,7 @@ class PresupuestoNomalFragment : Fragment() {
         Toast.makeText(context, "Teléfono: $numeroTelefono", Toast.LENGTH_SHORT).show()
 
         curp = arguments?.getString("Curp").toString()
+        telK = arguments?.getString("numNR").toString()
 
 
         getJSON()
@@ -99,48 +108,54 @@ class PresupuestoNomalFragment : Fragment() {
                 val postList: ArrayList<com.example.kerklytv2.modelo.serial.Presupuesto> =
                     response.body() as ArrayList<com.example.kerklytv2.modelo.serial.Presupuesto>
 
-               // Log.d("Lista", postList.toString())
-                MiAdapter = AdapterPresupuesto(postList)
+               if(postList.size == 0) {
+                   recyclerview.visibility = View.GONE
+               } else {
+                   img.visibility = View.GONE
+                   txt.visibility = View.GONE
 
-                MiAdapter.setOnClickListener {
-                    folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuesto
-                    val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
-                    val calle = postList[recyclerview.getChildAdapterPosition(it)].Calle
-                    val cp = postList[recyclerview.getChildAdapterPosition(it)].Codigo_Postal
-                    val referencia = postList[recyclerview.getChildAdapterPosition(it)].Referencia
-                    var ext = postList[recyclerview.getChildAdapterPosition(it)].No_Exterior
+                   MiAdapter = AdapterPresupuesto(postList)
 
-                    val n = postList[recyclerview.getChildAdapterPosition(it)].Nombre
-                    val ap = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Paterno
-                    val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
+                   MiAdapter.setOnClickListener {
+                       folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuesto
+                       val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
+                       val calle = postList[recyclerview.getChildAdapterPosition(it)].Calle
+                       val cp = postList[recyclerview.getChildAdapterPosition(it)].Codigo_Postal
+                       val referencia = postList[recyclerview.getChildAdapterPosition(it)].Referencia
+                       var ext = postList[recyclerview.getChildAdapterPosition(it)].No_Exterior
 
-                    val numero = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
+                       val n = postList[recyclerview.getChildAdapterPosition(it)].Nombre
+                       val ap = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Paterno
+                       val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
 
-                    val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
+                       val numero = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
+
+                       val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
 
 
-                    if (ext == "0") {
-                        ext = "S/N"
-                    }
+                       if (ext == "0") {
+                           ext = "S/N"
+                       }
 
-                    direccion = "$calle $colonia $ext $cp $referencia"
-                    nombre = "$n $ap $am"
+                       direccion = "$calle $colonia $ext $cp $referencia"
+                       nombre = "$n $ap $am"
 
-                    //Toast.makeText(context, "Teléfono: $colonia", Toast.LENGTH_SHORT).show()
+                       //Toast.makeText(context, "Teléfono: $colonia", Toast.LENGTH_SHORT).show()
 
-                    val i = Intent(context, Presupuesto::class.java)
-                    i.putExtra("Folio", folio)
-                    i.putExtra("Nombre", nombre)
-                    i.putExtra("Dirección", direccion)
-                    i.putExtra("Problema", problema)
-                    i.putExtra("Número", numero)
-                    i.putExtra("Normal", true)
-                    i.putExtra("Curp", curp)
+                       val i = Intent(context, Presupuesto::class.java)
+                       i.putExtra("Folio", folio)
+                       i.putExtra("Nombre", nombre)
+                       i.putExtra("Dirección", direccion)
+                       i.putExtra("Problema", problema)
+                       i.putExtra("Número", numero)
+                       i.putExtra("Normal", true)
+                       i.putExtra("Curp", curp)
+                       i.putExtra("numT", telK)
+                       startActivity(i)
+                   }
 
-                    startActivity(i)
-                }
-
-                recyclerview.adapter = MiAdapter
+                   recyclerview.adapter = MiAdapter
+               }
             }
 
             override fun onFailure(call: Call<List<com.example.kerklytv2.modelo.serial.Presupuesto?>?>, t: Throwable) {

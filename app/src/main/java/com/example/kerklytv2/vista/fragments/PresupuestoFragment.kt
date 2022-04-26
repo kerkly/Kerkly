@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,9 @@ class PresupuestoFragment : Fragment() {
     private lateinit var direccion: String
     private lateinit var nombre: String
     private lateinit var curp: String
+    private lateinit var telK: String
+    private lateinit var img: ImageView
+    private lateinit var txt: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,12 +71,15 @@ class PresupuestoFragment : Fragment() {
         var view = inflater.inflate(R.layout.fragment_presupuesto, container, false)
         context = requireActivity()
         recyclerview = view.findViewById(R.id.recycler_presupuesto)
+        img = view.findViewById(R.id.img_presupuesto_normal)
+        txt = view.findViewById(R.id.txt_presupuesto_normal)
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager= LinearLayoutManager(context)
         val intent = context.intent
         numeroTelefono = arguments?.getString("numNR").toString()
 
         curp = arguments?.getString("Curp").toString()
+        telK = arguments?.getString("numNR").toString()
 
         getJSON()
         return view
@@ -104,45 +112,54 @@ class PresupuestoFragment : Fragment() {
                 Log.d("Lista", postList.toString())
                 MiAdapter = ClaseAdapterR(postList)
 
-                MiAdapter.setOnClickListener {
-                    folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
-                    val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
-                    val calle = postList[recyclerview.getChildAdapterPosition(it)].Calle
-                    val cp = postList[recyclerview.getChildAdapterPosition(it)].Codigo_Postal
-                    val referencia = postList[recyclerview.getChildAdapterPosition(it)].Referencia
-                    var ext = postList[recyclerview.getChildAdapterPosition(it)].No_Exterior
+                if(postList.size == 0) {
+                    recyclerview.visibility = View.GONE
+                } else {
+                    img.visibility = View.GONE
+                    txt.visibility = View.GONE
 
-                    val n = postList[recyclerview.getChildAdapterPosition(it)].nombre_noR
-                    val ap = postList[recyclerview.getChildAdapterPosition(it)].apellidoP_noR
-                    val am = postList[recyclerview.getChildAdapterPosition(it)].apellidoM_noR
+                    MiAdapter.setOnClickListener {
+                        folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
+                        val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
+                        val calle = postList[recyclerview.getChildAdapterPosition(it)].Calle
+                        val cp = postList[recyclerview.getChildAdapterPosition(it)].Codigo_Postal
+                        val referencia = postList[recyclerview.getChildAdapterPosition(it)].Referencia
+                        var ext = postList[recyclerview.getChildAdapterPosition(it)].No_Exterior
 
-                    val numero = postList[recyclerview.getChildAdapterPosition(it)].idNoRTelefono
+                        val n = postList[recyclerview.getChildAdapterPosition(it)].nombre_noR
+                        val ap = postList[recyclerview.getChildAdapterPosition(it)].apellidoP_noR
+                        val am = postList[recyclerview.getChildAdapterPosition(it)].apellidoM_noR
 
-                    val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
+                        val numero = postList[recyclerview.getChildAdapterPosition(it)].idNoRTelefono
+
+                        val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
 
 
-                    if (ext == "0") {
-                        ext = "S/N"
+                        if (ext == "0") {
+                            ext = "S/N"
+                        }
+
+                        direccion = "$calle $colonia $ext $cp $referencia"
+                        nombre = "$n $ap $am"
+
+                        Toast.makeText(context, "Teléfono: $colonia",
+                            Toast.LENGTH_SHORT).show()
+
+                        val i = Intent(context, Presupuesto::class.java)
+                        i.putExtra("Folio", folio)
+                        i.putExtra("Nombre", nombre)
+                        i.putExtra("Dirección", direccion)
+                        i.putExtra("Problema", problema)
+                        i.putExtra("Número", numero)
+                        i.putExtra("Normal", false)
+                        i.putExtra("Curp", curp)
+                        i.putExtra("numT", telK)
+                        startActivity(i)
                     }
 
-                    direccion = "$calle $colonia $ext $cp $referencia"
-                    nombre = "$n $ap $am"
-
-                    Toast.makeText(context, "Teléfono: $colonia",
-                        Toast.LENGTH_SHORT).show()
-
-                    val i = Intent(context, Presupuesto::class.java)
-                    i.putExtra("Folio", folio)
-                    i.putExtra("Nombre", nombre)
-                    i.putExtra("Dirección", direccion)
-                    i.putExtra("Problema", problema)
-                    i.putExtra("Número", numero)
-                    i.putExtra("Normal", false)
-                    i.putExtra("Curp", curp)
-                    startActivity(i)
+                    recyclerview.adapter = MiAdapter
                 }
 
-                recyclerview.adapter = MiAdapter
             }
 
             override fun onFailure(call: Call<List<PresupuestoDatos?>?>, t: Throwable) {

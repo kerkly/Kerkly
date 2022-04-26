@@ -97,4 +97,7 @@
     <string name="mensaje">Mensaje</string>
     <string name="ubicacion">Ubicación</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="listaa_vacia_historial_normal">No tiene servicios realziados en su historial</string>
+    <string name="lista_vacia_trabajosPendientes">No tiene trabajos por realizar</string>
+    <string name="lista_vacia_presupuestos">No tiene presupuestos pendientes</string>
 </resources>

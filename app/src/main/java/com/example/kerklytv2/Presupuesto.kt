@@ -78,6 +78,8 @@ class Presupuesto : AppCompatActivity() {
     private var longitud = 0.0
     private var longitudCliente = 15.45
     private val  latitudCliente = -100.45
+    private lateinit var b: Bundle
+    private lateinit var telK: String
 
 
     var databaseReference: DatabaseReference? = null
@@ -145,6 +147,7 @@ class Presupuesto : AppCompatActivity() {
             }
 
             val i = Intent(this, InterfazKerkly::class.java)
+            i.putExtras(b)
             startActivity(i)
 
         }
@@ -156,15 +159,16 @@ class Presupuesto : AppCompatActivity() {
         }
 
 
-        val b = intent.extras
-        folio = b?.get("Folio") as Int
+        b = intent.extras!!
+        folio = b.get("Folio") as Int
         problema = b.get("Problema") as String
         cliente = b.getString("Nombre").toString()
         direccion = b.get("Dirección").toString()
         telefono = b.get("Número").toString()
         band = b.getBoolean("Normal")
         curp = b.getString("Curp").toString()
-
+        telK = b.getString("numT").toString()
+        Log.d("telefono kerkly", telK)
 
 
         tablaDinamica = TablaDinamica(tabla, applicationContext)

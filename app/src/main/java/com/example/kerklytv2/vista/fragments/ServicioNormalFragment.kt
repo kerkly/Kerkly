@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,6 +48,8 @@ class ServicioNormalFragment : Fragment() {
    // private lateinit var img: ImageView
     private var folio = 0
     private lateinit var curp: String
+    private lateinit var img: ImageView
+    private lateinit var txt: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +69,8 @@ class ServicioNormalFragment : Fragment() {
         context = requireActivity()
         recycler = v.findViewById(R.id.recycler_trabajoNormal)
       //  img = v.findViewById(R.id.chat_img)
+        img = v.findViewById(R.id.img_servicio_normal)
+        txt = v.findViewById(R.id.txt_servicio_normal)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         b = requireArguments()
@@ -104,62 +110,68 @@ class ServicioNormalFragment : Fragment() {
                 val postList: ArrayList<TrabajoNormal> = response.body() as
                         ArrayList<TrabajoNormal>
 
-                Log.d("Lista", postList.toString())
-                MiAdapter = AdapterNormalTrabajos(postList, requireActivity())
+                if (postList.size == 0) {
+                    recycler.visibility = View.GONE
+                } else {
+                    img.visibility = View.GONE
+                    txt.visibility = View.GONE
+
+                    MiAdapter = AdapterNormalTrabajos(postList, requireActivity())
+                    MiAdapter.setOnClickListener {
+                        folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
+                        val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
+                        val calle = postList[recycler.getChildAdapterPosition(it)].Calle
+                        val cp = postList[recycler.getChildAdapterPosition(it)].Codigo_Postal
+                        val referencia = postList[recycler.getChildAdapterPosition(it)].Referencia
+                        var ext = postList[recycler.getChildAdapterPosition(it)].No_Exterior
+
+                        val n = postList[recycler.getChildAdapterPosition(it)].Nombre
+                        val ap = postList[recycler.getChildAdapterPosition(it)].Apellido_Paterno
+                        val am = postList[recycler.getChildAdapterPosition(it)].Apellido_Materno
+
+                        val numero = postList[recycler.getChildAdapterPosition(it)].telefonoCliente
+
+                        val problema = postList[recycler.getChildAdapterPosition(it)].problema
+                        val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
+                        val estado = postList[recycler.getChildAdapterPosition(it)].Estado
+                        val pais = postList[recycler.getChildAdapterPosition(it)].Pais
+                        val idContrato = postList[recycler.getChildAdapterPosition(it)].idContrato
+
+                        val fecha = postList[recycler.getChildAdapterPosition(it)].Fecha_Inicio
+
+                        Log.d("Problema", problema!!)
+                        if (ext == "0") {
+                            ext = "S/N"
+                        }
+
+                        val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
+                        val nombre = "$n $ap $am"
+
+                        Toast.makeText(context, "Teléfono: $colonia",
+                            Toast.LENGTH_SHORT).show()
+
+                        val b = Bundle()
+                        b.putString("Nombre Cliente NoR", nombre)
+                        b.putString("Problema", problema)
+                        b.putString("Dirección", direccion)
+                        b.putString("Fecha", fecha)
+                        b.putInt("Contrato", idContrato)
+                        b.putString("Fragment", "0")
+                        b.putString("Curp", curp)
 
 
-                MiAdapter.setOnClickListener {
-                    folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
-                    val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
-                    val calle = postList[recycler.getChildAdapterPosition(it)].Calle
-                    val cp = postList[recycler.getChildAdapterPosition(it)].Codigo_Postal
-                    val referencia = postList[recycler.getChildAdapterPosition(it)].Referencia
-                    var ext = postList[recycler.getChildAdapterPosition(it)].No_Exterior
+                        val f = AgendaFragment()
+                        b.putBoolean("Historial", false)
+                        f.arguments = b
+                        var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
+                        }
 
-                    val n = postList[recycler.getChildAdapterPosition(it)].Nombre
-                    val ap = postList[recycler.getChildAdapterPosition(it)].Apellido_Paterno
-                    val am = postList[recycler.getChildAdapterPosition(it)].Apellido_Materno
-
-                    val numero = postList[recycler.getChildAdapterPosition(it)].telefonoCliente
-
-                    val problema = postList[recycler.getChildAdapterPosition(it)].problema
-                    val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
-                    val estado = postList[recycler.getChildAdapterPosition(it)].Estado
-                    val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                    val idContrato = postList[recycler.getChildAdapterPosition(it)].idContrato
-
-                    val fecha = postList[recycler.getChildAdapterPosition(it)].Fecha_Inicio
-
-                    Log.d("Problema", problema!!)
-                    if (ext == "0") {
-                        ext = "S/N"
                     }
 
-                    val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
-                    val nombre = "$n $ap $am"
-
-                    Toast.makeText(context, "Teléfono: $colonia",
-                        Toast.LENGTH_SHORT).show()
-
-                    val b = Bundle()
-                    b.putString("Nombre Cliente NoR", nombre)
-                    b.putString("Problema", problema)
-                    b.putString("Dirección", direccion)
-                    b.putString("Fecha", fecha)
-                    b.putInt("Contrato", idContrato)
-                    b.putString("Fragment", "0")
-                    b.putString("Curp", curp)
-
-
-                    val f = AgendaFragment()
-                    f.arguments = b
-                    var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
-                    }
-
+                    recycler.adapter = MiAdapter
                 }
 
-                recycler.adapter = MiAdapter
 
             }
 

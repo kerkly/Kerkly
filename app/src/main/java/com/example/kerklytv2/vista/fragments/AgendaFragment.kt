@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -69,6 +70,7 @@ class AgendaFragment : Fragment() {
     private var latitud = 0.0
     private var longitud = 0.0
     private lateinit var curp: String
+    private var bandHistory = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +98,7 @@ class AgendaFragment : Fragment() {
         boton = v.findViewById(R.id.btn_agendaGuardar)
         layoutFecha = v.findViewById(R.id.layout_fechaFinal)
         layoutHora = v.findViewById(R.id.layout_horaFinal)
-        btn_ubicacion = v.findViewById(R.id.btn_ubicacion)
+        btn_ubicacion = v.findViewById(R.id.btn_ubicacion_agenda)
 
         val aux = arguments?.get("Fragment")
 
@@ -134,13 +136,20 @@ class AgendaFragment : Fragment() {
         edit_problema.setText(arguments?.getString("Problema").toString())
         contrato = arguments?.getInt("Contrato")!!
 
+        bandHistory = arguments?.getBoolean("Historial")!!
+
         curp = arguments?.getString("Curp").toString()
 
         var fecha = arguments?.getString("Fecha")
         val hora = fecha?.substring(11,16)
         fecha = fecha?.substring(0,10)
 
-        getCoordenadas()
+
+        if (bandHistory) {
+            btn_ubicacion.visibility = View.GONE
+        } else {
+            getCoordenadas()
+        }
 
         edit_horInicio.setText(hora)
         edit_fechaInicio.setText(fecha)
