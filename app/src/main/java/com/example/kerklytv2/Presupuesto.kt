@@ -155,6 +155,7 @@ class Presupuesto : AppCompatActivity() {
         btn_ubicacion.setOnClickListener {
             val i = Intent(this, MapsActivity::class.java)
             i.putExtra("Telefono", telefono)
+            i.putExtra("Normal", band)
             startActivity(i)
         }
 

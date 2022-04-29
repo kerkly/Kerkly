@@ -9,6 +9,11 @@ import retrofit2.http.Query
 interface ObtenerCoordenadasNoRegistrado {
     @FormUrlEncoded
     @GET("CoordenadasDelClienteNoRegistradoPresu.php")
-    open fun getDatost(@Query("telefono") Telefono: String?):
+    open fun getNoRegistrado(@Query("telefono") Telefono: String?):
+            Call<List<CoordanadasClienteNoR?>?>?
+
+    @FormUrlEncoded
+    @GET("CoordenadasDelClienteSiRegistradoPresu.php")
+    open fun getRegistrado(@Query("telefono") Telefono: String?):
             Call<List<CoordanadasClienteNoR?>?>?
 }

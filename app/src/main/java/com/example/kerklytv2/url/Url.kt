@@ -1,5 +1,5 @@
 package com.example.kerklytv2.url
 
 class Url {
-    val URL: String = "https://a16d-2806-104e-3-fcba-cf2-61c1-94b0-de6b.ngrok.io/Kerkly/kerkly"
+    val URL: String = "https://df65-2806-104e-3-f8a8-ac56-36f0-8b6f-c9c6.ngrok.io/Kerkly/kerkly"
 }
