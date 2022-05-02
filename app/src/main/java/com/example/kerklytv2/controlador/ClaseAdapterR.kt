@@ -43,7 +43,14 @@ class ClaseAdapterR(val datset: ArrayList<PresupuestoDatos>) :
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ClaseAdapterR.ViewHolder, position: Int) {
         viewHolder.txtFolio.text = datset[position].idPresupuestoNoRegistrado.toString()
-        viewHolder.txtTelefono.text = datset[position].idNoRTelefono.toString()
+        if (datset[position].idNoRTelefono == null) {
+            viewHolder.txtTelefono.text = datset[position].telefonoCliente
+        } else {
+            viewHolder.txtTelefono.text = datset[position].idNoRTelefono.toString()
+        }
+
+        //viewHolder.txtTelefono.text = datset[position].telefonoCliente
+
         viewHolder.txtProblema.text = datset[position].problema.toString()
         viewHolder.txtFecha.text = datset[position].fechaPresupuesto.toString()
     }

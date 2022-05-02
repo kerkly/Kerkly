@@ -52,4 +52,23 @@ class PresupuestoDatos {
     @Expose
     var idPresupuestoNoRegistrado =0
 
+    @SerializedName("Correo")
+    @Expose
+    var Correo = ""
+
+    @SerializedName("Nombre")
+    @Expose
+    var Nombre = ""
+
+    @SerializedName("Apellido_Paterno")
+    @Expose
+    var Apellido_Paterno = ""
+
+    @SerializedName("Apellido_Materno")
+    @Expose
+    var Apellido_Materno = ""
+
+    @SerializedName("telefonoCliente")
+    @Expose
+    var telefonoCliente: String? = null
 }

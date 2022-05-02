@@ -98,7 +98,7 @@ class PresupuestoFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val presupuestoGET = retrofit.create(PresupuestoInterface::class.java)
-        val call = presupuestoGET.getPost(numeroTelefono)
+        val call = presupuestoGET.getPost(numeroTelefono, "Plomero")
         call?.enqueue(object : Callback<List<PresupuestoDatos?>?> {
 
             override fun onResponse(
