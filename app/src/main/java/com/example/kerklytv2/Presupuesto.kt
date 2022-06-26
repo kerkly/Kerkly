@@ -174,8 +174,8 @@ class Presupuesto : AppCompatActivity() {
 
         tablaDinamica = TablaDinamica(tabla, applicationContext)
         header.add("Item")
-        header.add("Concepto")
-        header.add("Pago")
+        header.add("Descripción")
+        header.add("Precio")
         tablaDinamica.addHeader(header)
 
        // getCoordenadas()

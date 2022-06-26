@@ -100,4 +100,8 @@
     <string name="listaa_vacia_historial_normal">No tiene servicios realziados en su historial</string>
     <string name="lista_vacia_trabajosPendientes">No tiene trabajos por realizar</string>
     <string name="lista_vacia_presupuestos">No tiene presupuestos pendientes</string>
+    <string name="cerrar_app">Cerrar aplicación</string>
+    <string name="mensaje_alertaCerrarApp">¿Seguro que quiere cerrar la aplicación?</string>
+    <string name="confirmar_alertCerrarApp">Confirmar</string>
+    <string name="cancelar_alertCerrarApp">Cancelar</string>
 </resources>
