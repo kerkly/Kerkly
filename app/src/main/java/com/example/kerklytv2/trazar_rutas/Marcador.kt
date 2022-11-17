@@ -43,7 +43,7 @@ class Marcador(var nMap: GoogleMap, var context: Context, var telefono: String) 
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val obtenerDatos = retrofit.create(ObtenerCoordenadasNoRegistrado::class.java)
-        val call = obtenerDatos.getNoRegistrado(telefono)
+        val call = obtenerDatos.getRegistrado(telefono)
         call?.enqueue(object : retrofit2.Callback<List<CoordanadasClienteNoR?>?> {
 
             override fun onResponse(
@@ -55,6 +55,7 @@ class Marcador(var nMap: GoogleMap, var context: Context, var telefono: String) 
                 location1.latitude = poslist!!.get(0).latitud
                 location1.longitude = poslist!!.get(0).longitud
                 val nombre = poslist!!.get(0).nombre_noR
+                System.out.println("telefono: $telefono latitud del marcador" +poslist!!.size)
                 CrearMarcador(location1, nombre.toString())
             }
 

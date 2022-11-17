@@ -2,15 +2,17 @@ package com.example.kerklytv2.vista
 
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.MainActiityControlador
 import com.example.kerklytv2.modelo.Kerkly
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.database.FirebaseDatabase
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var editUsuario: TextInputEditText
@@ -20,9 +22,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var kerkly: Kerkly
     private lateinit var controlador: MainActiityControlador
     private lateinit var id: String
-
-
-
 
     @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         layoutUsuario = findViewById(R.id.textnputUser)
         layoutContra = findViewById(R.id.textnputPassword)
         kerkly = Kerkly()
+
+
     }
 
     fun entrar(view: View) {
