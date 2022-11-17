@@ -1,5 +1,6 @@
 package com.example.kerklytv2.vista
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -54,6 +55,7 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var txt_nombre: TextView
     private lateinit var txt_correo: TextView
     private lateinit var txt_oficios: TextView
+    private lateinit var drawerLayout: DrawerLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +76,7 @@ class InterfazKerkly : AppCompatActivity() {
 
 
 
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
 
@@ -312,6 +314,20 @@ class InterfazKerkly : AppCompatActivity() {
                 ).show()
             }
         })
+    }
+
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            val alert: AlertDialog.Builder = AlertDialog.Builder(this)
+            alert.setTitle(getString(R.string.cerrar_app))
+            alert.setMessage(getString(R.string.mensaje_alertaCerrarApp))
+            alert.setCancelable(false)
+            alert.setPositiveButton(getString(R.string.confirmar_alertCerrarApp)) { dialogo1, id -> finish() }
+            alert.setNegativeButton(getString(R.string.cancelar_alertCerrarApp)) { dialogo1, id -> dialogo1.dismiss() }
+            alert.show()
+        }
     }
 
     private fun getKerkly() {
