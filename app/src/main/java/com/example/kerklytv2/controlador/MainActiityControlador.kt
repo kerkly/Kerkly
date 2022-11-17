@@ -98,7 +98,7 @@ class MainActiityControlador {
                 }
 
                 override fun failure(error: RetrofitError) {
-                    println("error $error")
+                    println("error 101 $error")
                 }
 
             }

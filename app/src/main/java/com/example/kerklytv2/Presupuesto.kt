@@ -152,12 +152,7 @@ class Presupuesto : AppCompatActivity() {
 
         }
 
-        btn_ubicacion.setOnClickListener {
-            val i = Intent(this, MapsActivity::class.java)
-            i.putExtra("Telefono", telefono)
-            i.putExtra("Normal", band)
-            startActivity(i)
-        }
+
 
 
         b = intent.extras!!
@@ -166,6 +161,7 @@ class Presupuesto : AppCompatActivity() {
         cliente = b.getString("Nombre").toString()
         direccion = b.get("Dirección").toString()
         telefono = b.get("Número").toString()
+        System.out.println("$folio clase presupuesto $telefono")
         band = b.getBoolean("Normal")
         curp = b.getString("Curp").toString()
         telK = b.getString("numT").toString()
@@ -177,6 +173,14 @@ class Presupuesto : AppCompatActivity() {
         header.add("Concepto")
         header.add("Pago")
         tablaDinamica.addHeader(header)
+
+        btn_ubicacion.setOnClickListener {
+
+            val i = Intent(this, MapsActivity::class.java)
+            i.putExtra("Telefono", telefono)
+            i.putExtra("Normal", band)
+            startActivity(i)
+        }
 
        // getCoordenadas()
 

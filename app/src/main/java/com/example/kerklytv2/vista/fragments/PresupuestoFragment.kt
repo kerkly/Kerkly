@@ -2,31 +2,34 @@ package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import android.widget.AdapterView.OnItemClickListener
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
 import com.example.kerklytv2.interfaces.PresupuestoInterface
-import com.example.kerklytv2.modelo.serial.PresupuestoDatos
+import com.example.kerklytv2.interfaces.obtenerTodosLosOficios
+import com.example.kerklytv2.modelo.serial.PresupuestoDatosClienteRegistrado
+import com.example.kerklytv2.modelo.serial.todosLosOficios
 import com.example.kerklytv2.url.Url
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import okhttp3.OkHttpClient
 
-import okhttp3.logging.HttpLoggingInterceptor
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,12 +57,19 @@ class PresupuestoFragment : Fragment() {
     private lateinit var img: ImageView
     private lateinit var txt: TextView
 
+    lateinit var postList: ArrayList<PresupuestoDatosClienteRegistrado>
+    lateinit var autoCompleteTxt: AutoCompleteTextView
+    lateinit  var adapterItems: ArrayAdapter<String>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+
 
     }
 
@@ -81,12 +91,64 @@ class PresupuestoFragment : Fragment() {
         curp = arguments?.getString("Curp").toString()
         telK = arguments?.getString("numNR").toString()
 
-        getJSON()
+
+        //primero se obtendra todos los oficios que tiene el kerkly
+
+        val ROOT_URL = Url().URL
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$ROOT_URL/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val oficios = retrofit.create(obtenerTodosLosOficios::class.java)
+        val call2 = oficios.getPost(numeroTelefono)
+        call2?.enqueue(object : Callback<List<todosLosOficios?>?>{
+            override fun onResponse(call: Call<List<todosLosOficios?>?>, response: Response<List<todosLosOficios?>?>) {
+                val postList: ArrayList<todosLosOficios> = response.body() as ArrayList<todosLosOficios>
+                var ofi: MutableList<String> = mutableListOf()
+
+                for (i in  0 until postList.size){
+                    val oficio = postList[i].nombreO
+                    System.out.println("oficios obtenidos " + oficio)
+                    ofi.add(oficio.toString())
+                }
+              //  System.out.println("tamaño del array " + items1!!.get(1))
+                autoCompleteTxt = view.findViewById(R.id.filtro);
+                adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
+                autoCompleteTxt.setAdapter(adapterItems)
+                autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id ->
+                    val item = parent.getItemAtPosition(position).toString()
+                    Toast.makeText(context, "oficio: $item", Toast.LENGTH_SHORT).show()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)?.commitNow();
+                        fragmentManager?.beginTransaction()?.attach(this@PresupuestoFragment)?.commitNow();
+                    } else {
+                        fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
+                            ?.attach(this@PresupuestoFragment)
+                            ?.commit();
+                    }
+                    getJSON(item)
+                }
+            }
+
+            override fun onFailure(call: Call<List<todosLosOficios?>?>, t: Throwable) {
+                Toast.makeText(context, "Codigo de respuesta de error: $t", Toast.LENGTH_SHORT).show();
+            }
+
+
+        })
+
         return view
     }
 
 
-    fun getJSON() {
+
+
+    fun  getJSON(oficio: String) {
+      //  System.out.println("metodo json $numeroTelefono")
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -98,15 +160,12 @@ class PresupuestoFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val presupuestoGET = retrofit.create(PresupuestoInterface::class.java)
-        val call = presupuestoGET.getPost(numeroTelefono, "Plomero")
-        call?.enqueue(object : Callback<List<PresupuestoDatos?>?> {
+        val call = presupuestoGET.getPresupuestoClienteRegistrado(numeroTelefono, oficio)
+        call?.enqueue(object : Callback<List<PresupuestoDatosClienteRegistrado?>?> {
 
-            override fun onResponse(
-                call: Call<List<PresupuestoDatos?>?>,
-                response: Response<List<PresupuestoDatos?>?>
-            ) {
+            override fun onResponse(call: Call<List<PresupuestoDatosClienteRegistrado?>?>, response: Response<List<PresupuestoDatosClienteRegistrado?>?>) {
 
-                val postList: ArrayList<PresupuestoDatos> = response.body() as ArrayList<PresupuestoDatos>
+                 postList = response.body() as ArrayList<PresupuestoDatosClienteRegistrado>
 
                 //carsModels = response.body() as ArrayList<presupuestok>
                 Log.d("Lista", postList.toString())
@@ -126,11 +185,11 @@ class PresupuestoFragment : Fragment() {
                         val referencia = postList[recyclerview.getChildAdapterPosition(it)].Referencia
                         var ext = postList[recyclerview.getChildAdapterPosition(it)].No_Exterior
 
-                        val n = postList[recyclerview.getChildAdapterPosition(it)].nombre_noR
-                        val ap = postList[recyclerview.getChildAdapterPosition(it)].apellidoP_noR
-                        val am = postList[recyclerview.getChildAdapterPosition(it)].apellidoM_noR
-
-                        val numero = postList[recyclerview.getChildAdapterPosition(it)].idNoRTelefono
+                        val n = postList[recyclerview.getChildAdapterPosition(it)].Nombre
+                        val ap = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Paterno
+                        val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
+                        val correo = postList[recyclerview.getChildAdapterPosition(it)].Correo
+                        val numero = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
 
                         val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
 
@@ -142,7 +201,7 @@ class PresupuestoFragment : Fragment() {
                         direccion = "$calle $colonia $ext $cp $referencia"
                         nombre = "$n $ap $am"
 
-                        Toast.makeText(context, "Teléfono: $colonia",
+                        Toast.makeText(context, "Teléfono: $numero",
                             Toast.LENGTH_SHORT).show()
 
                         val i = Intent(context, Presupuesto::class.java)
@@ -162,7 +221,7 @@ class PresupuestoFragment : Fragment() {
 
             }
 
-            override fun onFailure(call: Call<List<PresupuestoDatos?>?>, t: Throwable) {
+            override fun onFailure(call: Call<List<PresupuestoDatosClienteRegistrado?>?>, t: Throwable) {
                 Toast.makeText(
                     context,
                     "Codigo de respuesta de error: $t",
@@ -171,5 +230,7 @@ class PresupuestoFragment : Fragment() {
             }
 
         })
+
+
     }
 }

@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
-import com.example.kerklytv2.modelo.serial.PresupuestoDatos
+import com.example.kerklytv2.modelo.serial.PresupuestoDatosClienteRegistrado
 
-class ClaseAdapterR(val datset: ArrayList<PresupuestoDatos>) :
+class ClaseAdapterR(val datset: ArrayList<PresupuestoDatosClienteRegistrado>) :
     RecyclerView.Adapter<ClaseAdapterR.ViewHolder>(), View.OnClickListener {
 
     private lateinit var listener: View.OnClickListener
@@ -43,10 +43,10 @@ class ClaseAdapterR(val datset: ArrayList<PresupuestoDatos>) :
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ClaseAdapterR.ViewHolder, position: Int) {
         viewHolder.txtFolio.text = datset[position].idPresupuestoNoRegistrado.toString()
-        if (datset[position].idNoRTelefono == null) {
+        if (datset[position].telefonoCliente == null) {
             viewHolder.txtTelefono.text = datset[position].telefonoCliente
         } else {
-            viewHolder.txtTelefono.text = datset[position].idNoRTelefono.toString()
+            viewHolder.txtTelefono.text = datset[position].telefonoCliente.toString()
         }
 
         //viewHolder.txtTelefono.text = datset[position].telefonoCliente

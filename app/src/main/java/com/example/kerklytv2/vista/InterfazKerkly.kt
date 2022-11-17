@@ -27,6 +27,7 @@ import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.ui.home.HomeFragment
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*
+import com.google.firebase.database.FirebaseDatabase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit.RestAdapter
@@ -109,6 +110,13 @@ class InterfazKerkly : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+
+        //ejemplo en firebase
+        val database = FirebaseDatabase.getInstance()
+        val myRef = database.getReference("message")
+        myRef.setValue("Hola Luis luis")
+        System.out.println("entro en lo de firebase")
     }
 
     private fun cerrarSesion() {
@@ -249,7 +257,7 @@ class InterfazKerkly : AppCompatActivity() {
                         e.printStackTrace()
                     }
 
-                    Log.e("nosee", output)
+                   // Log.e("nosee", output)
 
                 }
 
@@ -328,19 +336,24 @@ class InterfazKerkly : AppCompatActivity() {
                 val postList: ArrayList<com.example.kerklytv2.modelo.serial.Kerkly> = response.body() as
                         ArrayList<com.example.kerklytv2.modelo.serial.Kerkly>
 
-                correo = postList[0].correo
-                val nombre = postList[0].nombre
-                val ap = postList[0].ap
-                val am = postList[0].am
-                curp = postList[0].curp
+                if (postList.size == 0){
+                    Toast.makeText(this@InterfazKerkly, "lista vacia", Toast.LENGTH_SHORT).show()
+                }else{
+                    correo = postList[0].correo
+                    val nombre = postList[0].nombre
+                    val ap = postList[0].ap
+                    val am = postList[0].am
+                    curp = postList[0].curp
 
-                nombre_completo = "$nombre $ap $am"
+                    nombre_completo = "$nombre $ap $am"
 
-                txt_nombre.text = nombre_completo
-                txt_correo.text = correo
+                    txt_nombre.text = nombre_completo
+                    txt_correo.text = correo
 
-                Log.d("correo", correo)
-                getOficiosKerkly()
+                    Log.d("correo", correo)
+                    getOficiosKerkly()
+                }
+
             }
 
             override fun onFailure(
