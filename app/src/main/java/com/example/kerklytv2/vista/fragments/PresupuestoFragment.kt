@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kerklytv2.MapsActivity
 import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
@@ -60,6 +61,7 @@ class PresupuestoFragment : Fragment() {
     lateinit var postList: ArrayList<PresupuestoDatosClienteRegistrado>
     lateinit var autoCompleteTxt: AutoCompleteTextView
     lateinit  var adapterItems: ArrayAdapter<String>
+    lateinit var items: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,8 +122,9 @@ class PresupuestoFragment : Fragment() {
                 adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
                 autoCompleteTxt.setAdapter(adapterItems)
                 autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id ->
-                    val item = parent.getItemAtPosition(position).toString()
-                    Toast.makeText(context, "oficio: $item", Toast.LENGTH_SHORT).show()
+                    items = parent.getItemAtPosition(position).toString()
+                    Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
+                  //  getJSON(items.toString())
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)?.commitNow();
                         fragmentManager?.beginTransaction()?.attach(this@PresupuestoFragment)?.commitNow();
@@ -130,7 +133,9 @@ class PresupuestoFragment : Fragment() {
                             ?.attach(this@PresupuestoFragment)
                             ?.commit();
                     }
-                    getJSON(item)
+
+                    getJSON()
+
                 }
             }
 
@@ -147,7 +152,7 @@ class PresupuestoFragment : Fragment() {
 
 
 
-    fun  getJSON(oficio: String) {
+    fun  getJSON() {
       //  System.out.println("metodo json $numeroTelefono")
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
@@ -160,7 +165,7 @@ class PresupuestoFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val presupuestoGET = retrofit.create(PresupuestoInterface::class.java)
-        val call = presupuestoGET.getPresupuestoClienteRegistrado(numeroTelefono, oficio)
+        val call = presupuestoGET.getPresupuestoClienteRegistrado(numeroTelefono, items)
         call?.enqueue(object : Callback<List<PresupuestoDatosClienteRegistrado?>?> {
 
             override fun onResponse(call: Call<List<PresupuestoDatosClienteRegistrado?>?>, response: Response<List<PresupuestoDatosClienteRegistrado?>?>) {
@@ -179,6 +184,8 @@ class PresupuestoFragment : Fragment() {
 
                     MiAdapter.setOnClickListener {
                         folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
+                       val latitud = postList[recyclerview.getChildAdapterPosition(it)].latitud
+                        val longitud = postList[recyclerview.getChildAdapterPosition(it)].longitud
                         val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
                         val calle = postList[recyclerview.getChildAdapterPosition(it)].Calle
                         val cp = postList[recyclerview.getChildAdapterPosition(it)].Codigo_Postal
@@ -204,7 +211,10 @@ class PresupuestoFragment : Fragment() {
                         Toast.makeText(context, "Teléfono: $numero",
                             Toast.LENGTH_SHORT).show()
 
-                        val i = Intent(context, Presupuesto::class.java)
+                       // val i = Intent(context, Presupuesto::class.java)
+                        val i = Intent(context, MapsActivity::class.java)
+                        i.putExtra("latitud", latitud)
+                        i.putExtra("longitud", longitud)
                         i.putExtra("Folio", folio)
                         i.putExtra("Nombre", nombre)
                         i.putExtra("Dirección", direccion)
@@ -213,6 +223,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("Normal", false)
                         i.putExtra("Curp", curp)
                         i.putExtra("numT", telK)
+                        i.putExtra("correo", correo)
                         startActivity(i)
                     }
 

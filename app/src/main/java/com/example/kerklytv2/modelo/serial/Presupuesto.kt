@@ -4,6 +4,13 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class Presupuesto {
+    @SerializedName("latitud")
+    @Expose
+    var latitud: String = ""
+
+    @SerializedName("longitud")
+    @Expose
+    var longitud: String = ""
 
     @SerializedName("problema")
     @Expose
@@ -13,15 +20,15 @@ class Presupuesto {
     @Expose
     var telefonoCliente: String = ""
 
-    @SerializedName("cliente.Nombre")
+    @SerializedName("Nombre")
     @Expose
     var Nombre: String = ""
 
-    @SerializedName("cliente.Apellido_Paterno")
+    @SerializedName("Apellido_Paterno")
     @Expose
     var Apellido_Paterno: String = ""
 
-    @SerializedName("cliente.Apellido_Materno")
+    @SerializedName("Apellido_Materno")
     @Expose
     var Apellido_Materno: String = ""
 

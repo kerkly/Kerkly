@@ -16,10 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -66,6 +63,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     lateinit var dialog: Dialog
     private lateinit var telefono: String
     private lateinit var b: Bundle
+    lateinit var latitud2: String
+    lateinit var longitud2: String
+    lateinit var nombreCliente: String
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,9 +76,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         setContentView(binding.root)
 
         b = intent.extras!!
+        //recibimos las coordenas
+        //telefono = b.getString("Telefono").toString()
+        latitud2 = b.getString("latitud").toString()
+        longitud2 = b.getString("longitud").toString()
+        nombreCliente = b.getString("Nombre").toString()
 
-        telefono = b.getString("Telefono").toString()
-
+      //  System.out.println("latitud : $latitud2 $longitud2 $nombreCliente latitud del marcador")
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
@@ -90,6 +95,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mapFragment.getMapAsync(this)
 
         getLocalizacion()
+
+        buttonEnviarUbicacion.setOnClickListener(View.OnClickListener {
+            Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
+            //pendiente
+        })
     }
 
     /**
@@ -153,7 +163,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         //los marcadores
-        Utils_k.Marcador(mMap, applicationContext, telefono)
+        Utils_k.Marcador(mMap, applicationContext, latitud2, longitud2, nombreCliente)
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
     }
@@ -253,7 +263,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                         }
                         Utils_k.routes.add(path)
                         //Toast.makeText(this, "hola", Toast.LENGTH_LONG).show()
-                        Utils_k.Marcador(mMap, applicationContext, telefono)
+                        Utils_k.Marcador(mMap, applicationContext, latitud2, longitud2, nombreCliente)
                         var points: java.util.ArrayList<LatLng?>? = null
                         var lineOptions: PolylineOptions? = null
 

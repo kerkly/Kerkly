@@ -76,8 +76,8 @@ class Presupuesto : AppCompatActivity() {
     private lateinit var curp: String
     private var latitud = 0.0
     private var longitud = 0.0
-    private var longitudCliente = 15.45
-    private val  latitudCliente = -100.45
+    lateinit var longitudCliente: String
+    lateinit var  latitudCliente: String
     private lateinit var b: Bundle
     private lateinit var telK: String
 
@@ -152,16 +152,15 @@ class Presupuesto : AppCompatActivity() {
 
         }
 
-
-
-
         b = intent.extras!!
+        latitudCliente =  b.get("latitud") as String
+        longitudCliente = b.get("longitud") as String
         folio = b.get("Folio") as Int
         problema = b.get("Problema") as String
         cliente = b.getString("Nombre").toString()
         direccion = b.get("Dirección").toString()
         telefono = b.get("Número").toString()
-        System.out.println("$folio clase presupuesto $telefono")
+       // System.out.println("$folio clase presupuesto $telefono")
         band = b.getBoolean("Normal")
         curp = b.getString("Curp").toString()
         telK = b.getString("numT").toString()
@@ -179,6 +178,10 @@ class Presupuesto : AppCompatActivity() {
             val i = Intent(this, MapsActivity::class.java)
             i.putExtra("Telefono", telefono)
             i.putExtra("Normal", band)
+            i.putExtra("latitud", latitudCliente)
+            i.putExtra("longitud", longitudCliente)
+           //System.out.println("clase presupuesto $cliente $latitudCliente $longitudCliente")
+            i.putExtra("Nombre", cliente)
             startActivity(i)
         }
 

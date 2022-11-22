@@ -3,7 +3,8 @@
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <fragment
         android:id="@+id/map"
@@ -43,5 +44,31 @@
             />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="bottom">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEnviarUbicacion"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:text="@string/siguienteMaps"
+                android:layout_gravity="center"
+                android:background="@drawable/fondo_boton"
+                android:textColor="@color/black"
+                app:backgroundTint="@color/colorBoton"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 </FrameLayout>
