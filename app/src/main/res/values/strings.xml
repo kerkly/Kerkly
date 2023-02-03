@@ -103,5 +103,6 @@
     <string name="solicitudes">Solicitudes de clientes</string>
     <string name="ir_a_mis_so">Ir a mis solicitudes</string>
     <string name="flitrar_sol">Flitrar solicitudes por oficio</string>
-    <string name="siguienteMaps">Siguiente</string>
+    <string name="AceptarServicio">Aceptar Servicio</string>
+    <string name="CancelarServicio">Rechazar Servicio</string>
 </resources>

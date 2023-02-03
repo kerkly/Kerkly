@@ -20,7 +20,7 @@ class Marcador(var nMap: GoogleMap, var context: Context, var latitud: String, v
         val punto = LatLng(location.latitude, location.longitude)
         val height = 160
         val width = 165
-        val jira = context.resources.getDrawable(android.R.drawable.ic_menu_myplaces) as BitmapDrawable
+        val jira = context.resources.getDrawable(android.R.drawable.sym_call_outgoing) as BitmapDrawable
         val ji = jira.bitmap
         val jiras = Bitmap.createScaledBitmap(ji, width, height, false)
         nMap.addMarker(
@@ -32,7 +32,7 @@ class Marcador(var nMap: GoogleMap, var context: Context, var latitud: String, v
     }
 
     fun ObetenerCoordenadasBaseDeDatos(){
-        val location1 = Location(nombre)
+        val location1 = Location("marcador")
         location1.latitude = latitud.toDouble()
         location1.longitude = longitud.toDouble()
         //val nombre = poslist!!.get(0).nombre_noR

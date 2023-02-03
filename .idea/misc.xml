@@ -26,10 +26,13 @@
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/drawable/fondo_boton.xml" value="0.1415" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_interfaz_kerkly.xml" value="0.1453804347826087" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_main.xml" value="0.14130434782608695" />
-        <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_maps.xml" value="0.1" />
+        <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_main_enviar_ubicacion_en_tiempo_real.xml" value="0.22" />
+        <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_maps.xml" value="0.13436385255648037" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_pantalla_inicio.xml" value="0.14130434782608695" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/activity_presupuesto.xml" value="0.14130434782608695" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/app_bar_interfaz_kerkly.xml" value="0.14130434782608695" />
+        <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/dialog_aceptar_servicio.xml" value="0.14666666666666667" />
+        <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/dialog_rechazar_servicio.xml" value="0.13436385255648037" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/fragment_agenda.xml" value="0.14130434782608695" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/fragment_gallery.xml" value="0.14130434782608695" />
         <entry key="..\:/copia de kerkly 20 de octubre 2022/Kerkly/app/src/main/res/layout/fragment_historial.xml" value="0.14130434782608695" />

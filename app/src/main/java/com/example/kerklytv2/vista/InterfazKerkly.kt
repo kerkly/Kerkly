@@ -49,11 +49,13 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var id: String
     private lateinit var telefono: String
     private lateinit var nombre_completo: String
+    private lateinit var nombreKerkly: String
     private lateinit var correo: String
     private lateinit var curp: String
     private lateinit var txt_nombre: TextView
     private lateinit var txt_correo: TextView
     private lateinit var txt_oficios: TextView
+    lateinit var ofi: MutableList<String>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,12 +113,12 @@ class InterfazKerkly : AppCompatActivity() {
             true
         }
 
-
+/*
         //ejemplo en firebase
         val database = FirebaseDatabase.getInstance()
         val myRef = database.getReference("message")
         myRef.setValue("Hola Luis luis")
-        System.out.println("entro en lo de firebase")
+        System.out.println("entro en lo de firebase")*/
     }
 
     private fun cerrarSesion() {
@@ -196,10 +198,15 @@ class InterfazKerkly : AppCompatActivity() {
 
 
     private fun setFragmentPresupuesto() {
+        //var milista = ArrayList<String>()
+       // milista = ofi as ArrayList<String>
+
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
         args.putString("Curp", curp)
+        args.putString("nombrekerkly", nombreKerkly)
+        //args.putSerializable("arrayOfcios", milista)
         val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
@@ -291,15 +298,17 @@ class InterfazKerkly : AppCompatActivity() {
             ) {
                 val postList: ArrayList<OficioKerkly> = response.body() as ArrayList<OficioKerkly>
 
+                 ofi  = mutableListOf()
                 var acumulador = ""
                 for (i in 0 until postList.size){
                     if(i == (postList.size-1)) {
                         acumulador += "${postList[i].nombreOficio}"
+                        ofi.add(acumulador)
                     } else {
                         acumulador += "${postList[i].nombreOficio}, "
                     }
                 }
-                println(acumulador)
+                System.out.println("aquiiiiiii ")
                 txt_oficios.text = acumulador
 
             }
@@ -344,7 +353,7 @@ class InterfazKerkly : AppCompatActivity() {
                     val ap = postList[0].ap
                     val am = postList[0].am
                     curp = postList[0].curp
-
+                    nombreKerkly = nombre
                     nombre_completo = "$nombre $ap $am"
 
                     txt_nombre.text = nombre_completo

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -12,39 +13,36 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationProvider
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.*
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.example.kerklytv2.databinding.ActivityMapsBinding
 import com.example.kerklytv2.trazar_rutas.GPSTracker
 import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.*
+import com.google.firebase.database.core.view.View
 import kotlinx.android.synthetic.main.activity_maps.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
-import kotlin.collections.HashMap
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerClickListener,  GeoTask.Geo {
@@ -66,6 +64,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     lateinit var latitud2: String
     lateinit var longitud2: String
     lateinit var nombreCliente: String
+    lateinit var nombrekerkly: String
 
 
 
@@ -81,6 +80,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         latitud2 = b.getString("latitud").toString()
         longitud2 = b.getString("longitud").toString()
         nombreCliente = b.getString("Nombre").toString()
+        nombrekerkly = b.getString("nombrekerkly").toString()
 
       //  System.out.println("latitud : $latitud2 $longitud2 $nombreCliente latitud del marcador")
         context = this
@@ -90,29 +90,61 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         getLocalizacion()
 
-        buttonEnviarUbicacion.setOnClickListener(View.OnClickListener {
-            Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
+        buttonAceptarServicio.setOnClickListener {
+           // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
             //pendiente
+            //val i = Intent(this, MainActivityEnviarUbicacionEnTiempoReal::class.java)
+           // startActivity(i)
+
+            mostrarDialogoPersonalizado()
+        }
+
+        buttonCancelarServicio.setOnClickListener{
+            mostrarDialogRechazar()
+        }
+    }
+
+    private fun mostrarDialogRechazar() {
+        val builder = AlertDialog.Builder(this@MapsActivity)
+        val inflater = layoutInflater
+        val view: android.view.View? = inflater.inflate(R.layout.dialog_rechazar_servicio, null)
+        builder.setView(view)
+
+
+        val dialog = builder.create()
+        dialog.show()
+        val txt: TextView = view!!.findViewById(R.id.text_dialog)
+        txt.text = "¿Seguro que deseas Rechazar el servicio?"
+        val btnAceptar: Button = view!!.findViewById(R.id.btnRechazar)
+        btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
+
+            override fun onClick(p0: android.view.View?) {
+                Toast.makeText(applicationContext, "Rechazado", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
+
+        })
+
+        val btnRechazar: Button = view!!.findViewById(R.id.btncancelar1)
+        btnRechazar.setOnClickListener(object: android.view.View.OnClickListener{
+            override fun onClick(p0: android.view.View?) {
+                Toast.makeText(applicationContext, "Cancelado", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
         })
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
+        val constructor = LatLngBounds.Builder()
         mMap = googleMap
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
@@ -131,19 +163,39 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 val miUbicacion = LatLng(location.getLatitude(), location.getLongitude())
                 latitud = location.latitude
                 longitud = location.longitude
-                //locationManager.removeUpdates(this)
+                locationManager.removeUpdates(this)
                 mMap.setMyLocationEnabled(true)
                 mMap.isMyLocationEnabled = true
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(miUbicacion))
-                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 val cameraPosition = CameraPosition.Builder()
                     .target(miUbicacion)
-                    .zoom(15f)
+                    .zoom(20f)
                     .bearing(90f)
                     .tilt(45f)
                     .build()
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+               // mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
+                constructor.include(miUbicacion)
+
+                val lat: Double
+                val lon: Double
+                lat = latitud2.toDouble()
+                lon = longitud2.toDouble()
+
+                val position = LatLng(lat, lon)
+                TrazarLineas(position)
+                constructor.include(position)
+                val limites = constructor.build()
+
+                val ancho = resources.displayMetrics.widthPixels
+                val alto = resources.displayMetrics.heightPixels
+                val padding = (alto * 0.100).toInt() // 25% de espacio (padding) superior e inferior
+
+
+                val centrarmarcadores = CameraUpdateFactory.newLatLngBounds(limites, ancho, alto, padding)
+
+                mMap.animateCamera(centrarmarcadores)
 
             }
             override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
@@ -163,9 +215,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         //los marcadores
-        Utils_k.Marcador(mMap, applicationContext, latitud2, longitud2, nombreCliente)
+        Utils_k.Marcador(mMap, applicationContext, latitud2, longitud2, nombrekerkly)
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
+
+
+
     }
 
     override fun onMapLongClick(p0: LatLng) {
@@ -196,7 +251,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     private fun AlertShow(title: String?, position: LatLng) {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Desea ir este punto?")
+        builder.setMessage("Desea ir  adonde $nombreCliente?")
         builder.setTitle(title)
         builder.setCancelable(false)
         builder.setPositiveButton("Si") { dialog, which ->
@@ -393,7 +448,40 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         val min = res[0].toDouble() / 60
         val dist = res[1].toInt() / 1000
 
-        textView_result1.setText("Duracion= " + (min / 60).toInt() + " hr " + (min % 60).toInt() + " mins")
-        textView_result2.setText("Distancia= $dist kilometros")
+        textView_result1.setText(" " +(min / 60).toInt() + " hr " + (min % 60).toInt() + " mins")
+        textView_result2.setText("$dist kilometros")
+    }
+
+
+     fun mostrarDialogoPersonalizado() {
+        val builder = AlertDialog.Builder(this@MapsActivity)
+        val inflater = layoutInflater
+        val view: android.view.View? = inflater.inflate(R.layout.dialog_aceptar_servicio, null)
+        builder.setView(view)
+
+
+       val dialog = builder.create()
+        dialog.show()
+        val txt: TextView = view!!.findViewById(R.id.text_dialog)
+        txt.text = "¿Seguro que deseas aceptar el servicio?"
+       val btnAceptar: Button = view!!.findViewById(R.id.btnAceptar)
+        btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
+
+            override fun onClick(p0: android.view.View?) {
+                Toast.makeText(applicationContext, "Aceptado", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
+
+        })
+
+         val btnRechazar: Button = view!!.findViewById(R.id.btnCancel)
+         btnRechazar.setOnClickListener(object: android.view.View.OnClickListener{
+             override fun onClick(p0: android.view.View?) {
+                 Toast.makeText(applicationContext, "Cancelado", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+             }
+
+         })
     }
 }

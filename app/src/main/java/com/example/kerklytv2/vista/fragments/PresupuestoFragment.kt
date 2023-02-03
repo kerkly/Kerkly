@@ -11,11 +11,9 @@ import android.view.ViewGroup
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.MapsActivity
-import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
 import com.example.kerklytv2.interfaces.PresupuestoInterface
@@ -62,6 +60,8 @@ class PresupuestoFragment : Fragment() {
     lateinit var autoCompleteTxt: AutoCompleteTextView
     lateinit  var adapterItems: ArrayAdapter<String>
     lateinit var items: String
+    lateinit var nombrekerkly: String
+    lateinit var ofi: MutableList<String>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,11 +92,16 @@ class PresupuestoFragment : Fragment() {
 
         curp = arguments?.getString("Curp").toString()
         telK = arguments?.getString("numNR").toString()
+        nombrekerkly = arguments?.getString("nombrekerkly").toString()
+
+      //  var List: ArrayList<String> = ArrayList<String>()
+
+       // List = arguments!!.getSerializable("arrayOfcios") as ArrayList<String>
 
 
         //primero se obtendra todos los oficios que tiene el kerkly
 
-        val ROOT_URL = Url().URL
+       val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
         val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
@@ -109,37 +114,44 @@ class PresupuestoFragment : Fragment() {
         val call2 = oficios.getPost(numeroTelefono)
         call2?.enqueue(object : Callback<List<todosLosOficios?>?>{
             override fun onResponse(call: Call<List<todosLosOficios?>?>, response: Response<List<todosLosOficios?>?>) {
-                val postList: ArrayList<todosLosOficios> = response.body() as ArrayList<todosLosOficios>
-                var ofi: MutableList<String> = mutableListOf()
+                val postList: ArrayList<todosLosOficios> =
+                    response.body() as ArrayList<todosLosOficios>
 
-                for (i in  0 until postList.size){
+
+                ofi = mutableListOf()
+                for (i in 0 until postList.size) {
                     val oficio = postList[i].nombreO
                     System.out.println("oficios obtenidos " + oficio)
                     ofi.add(oficio.toString())
                 }
-              //  System.out.println("tamaño del array " + items1!!.get(1))
+
+
+                //  System.out.println("tamaño del array " + items1!!.get(1))
                 autoCompleteTxt = view.findViewById(R.id.filtro);
                 adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
                 autoCompleteTxt.setAdapter(adapterItems)
-                autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id ->
-                    items = parent.getItemAtPosition(position).toString()
-                    Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
-                  //  getJSON(items.toString())
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)?.commitNow();
-                        fragmentManager?.beginTransaction()?.attach(this@PresupuestoFragment)?.commitNow();
-                    } else {
-                        fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
-                            ?.attach(this@PresupuestoFragment)
-                            ?.commit();
+                autoCompleteTxt.onItemClickListener =
+                    OnItemClickListener { parent, view, position, id ->
+                        items = parent.getItemAtPosition(position).toString()
+                        Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
+                        //  getJSON(items.toString())
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
+                                ?.commitNow();
+                            fragmentManager?.beginTransaction()?.attach(this@PresupuestoFragment)
+                                ?.commitNow();
+                        } else {
+                            fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
+                                ?.attach(this@PresupuestoFragment)
+                                ?.commit();
+                        }
+
+                        getJSON()
+
                     }
 
-                    getJSON()
-
-                }
             }
-
-            override fun onFailure(call: Call<List<todosLosOficios?>?>, t: Throwable) {
+          override fun onFailure(call: Call<List<todosLosOficios?>?>, t: Throwable) {
                 Toast.makeText(context, "Codigo de respuesta de error: $t", Toast.LENGTH_SHORT).show();
             }
 
@@ -197,7 +209,6 @@ class PresupuestoFragment : Fragment() {
                         val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
                         val correo = postList[recyclerview.getChildAdapterPosition(it)].Correo
                         val numero = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
-
                         val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
 
 
@@ -224,6 +235,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("Curp", curp)
                         i.putExtra("numT", telK)
                         i.putExtra("correo", correo)
+                        i.putExtra("nombrekerkly", nombrekerkly)
                         startActivity(i)
                     }
 
@@ -241,7 +253,6 @@ class PresupuestoFragment : Fragment() {
             }
 
         })
-
-
     }
+
 }
