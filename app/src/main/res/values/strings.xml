@@ -105,4 +105,9 @@
     <string name="flitrar_sol">Flitrar solicitudes por oficio</string>
     <string name="AceptarServicio">Aceptar Servicio</string>
     <string name="CancelarServicio">Rechazar Servicio</string>
+
+    <string name="cerrar_app">Cerrar aplicación</string>
+    <string name="mensaje_alertaCerrarApp">¿Seguro que quiere cerrar la aplicación?</string>
+    <string name="confirmar_alertCerrarApp">Confirmar</string>
+    <string name="cancelar_alertCerrarApp">Cancelar</string>
 </resources>
