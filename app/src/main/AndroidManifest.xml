@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -14,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KerklyTV2">
-
+        <activity
+            android:name=".MainActivityEnviarUbicacionEnTiempoReal"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -26,7 +27,6 @@
              project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
              "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
         -->
-
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -34,7 +34,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -63,7 +62,7 @@
             android:theme="@style/Theme.KerklyTV2.NoActionBar" />
         <activity
             android:name=".vista.MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
 
 </manifest>

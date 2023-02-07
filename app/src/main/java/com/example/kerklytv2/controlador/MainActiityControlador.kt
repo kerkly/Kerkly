@@ -82,7 +82,6 @@ class MainActiityControlador {
                         e.printStackTrace()
                     }
 
-                    Log.e("nosee", output)
                     if(output == "0") {
                         val  intent = Intent(contexto, MainActivity::class.java)
                         intent.putExtra("Telefono", output)

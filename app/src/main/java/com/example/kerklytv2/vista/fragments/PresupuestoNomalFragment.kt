@@ -117,6 +117,8 @@ class PresupuestoNomalFragment : Fragment() {
                    MiAdapter = AdapterPresupuesto(postList)
 
                    MiAdapter.setOnClickListener {
+                       val latitud = postList[recyclerview.getChildAdapterPosition(it)].latitud
+                       val longitud = postList[recyclerview.getChildAdapterPosition(it)].longitud
                        folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuesto
                        val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
                        val calle = postList[recyclerview.getChildAdapterPosition(it)].Calle
@@ -140,9 +142,11 @@ class PresupuestoNomalFragment : Fragment() {
                        direccion = "$calle $colonia $ext $cp $referencia"
                        nombre = "$n $ap $am"
 
-                       //Toast.makeText(context, "Teléfono: $colonia", Toast.LENGTH_SHORT).show()
+                     //  Toast.makeText(context, "Nombre: $n", Toast.LENGTH_SHORT).show()
 
                        val i = Intent(context, Presupuesto::class.java)
+                       i.putExtra("latitud", latitud)
+                       i.putExtra("longitud", longitud)
                        i.putExtra("Folio", folio)
                        i.putExtra("Nombre", nombre)
                        i.putExtra("Dirección", direccion)

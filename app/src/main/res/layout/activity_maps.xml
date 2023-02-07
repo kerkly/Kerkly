@@ -3,45 +3,111 @@
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MapsActivity" />
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            tools:context=".MapsActivity" />
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="540dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distancia Del servicio:"
+            android:textSize="15dp"
+            android:layout_marginLeft="20dp"
+
+            />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView_result2"
-            android:text="tiempo"
-            android:textSize="25dp"
-            android:textColor="#000000"
-            android:textStyle="bold"
             android:layout_marginLeft="20dp"
+            android:textSize="15dp"
+            />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:layout_marginLeft="20dp"
+            android:text="Tiempo de llegada estimado:"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView_result1"
+            android:textSize="15dp"
             android:layout_marginLeft="20dp"
-            android:textSize="25dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:text="distancia"
             />
     </LinearLayout>
 
 
+</LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAceptarServicio"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:text="@string/AceptarServicio"
+                android:layout_gravity="center"
+                android:background="@drawable/fondo_boton"
+                android:textColor="@color/black"
+                app:backgroundTint="#78B1BF"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonCancelarServicio"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:text="@string/CancelarServicio"
+                android:layout_gravity="center"
+                android:background="@drawable/fondo_botones_2"
+                android:textColor="@color/black"
+                app:backgroundTint="#C83939"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 </FrameLayout>

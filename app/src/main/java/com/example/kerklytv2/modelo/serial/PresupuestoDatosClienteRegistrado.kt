@@ -4,6 +4,14 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class PresupuestoDatosClienteRegistrado {
+    @SerializedName("latitud")
+    @Expose
+    var latitud: String?=null
+
+    @SerializedName("longitud")
+    @Expose
+    var longitud: String?=null
+
     @SerializedName("problema")
     @Expose
     var problema: String? = null
