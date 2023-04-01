@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity() {
 
                 controlador = MainActiityControlador()
                 controlador.verificarUsuario(kerkly, this)
+
             }
         }
         // val intent = Intent(this, InterfazKerkly::class.java)
