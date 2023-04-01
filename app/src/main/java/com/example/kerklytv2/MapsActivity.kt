@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -36,8 +35,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.firebase.database.core.view.View
-import kotlinx.android.synthetic.main.activity_maps.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -66,6 +63,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     lateinit var nombreCliente: String
     lateinit var nombrekerkly: String
 
+    var minutos: Double = 0.0
+    var distancia = 0
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,9 +93,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+
+
         getLocalizacion()
 
-        buttonAceptarServicio.setOnClickListener {
+        /*buttonAceptarServicio.setOnClickListener {
            // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
             //pendiente
             //val i = Intent(this, MainActivityEnviarUbicacionEnTiempoReal::class.java)
@@ -106,7 +108,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
         buttonCancelarServicio.setOnClickListener{
             mostrarDialogRechazar()
-        }
+        }*/
+
+        /*imageViewACeptar.setOnClickListener({
+            mostrarDialogoPersonalizado()
+        })
+
+        imageViewChat.setOnClickListener({
+            val f = BlankFragmentChat()
+            var fm = supportFragmentManager.beginTransaction().apply {
+                replace(R.id.fragmentContenedorL,f).commit()
+                buttonIniciarChat.setVisibility(android.view.View.GONE);
+            }
+
+        })*/
+    }
+
+    override fun setDouble(min: String?) {
+        val res = min!!.split(",").toTypedArray()
+        minutos = res[0].toDouble() / 60
+        distancia = res[1].toInt() / 1000
+
+        System.out.println(" entrooooo en setDouble: "+ (minutos/60).toInt() +"hora" )
+        // txtejemplo1.setText(" " +(min/60).toInt() + " hr " + (min % 60).toInt() + " mins")
+        // textView_result2.setText("$dist kilometros")
     }
 
     private fun mostrarDialogRechazar() {
@@ -230,6 +255,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     override fun onMarkerClick(p0: Marker): Boolean {
         AlertShow(p0.title, p0.position)
+        //System.out.println(" " +(minutos/60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
         return false
     }
 
@@ -256,6 +282,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         builder.setCancelable(false)
         builder.setPositiveButton("Si") { dialog, which ->
             TrazarLineas(position)
+            System.out.println(" " +(minutos/60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
         }
         builder.setNegativeButton("No") { dialog, which -> dialog.cancel() }
         val alertDialog = builder.create()
@@ -282,6 +309,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 Utils_k.coordenadas.destinoLat.toString(),
                 Utils_k.coordenadas.destinoLng.toString()
             )
+
 
 
         } catch (e: Exception) {
@@ -360,8 +388,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         }
         request!!.add(jsonObjectRequest)
 
-        val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyAp-2jznuGLfRJ_en09y1sp6A-467zrXm0"
-        GeoTask(context).execute(url2)
+        val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
+       // GeoTask(context).execute(url2)
+
+
     }
 
     fun setProgressDialog() {
@@ -443,14 +473,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         return poly
     }
 
-    override fun setDouble(min: String?) {
-        val res = min!!.split(",").toTypedArray()
-        val min = res[0].toDouble() / 60
-        val dist = res[1].toInt() / 1000
 
-        textView_result1.setText(" " +(min / 60).toInt() + " hr " + (min % 60).toInt() + " mins")
-        textView_result2.setText("$dist kilometros")
-    }
 
 
      fun mostrarDialogoPersonalizado() {
@@ -463,13 +486,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
        val dialog = builder.create()
         dialog.show()
         val txt: TextView = view!!.findViewById(R.id.text_dialog)
-        txt.text = "¿Seguro que deseas aceptar el servicio?"
+
+      //  txt.text = "¿Seguro que deseas aceptar el servicio?"
+         val textView_result1: TextView = view.findViewById(R.id.textView_result1)
+         val textView_result2: TextView = view.findViewById(R.id.textView_result2)
+         textView_result1.setText(" " +(minutos / 60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
+          textView_result2.setText("$distancia kilometros")
+
        val btnAceptar: Button = view!!.findViewById(R.id.btnAceptar)
         btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
 
             override fun onClick(p0: android.view.View?) {
                 Toast.makeText(applicationContext, "Aceptado", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
+                var intent = Intent(this@MapsActivity, MainActivitySeguimientoDelServicio::class.java)
+                startActivity(intent)
             }
 
 

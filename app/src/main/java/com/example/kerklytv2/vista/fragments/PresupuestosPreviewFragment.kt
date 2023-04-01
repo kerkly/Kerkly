@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.kerklytv2.R
+import com.example.kerklytv2.modelo.serial.OficioKerkly
+//import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.google.android.material.button.MaterialButton
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,6 +28,7 @@ class PresupuestosPreviewFragment : Fragment() {
     private lateinit var boton_urg: MaterialButton
     private lateinit var boton_normal: MaterialButton
     private var b: Bundle? = null
+    lateinit var postList: ArrayList<OficioKerkly>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,13 +58,17 @@ class PresupuestosPreviewFragment : Fragment() {
         }
 
         b = arguments
+        postList = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
 
 
         return v
     }
 
     private fun setPresupuestoUrgente() {
+        val args = Bundle()
         val f = PresupuestoFragment()
+        args.putSerializable("arrayOfcios", postList)
+        f.arguments = args
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()

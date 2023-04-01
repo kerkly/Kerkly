@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
 import android.widget.Toast
+import com.example.kerklytv2.vista.fragments.MapsFragment
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -14,13 +15,13 @@ import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 
-class GeoTask (var mContext: Context) : AsyncTask<String?, Void?, String?>() {
+class GeoTask(var mContext: MapsFragment) : AsyncTask<String?, Void?, String?>() {
         var progressDialog: ProgressDialog? = null
         var geo1: Geo
 
         override fun onPreExecute() {
             super.onPreExecute()
-            progressDialog = ProgressDialog(mContext)
+            progressDialog = ProgressDialog(mContext.requireContext())
             progressDialog!!.setMessage("Loading")
             progressDialog!!.setCancelable(false)
             progressDialog!!.show()
@@ -32,7 +33,7 @@ class GeoTask (var mContext: Context) : AsyncTask<String?, Void?, String?>() {
                 geo1.setDouble(aDouble)
                 progressDialog!!.dismiss()
             } else Toast.makeText(
-                mContext,
+                mContext.requireContext(),
                 "Error",
                 Toast.LENGTH_SHORT
             ).show()

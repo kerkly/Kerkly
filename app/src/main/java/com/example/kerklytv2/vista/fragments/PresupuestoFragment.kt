@@ -13,11 +13,13 @@ import android.widget.AdapterView.OnItemClickListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kerklytv2.MapsActivity
+import com.example.kerklytv2.MainActivitySeguimientoDelServicio
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
 import com.example.kerklytv2.interfaces.PresupuestoInterface
 import com.example.kerklytv2.interfaces.obtenerTodosLosOficios
+import com.example.kerklytv2.modelo.serial.OficioKerkly
+
 import com.example.kerklytv2.modelo.serial.PresupuestoDatosClienteRegistrado
 import com.example.kerklytv2.modelo.serial.todosLosOficios
 import com.example.kerklytv2.url.Url
@@ -62,6 +64,7 @@ class PresupuestoFragment : Fragment() {
     lateinit var items: String
     lateinit var nombrekerkly: String
     lateinit var ofi: MutableList<String>
+    lateinit var postList2: ArrayList<OficioKerkly>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,10 +78,7 @@ class PresupuestoFragment : Fragment() {
 
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_presupuesto, container, false)
         context = requireActivity()
@@ -94,14 +94,41 @@ class PresupuestoFragment : Fragment() {
         telK = arguments?.getString("numNR").toString()
         nombrekerkly = arguments?.getString("nombrekerkly").toString()
 
-      //  var List: ArrayList<String> = ArrayList<String>()
+        postList2 = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
 
-       // List = arguments!!.getSerializable("arrayOfcios") as ArrayList<String>
+       ofi = mutableListOf()
+        for (i in 0 until postList2.size) {
+            val oficio = postList2[i].nombreOficio
+            ofi.add(oficio)
+        }
+
+        autoCompleteTxt = view.findViewById(R.id.filtro);
+        adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
+        autoCompleteTxt.setAdapter(adapterItems)
+        autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id -> items = parent.getItemAtPosition(position).toString()
+                Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
+                //  getJSON(items.toString())
+            getJSON()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
+                        ?.commitNow();
+                    fragmentManager?.beginTransaction()?.attach(this@PresupuestoFragment)
+                        ?.commitNow();
+                } else {
+                    fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
+                        ?.attach(this@PresupuestoFragment)
+                        ?.commit();
+                }
+
+               getJSON()
+
+            }
+
 
 
         //primero se obtendra todos los oficios que tiene el kerkly
-
-       val ROOT_URL = Url().URL
+/*
+      val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
         val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
@@ -156,7 +183,7 @@ class PresupuestoFragment : Fragment() {
             }
 
 
-        })
+        })*/
 
         return view
     }
@@ -182,10 +209,10 @@ class PresupuestoFragment : Fragment() {
 
             override fun onResponse(call: Call<List<PresupuestoDatosClienteRegistrado?>?>, response: Response<List<PresupuestoDatosClienteRegistrado?>?>) {
 
-                 postList = response.body() as ArrayList<PresupuestoDatosClienteRegistrado>
+                postList = response.body() as ArrayList<PresupuestoDatosClienteRegistrado>
 
                 //carsModels = response.body() as ArrayList<presupuestok>
-                Log.d("Lista", postList.toString())
+               // Log.d("Lista", postList.toString())
                 MiAdapter = ClaseAdapterR(postList)
 
                 if(postList.size == 0) {
@@ -208,7 +235,7 @@ class PresupuestoFragment : Fragment() {
                         val ap = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Paterno
                         val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
                         val correo = postList[recyclerview.getChildAdapterPosition(it)].Correo
-                        val numero = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
+                        val numeroCliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
                         val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
 
 
@@ -219,11 +246,11 @@ class PresupuestoFragment : Fragment() {
                         direccion = "$calle $colonia $ext $cp $referencia"
                         nombre = "$n $ap $am"
 
-                        Toast.makeText(context, "Teléfono: $numero",
-                            Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(context, "Teléfono: $numeroCliente", Toast.LENGTH_SHORT).show()
 
+                        //cambios de diseño
                        // val i = Intent(context, Presupuesto::class.java)
-                        val i = Intent(context, MapsActivity::class.java)
+                  /*      val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
                         i.putExtra("longitud", longitud)
                         i.putExtra("Folio", folio)
@@ -236,7 +263,22 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("numT", telK)
                         i.putExtra("correo", correo)
                         i.putExtra("nombrekerkly", nombrekerkly)
+                        startActivity(i)*/
+                       val i = Intent(context, MainActivitySeguimientoDelServicio::class.java)
+                        i.putExtra("latitud", latitud)
+                        i.putExtra("longitud", longitud)
+                        i.putExtra("Folio", folio)
+                        i.putExtra("Nombre", nombre)
+                        i.putExtra("Dirección", direccion)
+                        i.putExtra("Problema", problema)
+                        i.putExtra("numeroCliente", numeroCliente)
+                        i.putExtra("Normal", false)
+                        i.putExtra("Curp", curp)
+                        i.putExtra("numeroKerkly", telK)
+                        i.putExtra("correo", correo)
+                        i.putExtra("nombrekerkly", nombrekerkly)
                         startActivity(i)
+
                     }
 
                     recyclerview.adapter = MiAdapter

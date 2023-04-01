@@ -61,7 +61,7 @@
     <string name="cerrar_sesionConfirmacion">¿Estás seguro que quieres cerrar sesión?</string>
     <string name="descarga_exito">Su descarga ha sido completada con éxito</string>
     <string name="title_activity_interfaz_kerkly">InterfazKerkly</string>
-    <string name="mensajes">Mensajes</string>
+    <string name="Contactos">Contactos</string>
     <string name="agenda">Trabajos pendientes</string>
     <string name="introducirEvento">Introduce el evento</string>
     <string name="descripcion">Descripción</string>
@@ -110,4 +110,11 @@
     <string name="mensaje_alertaCerrarApp">¿Seguro que quiere cerrar la aplicación?</string>
     <string name="confirmar_alertCerrarApp">Confirmar</string>
     <string name="cancelar_alertCerrarApp">Cancelar</string>
+    <string name="dialogAceptarServicio_txt1">Teniendo la informacion de la ubicacion, ¿Desea Aceptar es Servicio?</string>
+    <string name="dialogAceptarServicio_txt2">Si aceptas el servicio se te asignara a tu lista.</string>
+    <string name="btnCancelar">Cancelar</string>
+    <string name="dialogRechazarServicio_txt1">¿Seguro que deseas Rechazar el servicio?</string>
+
+    <string name="activitySeguimiento_txt1">Se ha notificado al cliente que acepto el servicio, informa al cliente sobre el horarios de llegada al servicio a travez del chat</string>
+    <string name="activitySeguimiento_btn1">Iniciar Chat con el cliente</string>
 </resources>
