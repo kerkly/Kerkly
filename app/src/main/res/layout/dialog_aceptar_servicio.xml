@@ -1,20 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="320dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Distancia:"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:textColor="#0F6C39"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_result1"
+                android:textSize="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold"
+                android:textColor="#0F6C39"
+                />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:layout_marginLeft="20dp"
+                android:text="Tiempo:"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textColor="#0F6C39"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_result2"
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                android:layout_marginTop="10dp"
+                android:textColor="#0F6C39"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
     <TextView
         android:id="@+id/text_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:text="¿Seguro que deseas aceptar el servicio?"
+        android:text="@string/dialogAceptarServicio_txt1"
         android:textColor="@android:color/background_dark"
         android:textSize="24sp" />
 
@@ -24,12 +86,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:gravity="center"
-        android:text="Si aceptas el servicio se te asignara a tu lista."
+        android:text="@string/dialogAceptarServicio_txt2"
         android:textSize="24sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:orientation="horizontal"
         android:layout_marginTop="20dp">
 
@@ -42,7 +104,7 @@
             android:text="@string/AceptarServicio"
             android:background="@drawable/fondo_botones_2"
             android:gravity="center"
-
+            android:layout_margin="10dp"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:textAllCaps="false"
@@ -54,7 +116,8 @@
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelar"
+            android:text="@string/btnCancelar"
+            android:layout_margin="10dp"
             android:background="@drawable/fondo_botones_2"
             android:textColor="@color/black"
             android:layout_marginStart="6dp"

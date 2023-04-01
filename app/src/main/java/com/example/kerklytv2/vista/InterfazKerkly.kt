@@ -2,22 +2,22 @@ package com.example.kerklytv2.vista
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.widget.TextView
 import android.widget.Toast
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
 import com.example.kerklytv2.R
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyInterface
@@ -25,9 +25,15 @@ import com.example.kerklytv2.interfaces.ObtenerKerklyaOficiosInterface
 import com.example.kerklytv2.interfaces.SesionAbiertaInterface
 import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.modelo.serial.OficioKerkly
+import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.ui.home.HomeFragment
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -41,6 +47,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.text.DateFormat
+import java.util.*
 
 class InterfazKerkly : AppCompatActivity() {
 
@@ -48,7 +56,7 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var kerkly: Kerkly
     private lateinit var b: Bundle
     private lateinit var id: String
-    private lateinit var telefono: String
+    private lateinit var telefonoKerkly: String
     private lateinit var nombre_completo: String
     private lateinit var nombreKerkly: String
     private lateinit var correo: String
@@ -58,6 +66,19 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var txt_oficios: TextView
     lateinit var ofi: MutableList<String>
     private lateinit var drawerLayout: DrawerLayout
+    lateinit var postList: ArrayList<OficioKerkly>
+
+    //Autenticacion con cuenta de google
+    var providers: MutableList<AuthUI.IdpConfig?>? = null
+    private var mAuth: FirebaseAuth? = null
+    private var currentUser: FirebaseUser? = null
+    private val MY_REQUEST_CODE = 200
+
+    //firebase Realtime data base
+    lateinit var photoUrl: String
+    lateinit var name: String
+    lateinit var correoKerkly: String
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,14 +87,22 @@ class InterfazKerkly : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        //Autenticacion
+        providers = Arrays.asList(
+            // EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build())
+        mAuth = FirebaseAuth.getInstance()
+
+
         id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
 
         kerkly = Kerkly()
         b = intent.extras!!
 
-        telefono = b.getString("numT").toString()
+        telefonoKerkly = b.getString("numT").toString()
 
-        sesion(telefono)
+
+        sesion(telefonoKerkly)
         getKerkly()
 
 
@@ -94,7 +123,7 @@ class InterfazKerkly : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home,
-                R.id.mensajesFragment,
+                R.id.ContactosFragment,
                 R.id.nav_slideshow,
                 R.id.presupuestoFragment,
             ), drawerLayout
@@ -104,7 +133,7 @@ class InterfazKerkly : AppCompatActivity() {
         navView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_home -> setFragmentHome()
-             //   R.id.mensajesFragment -> setFragmentMensajes() // mensajes
+                R.id.ContactosFragment -> setFragmentcontactos() // mensajes
                 R.id.nav_slideshow -> setFragmenTrabajos() // agenda
                 R.id.presupuestoFragment -> setFragmentPresupuesto()
                 R.id.historialFragment -> setFragmentHistorial() // historial
@@ -121,6 +150,8 @@ class InterfazKerkly : AppCompatActivity() {
         val myRef = database.getReference("message")
         myRef.setValue("Hola Luis luis")
         System.out.println("entro en lo de firebase")*/
+
+
     }
 
     private fun cerrarSesion() {
@@ -150,6 +181,7 @@ class InterfazKerkly : AppCompatActivity() {
                     Log.d("output", output)
 
                     if (output == "1") {
+                        metodoSalir()
                         Toast.makeText(applicationContext, "Sesión cerrada", Toast.LENGTH_SHORT).show()
                         val i = Intent(applicationContext, MainActivity::class.java)
                         startActivity(i)
@@ -186,6 +218,7 @@ class InterfazKerkly : AppCompatActivity() {
     }
 
     private fun setFragmenTrabajos() {
+        print("aqui 260")
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
@@ -197,18 +230,27 @@ class InterfazKerkly : AppCompatActivity() {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
     }
+    private fun setFragmentcontactos() {
+        val b2 = Bundle()
+        val f = ContactosFragment()
+        f.arguments = b2
+        b2!!.putString("telefonoKerkly", telefonoKerkly)
+        b2!!.putString("urlFotoKerkly", photoUrl)
+        b2!!.putString("nombreKerkly", name)
+        b2!!.putString("correoKerkly", correoKerkly)
 
+        var fm = supportFragmentManager.beginTransaction().apply {
+            replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
+        }
+    }
 
     private fun setFragmentPresupuesto() {
-        //var milista = ArrayList<String>()
-       // milista = ofi as ArrayList<String>
-
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
         args.putString("Curp", curp)
         args.putString("nombrekerkly", nombreKerkly)
-        //args.putSerializable("arrayOfcios", milista)
+        args.putSerializable("arrayOfcios", postList)
         val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
@@ -221,12 +263,7 @@ class InterfazKerkly : AppCompatActivity() {
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
 
-    private fun setFragmentMensajes() {
-        val f = MensajesFragment()
-        var fm = supportFragmentManager.beginTransaction().apply {
-            replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
-        }
-    }
+
 
     private fun setFragmentAgenda() {
         val f = PresupuestoFragment()
@@ -298,7 +335,7 @@ class InterfazKerkly : AppCompatActivity() {
                 call: Call<List<OficioKerkly?>?>,
                 response: retrofit2.Response<List<OficioKerkly?>?>
             ) {
-                val postList: ArrayList<OficioKerkly> = response.body() as ArrayList<OficioKerkly>
+                 postList = response.body() as ArrayList<OficioKerkly>
 
                  ofi  = mutableListOf()
                 var acumulador = ""
@@ -310,7 +347,6 @@ class InterfazKerkly : AppCompatActivity() {
                         acumulador += "${postList[i].nombreOficio}, "
                     }
                 }
-                System.out.println("aquiiiiiii ")
                 txt_oficios.text = acumulador
 
             }
@@ -352,7 +388,7 @@ class InterfazKerkly : AppCompatActivity() {
             .build()
 
         val presupuestoGET = retrofit.create(ObtenerKerklyInterface::class.java)
-        val call = presupuestoGET.getKerkly(telefono)
+        val call = presupuestoGET.getKerkly(telefonoKerkly)
         call?.enqueue(object: Callback<List<com.example.kerklytv2.modelo.serial.Kerkly?>?> {
             override fun onResponse(
                 call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
@@ -393,4 +429,92 @@ class InterfazKerkly : AppCompatActivity() {
             }
         })
     }
+
+
+    //metodos para la Autenticacion con cuenta de google
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == MY_REQUEST_CODE) {
+            val response = IdpResponse.fromResultIntent(data)
+            if (requestCode == RESULT_OK) {
+                val user = FirebaseAuth.getInstance().currentUser
+
+                Toast.makeText(this, "saludos" + user!!.email, Toast.LENGTH_SHORT).show()
+                correo = currentUser!!.getEmail()!!
+
+
+
+            }
+        }
+    }
+    fun muestraOpciones() {
+        startActivityForResult(
+            AuthUI.getInstance().createSignInIntentBuilder()
+                .setIsSmartLockEnabled(false)
+                .setAvailableProviders(providers!!)
+                .build(),MY_REQUEST_CODE
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        currentUser = mAuth!!.currentUser
+        val user = FirebaseAuth.getInstance().currentUser
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        if (networkInfo != null && networkInfo.isConnected) {
+            if (currentUser != null) {
+
+//              val name = currentUser!!.getDisplayName()
+                //              val email = currentUser!!.getEmail()
+                //            val photoUrl = currentUser!!.getPhotoUrl()
+               // correo = user!!.email!!
+
+                //   Toast.makeText(this, "entro", Toast.LENGTH_LONG).show();
+                // Name, email address, and profile photo Url
+                 name = currentUser!!.displayName.toString()
+                 correoKerkly = currentUser!!.email.toString()
+                 photoUrl = currentUser!!.photoUrl.toString()
+                val uid = currentUser!!.uid
+                val foto = photoUrl.toString()
+
+               // Toast.makeText(this, "entro : $email ", Toast.LENGTH_SHORT).show()
+                // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
+                val database = FirebaseDatabase.getInstance()
+
+
+               val databaseReference = database.getReference("UsuariosR").child("$telefonoKerkly")
+                val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
+               //val usuario = usuarios()
+
+               //val u = usuarios(uid, email, name, foto, currentDateTimeString)
+                databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString())) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                    Toast.makeText(this@InterfazKerkly, "Bienvenido $name", Toast.LENGTH_SHORT)
+                        .show()
+
+                }
+
+            }else{
+                muestraOpciones()
+            }
+
+        } else {
+            Toast.makeText(this@InterfazKerkly, "No hay conexion a Internet", Toast.LENGTH_LONG)
+                .show()
+        }
+
+    }
+
+    fun metodoSalir() {
+        AuthUI.getInstance()
+            .signOut(applicationContext)
+            .addOnCompleteListener { muestraOpciones() }.addOnFailureListener { e ->
+                Toast.makeText(
+                    applicationContext, ""
+                            + e.message, Toast.LENGTH_LONG
+                ).show()
+            }
+    }
+
 }

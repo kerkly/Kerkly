@@ -1,7 +1,6 @@
 package com.example.kerklytv2.controlador
 
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kerklytv2.interfaces.LoginInterface
@@ -39,7 +38,7 @@ class MainActiityControlador {
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
-                    // Toast.makeText(this@MainActivity, Respuesta, Toast.LENGTH_SHORT).show()
+                     Toast.makeText(context, Respuesta, Toast.LENGTH_SHORT).show()
                     val resp1 = "1"
                     if (resp1.equals(Respuesta)){
                         //Toast.makeText(context, "Todo exelente, ya pasaria a la sig actividad", Toast.LENGTH_SHORT).show()
@@ -48,7 +47,8 @@ class MainActiityControlador {
                         context.startActivity(intent)
 
                     }else{
-                        Toast.makeText(context, "El Usuario o contraseña Son Incorrectos", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(context, "El Usuario o contraseña Son Incorrectos", Toast.LENGTH_SHORT).show()
+                        //  Toast.makeText(context, "$Respuesta", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -82,7 +82,11 @@ class MainActiityControlador {
                         e.printStackTrace()
                     }
 
+<<<<<<< Updated upstream
                     if(output == "0") {
+=======
+                    if(output != "0") {
+>>>>>>> Stashed changes
                         val  intent = Intent(contexto, MainActivity::class.java)
                         intent.putExtra("Telefono", output)
                         contexto.startActivity(intent)

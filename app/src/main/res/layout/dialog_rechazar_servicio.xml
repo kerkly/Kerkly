@@ -14,18 +14,11 @@
         android:layout_height="wrap_content"
        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:text="¿Seguro que deseas Rechazar el servicio?"
+        android:text="@string/dialogRechazarServicio_txt1"
         android:textColor="@android:color/background_dark"
         android:textSize="24sp" />
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:text="Si aceptas el servicio se te asignara a tu lista."
-        android:textSize="24sp" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +47,7 @@
             android:id="@+id/btncancelar1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelar"
+            android:text="@string/btnCancelar"
             android:background="@drawable/fondo_botones_2"
             android:textColor="@color/black"
             android:layout_marginStart="6dp"
