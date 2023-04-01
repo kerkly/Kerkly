@@ -126,8 +126,7 @@ class MainActivityEnviarUbicacionEnTiempoReal : AppCompatActivity() {
             try {
                 val geocoder = Geocoder(this, Locale.getDefault())
                 val list: List<Address> = geocoder.getFromLocation(
-                    loc.getLatitude(), loc.getLongitude(), 1
-                )
+                    loc.getLatitude(), loc.getLongitude(), 1)!!
                 if (!list.isEmpty()) {
                     val DirCalle: Address = list[0]
                    // textViewDireccion.setText(DirCalle.getAddressLine(0))

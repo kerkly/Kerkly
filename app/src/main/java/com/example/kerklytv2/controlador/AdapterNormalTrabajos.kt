@@ -10,7 +10,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.TrabajoNormal
-import com.example.kerklytv2.vista.fragments.MensajesFragment
+import com.example.kerklytv2.vista.fragments.ContactosFragment
+
 
 class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: FragmentActivity):
     RecyclerView.Adapter<AdapterNormalTrabajos.ViewHolder>(), View.OnClickListener {
@@ -52,7 +53,7 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: 
 
 
         holder.img.setOnClickListener {
-            val f = MensajesFragment()
+            val f = ContactosFragment()
             val b = Bundle()
             val nombre = "${datset[position].Nombre} ${datset[position].Apellido_Paterno}"
             val folio = datset[position].idContrato

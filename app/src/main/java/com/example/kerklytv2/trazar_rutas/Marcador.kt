@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
+import com.example.kerklytv2.R
 import com.example.kerklytv2.url.Url
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -20,7 +21,7 @@ class Marcador(var nMap: GoogleMap, var context: Context, var latitud: String, v
         val punto = LatLng(location.latitude, location.longitude)
         val height = 160
         val width = 165
-        val jira = context.resources.getDrawable(android.R.drawable.sym_call_outgoing) as BitmapDrawable
+        val jira = context.resources.getDrawable(R.drawable.programador) as BitmapDrawable
         val ji = jira.bitmap
         val jiras = Bitmap.createScaledBitmap(ji, width, height, false)
         nMap.addMarker(

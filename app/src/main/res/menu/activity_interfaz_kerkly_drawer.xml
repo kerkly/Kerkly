@@ -9,9 +9,9 @@
             android:icon="@drawable/ic_vector__7_"
             android:title="@string/notificaciones" />
         <item
-            android:id="@+id/mensajesFragment"
+            android:id="@+id/ContactosFragment"
             android:icon="@drawable/ic_vector__8_"
-            android:title="@string/mensajes" />
+            android:title="@string/Contactos" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_vector__9_"

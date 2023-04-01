@@ -1,7 +1,6 @@
 package com.example.kerklytv2.controlador
 
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kerklytv2.interfaces.LoginInterface
