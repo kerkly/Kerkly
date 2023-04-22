@@ -1,21 +1,24 @@
 package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.MainActivitySeguimientoDelServicio
+import com.example.kerklytv2.MapsActivity
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
+import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.PresupuestoInterface
 import com.example.kerklytv2.interfaces.obtenerTodosLosOficios
 import com.example.kerklytv2.modelo.serial.OficioKerkly
@@ -62,9 +65,11 @@ class PresupuestoFragment : Fragment() {
     lateinit var autoCompleteTxt: AutoCompleteTextView
     lateinit  var adapterItems: ArrayAdapter<String>
     lateinit var items: String
-    lateinit var nombrekerkly: String
+    lateinit var nombreCompletoKerkly: String
     lateinit var ofi: MutableList<String>
     lateinit var postList2: ArrayList<OficioKerkly>
+
+    private val setProgressDialog = SetProgressDialog()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,7 +97,8 @@ class PresupuestoFragment : Fragment() {
 
         curp = arguments?.getString("Curp").toString()
         telK = arguments?.getString("numNR").toString()
-        nombrekerkly = arguments?.getString("nombrekerkly").toString()
+        nombreCompletoKerkly = arguments?.getString("nombreCompletoKerkly")!!
+        //nombrekerkly = arguments?.getString("nombrekerkly").toString()
 
         postList2 = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
 
@@ -106,8 +112,9 @@ class PresupuestoFragment : Fragment() {
         adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
         autoCompleteTxt.setAdapter(adapterItems)
         autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id -> items = parent.getItemAtPosition(position).toString()
-                Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
                 //  getJSON(items.toString())
+           setProgressDialog.setProgressDialog(requireContext())
             getJSON()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
@@ -120,7 +127,7 @@ class PresupuestoFragment : Fragment() {
                         ?.commit();
                 }
 
-               getJSON()
+
 
             }
 
@@ -218,11 +225,12 @@ class PresupuestoFragment : Fragment() {
                 if(postList.size == 0) {
                     recyclerview.visibility = View.GONE
                 } else {
+                    setProgressDialog.dialog!!.dismiss()
                     img.visibility = View.GONE
                     txt.visibility = View.GONE
 
                     MiAdapter.setOnClickListener {
-                        folio = postList[recyclerview.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
+                      val  folioo = postList[recyclerview.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
                        val latitud = postList[recyclerview.getChildAdapterPosition(it)].latitud
                         val longitud = postList[recyclerview.getChildAdapterPosition(it)].longitud
                         val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
@@ -245,8 +253,8 @@ class PresupuestoFragment : Fragment() {
 
                         direccion = "$calle $colonia $ext $cp $referencia"
                         nombre = "$n $ap $am"
-
-                        //Toast.makeText(context, "Teléfono: $numeroCliente", Toast.LENGTH_SHORT).show()
+                        println("Teléfono: $numeroCliente, folio $folioo")
+                        //Toast.makeText(context, "Teléfono: $numeroCliente, folio $folioo", Toast.LENGTH_SHORT).show()
 
                         //cambios de diseño
                        // val i = Intent(context, Presupuesto::class.java)
@@ -264,19 +272,19 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("correo", correo)
                         i.putExtra("nombrekerkly", nombrekerkly)
                         startActivity(i)*/
-                       val i = Intent(context, MainActivitySeguimientoDelServicio::class.java)
+                       val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
                         i.putExtra("longitud", longitud)
-                        i.putExtra("Folio", folio)
-                        i.putExtra("Nombre", nombre)
+                        i.putExtra("Folio", folioo.toString())
+                        i.putExtra("nombreCompletoCliente", nombre)
                         i.putExtra("Dirección", direccion)
                         i.putExtra("Problema", problema)
-                        i.putExtra("numeroCliente", numeroCliente)
+                        i.putExtra("telefonoCliente", numeroCliente)
                         i.putExtra("Normal", false)
                         i.putExtra("Curp", curp)
-                        i.putExtra("numeroKerkly", telK)
+                        i.putExtra("telefonoKerkly", telK)
                         i.putExtra("correo", correo)
-                        i.putExtra("nombrekerkly", nombrekerkly)
+                        i.putExtra("nombreCompletoKerkly", nombreCompletoKerkly)
                         startActivity(i)
 
                     }
@@ -296,5 +304,7 @@ class PresupuestoFragment : Fragment() {
 
         })
     }
+
+
 
 }

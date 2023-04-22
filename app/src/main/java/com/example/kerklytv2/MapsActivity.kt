@@ -15,30 +15,42 @@ import android.location.LocationProvider
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.kerklytv2.Notificacion.llamartopico
+import com.example.kerklytv2.controlador.SetProgressDialog
+import com.example.kerklytv2.controlador.adapterUsuarios
 import com.example.kerklytv2.databinding.ActivityMapsBinding
+import com.example.kerklytv2.interfaces.AceptarServicioUrgente
+import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.trazar_rutas.GPSTracker
 import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
+import com.example.kerklytv2.url.Url
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.button.MaterialButton
+import com.google.firebase.database.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import retrofit.Callback
+import retrofit.RestAdapter
+import retrofit.RetrofitError
+import retrofit.client.Response
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
@@ -50,22 +62,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     var longitud: Double = 0.0
     lateinit var context: Context
     private var locationManager: LocationManager? = null
-    var progressBar: ProgressBar? = null
     var location: Location? = null
     var gpsTracker: GPSTracker? = null
     var request: RequestQueue? = null
     var jsonObjectRequest: JsonObjectRequest? = null
-    lateinit var dialog: Dialog
-    private lateinit var telefono: String
+    private lateinit var telefonoCliente: String
+    private lateinit var telefonoKerkly: String
     private lateinit var b: Bundle
     lateinit var latitud2: String
     lateinit var longitud2: String
     lateinit var nombreCliente: String
     lateinit var nombrekerkly: String
+    private lateinit var Folio: String
 
     var minutos: Double = 0.0
     var distancia = 0
 
+    private lateinit var firebase_databaseUsu: FirebaseDatabase
+    private lateinit var databaseUsu: DatabaseReference
+    private val setProgressDialog = SetProgressDialog()
+    private val llamartopico = llamartopico()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,18 +92,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
         b = intent.extras!!
         //recibimos las coordenas
-        //telefono = b.getString("Telefono").toString()
+        telefonoCliente = b.getString("telefonoCliente").toString()
+        telefonoKerkly = b.getString("telefonoKerkly").toString()
         latitud2 = b.getString("latitud").toString()
         longitud2 = b.getString("longitud").toString()
-        nombreCliente = b.getString("Nombre").toString()
-        nombrekerkly = b.getString("nombrekerkly").toString()
+        nombreCliente = b.getString("nombreCompletoCliente").toString()
+        nombrekerkly = b.getString("nombreCompletoKerkly").toString()
+        Folio = b.getString("Folio").toString()
 
-      //  System.out.println("latitud : $latitud2 $longitud2 $nombreCliente latitud del marcador")
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
         request = Volley.newRequestQueue(applicationContext)
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -96,19 +112,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
 
         getLocalizacion()
-
-        /*buttonAceptarServicio.setOnClickListener {
+        val buttonAceptarServicio: MaterialButton
+        buttonAceptarServicio = findViewById(R.id.buttonAceptarServicio)
+        buttonAceptarServicio.setOnClickListener {
            // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
             //pendiente
             //val i = Intent(this, MainActivityEnviarUbicacionEnTiempoReal::class.java)
            // startActivity(i)
 
-            mostrarDialogoPersonalizado()
+            mostrarDialogoPersonalizado(minutos, distancia)
         }
-
+        val buttonCancelarServicio : MaterialButton
+        buttonCancelarServicio = findViewById(R.id.buttonCancelarServicio)
         buttonCancelarServicio.setOnClickListener{
             mostrarDialogRechazar()
-        }*/
+        }
 
         /*imageViewACeptar.setOnClickListener({
             mostrarDialogoPersonalizado()
@@ -124,12 +142,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         })*/
     }
 
+
     override fun setDouble(min: String?) {
         val res = min!!.split(",").toTypedArray()
         minutos = res[0].toDouble() / 60
         distancia = res[1].toInt() / 1000
 
         System.out.println(" entrooooo en setDouble: "+ (minutos/60).toInt() +"hora" )
+        mostrarDialogoPersonalizado(minutos, distancia)
         // txtejemplo1.setText(" " +(min/60).toInt() + " hr " + (min % 60).toInt() + " mins")
         // textView_result2.setText("$dist kilometros")
     }
@@ -139,8 +159,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         val inflater = layoutInflater
         val view: android.view.View? = inflater.inflate(R.layout.dialog_rechazar_servicio, null)
         builder.setView(view)
-
-
         val dialog = builder.create()
         dialog.show()
         val txt: TextView = view!!.findViewById(R.id.text_dialog)
@@ -149,8 +167,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
 
             override fun onClick(p0: android.view.View?) {
-                Toast.makeText(applicationContext, "Rechazado", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(applicationContext, "Rechazado", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
+                finishActivity(1)
+                val intent  = Intent(this@MapsActivity, PantallaInicio::class.java)
+                startActivity(intent)
             }
 
 
@@ -244,8 +265,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
 
-
-
     }
 
     override fun onMapLongClick(p0: LatLng) {
@@ -292,7 +311,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     fun TrazarLineas(latLng: LatLng){
         Utils_k.coordenadas.destinoLat = latLng.latitude
         Utils_k.coordenadas.destinoLng = latLng.longitude
-        setProgressDialog()
+        setProgressDialog.setProgressDialog(this)
         try {
             while (location == null) {
                 location = gpsTracker!!.location
@@ -310,12 +329,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 Utils_k.coordenadas.destinoLng.toString()
             )
 
-
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     private fun AsignarRuta(latInicial: String, lngInicial: String, latFinal: String, lngFinal: String) {
@@ -369,7 +385,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                         }
                         assert(lineOptions != null)
                         mMap.addPolyline(lineOptions!!)
-                        dialog.dismiss()
+                        setProgressDialog.dialog!!.dismiss()
 
 
                     }
@@ -389,54 +405,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         request!!.add(jsonObjectRequest)
 
         val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
-       // GeoTask(context).execute(url2)
+        GeoTask(this).execute(url2)
 
 
     }
 
-    fun setProgressDialog() {
-        val llPadding = 30
-        val ll = LinearLayout(this)
-        ll.orientation = LinearLayout.HORIZONTAL
-        ll.setPadding(llPadding, llPadding, llPadding, llPadding)
-        ll.gravity = Gravity.CENTER
-        var llParam = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        llParam.gravity = Gravity.CENTER
-        ll.layoutParams = llParam
-        progressBar = ProgressBar(this)
 
-        progressBar!!.isIndeterminate = true
-        progressBar!!.setPadding(0, 0, llPadding, 0)
-        progressBar!!.layoutParams = llParam
-        llParam = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        llParam.gravity = Gravity.CENTER
-        val tvText = TextView(this)
-        tvText.text = "Por favor espere un momento..."
-        tvText.setTextColor(Color.parseColor("#000000"))
-        tvText.textSize = 20f
-        tvText.layoutParams = llParam
-        ll.addView(progressBar)
-        ll.addView(tvText)
-        val builder = AlertDialog.Builder(this)
-        builder.setCancelable(false)
-        builder.setView(ll)
-        dialog = builder.create()
-        dialog.show()
-        val window: Window? = dialog.window
-        if (window != null) {
-            val layoutParams = WindowManager.LayoutParams()
-            layoutParams.copyFrom(dialog.window!!.attributes)
-            layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-            layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-            dialog.window!!.attributes = layoutParams
-        }
-    }
 
     private fun decodePoly(encoded: String): List<LatLng> {
         val poly: MutableList<LatLng> = ArrayList()
@@ -476,7 +450,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
 
 
-     fun mostrarDialogoPersonalizado() {
+     fun mostrarDialogoPersonalizado(min: Double, dist: Int) {
         val builder = AlertDialog.Builder(this@MapsActivity)
         val inflater = layoutInflater
         val view: android.view.View? = inflater.inflate(R.layout.dialog_aceptar_servicio, null)
@@ -490,17 +464,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
       //  txt.text = "¿Seguro que deseas aceptar el servicio?"
          val textView_result1: TextView = view.findViewById(R.id.textView_result1)
          val textView_result2: TextView = view.findViewById(R.id.textView_result2)
-         textView_result1.setText(" " +(minutos / 60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
-          textView_result2.setText("$distancia kilometros")
+         textView_result2.setText(" " +(min / 60).toInt() + " hr " + (min % 60).toInt() + " mins")
+         textView_result1.setText("$dist kilometros")
 
        val btnAceptar: Button = view!!.findViewById(R.id.btnAceptar)
         btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
 
             override fun onClick(p0: android.view.View?) {
-                Toast.makeText(applicationContext, "Aceptado", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(applicationContext, "Aceptado", Toast.LENGTH_SHORT).show()
+                AceptarServicio()
                 dialog.dismiss()
-                var intent = Intent(this@MapsActivity, MainActivitySeguimientoDelServicio::class.java)
-                startActivity(intent)
+
             }
 
 
@@ -509,10 +483,101 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
          val btnRechazar: Button = view!!.findViewById(R.id.btnCancel)
          btnRechazar.setOnClickListener(object: android.view.View.OnClickListener{
              override fun onClick(p0: android.view.View?) {
-                 Toast.makeText(applicationContext, "Cancelado", Toast.LENGTH_SHORT).show()
+                // Toast.makeText(applicationContext, "Cancelado", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
              }
 
          })
+    }
+
+    private fun agregarContacto(numeroCliente: String, numeroKerkly: String) {
+        //Primero agregamos numeros  a la lista de usuarios
+        var firebaseDatabaseLista: FirebaseDatabase
+        var databaseReferenceCliente: DatabaseReference
+        var databaseReferencekerkly: DatabaseReference
+
+        firebaseDatabaseLista = FirebaseDatabase.getInstance()
+        databaseReferenceCliente = firebaseDatabaseLista.getReference("UsuariosR").child(numeroCliente)
+            .child("Lista de Usuarios")
+        databaseReferenceCliente.push().child("telefono").setValue(numeroKerkly)
+
+        databaseReferencekerkly = firebaseDatabaseLista.getReference("UsuariosR").child(numeroKerkly)
+            .child("Lista de Usuarios")
+        databaseReferencekerkly.push().child("telefono").setValue(numeroCliente)
+
+
+    }
+
+    private fun AceptarServicio() {
+        val ROOT_URL = Url().URL
+        val adapter = RestAdapter.Builder()
+            .setEndpoint(ROOT_URL)
+            .build()
+        val api: AceptarServicioUrgente = adapter.create(AceptarServicioUrgente::class.java)
+        api.AceptarServicio(Folio, 1,
+        object : Callback<Response?>{
+            override fun success(t: Response?, response: Response?) {
+              var entrada: BufferedReader? = null
+                var Res = ""
+                try{
+                    entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
+                    Res = entrada.readLine()
+
+                    if(Res == "1"){
+                        firebase_databaseUsu = FirebaseDatabase.getInstance()
+                        databaseUsu = firebase_databaseUsu.getReference("UsuariosR")
+                            .child(telefonoCliente.toString()).child("MisDatos")
+
+                        databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val u2 = snapshot.getValue(usuarios::class.java)
+
+                               // println(" 576: " + u2!!.correo.trim())
+                                telefonoCliente =  u2!!.telefono.trim()
+                                val urlfoto =  u2!!.foto.trim()
+                                val nombreCliente =  u2!!.nombre.trim()
+                                val correoCliente =  u2!!.correo.trim()
+                                val tokenCliente = u2!!.token.trim()
+                               // Toast.makeText(this@MapsActivity,"$nombreCliente",Toast.LENGTH_SHORT).show()
+                               //enviar Notificacion
+                                agregarContacto(telefonoCliente, telefonoKerkly)
+                               llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
+                                val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
+
+                                intent.putExtra("nombreCompletoCliente", nombreCliente)
+                                intent.putExtra("correoCliente", correoCliente)
+                                intent.putExtra("telefonoCliente",telefonoCliente)
+                                intent.putExtra("telefonoKerkly", telefonoKerkly)
+                                intent.putExtra("urlFotoCliente", urlfoto)
+                                intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+                                intent.putExtra("tokenCliente", tokenCliente)
+
+                                startActivity(intent)
+                                finish()
+
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                TODO("Not yet implemented")
+                            }
+
+                        })
+
+                    }else{
+                        Toast.makeText(this@MapsActivity, "El Servicio No se Pudo Acompletar", Toast.LENGTH_SHORT).show()
+                    }
+                }catch (e: java.lang.Exception){
+                    e.printStackTrace()
+                }
+
+            }
+
+            override fun failure(error: RetrofitError?) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
+
     }
 }

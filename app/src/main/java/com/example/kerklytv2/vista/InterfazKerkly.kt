@@ -1,16 +1,29 @@
 package com.example.kerklytv2.vista
 
+import android.Manifest
 import android.app.AlertDialog
+import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.Menu
+import android.view.*
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -18,7 +31,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.kerklytv2.R
+import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyaOficiosInterface
@@ -31,12 +47,16 @@ import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -78,6 +98,8 @@ class InterfazKerkly : AppCompatActivity() {
     lateinit var photoUrl: String
     lateinit var name: String
     lateinit var correoKerkly: String
+    private lateinit var token: String
+    val setProgressDialog = SetProgressDialog()
 
 
 
@@ -86,26 +108,19 @@ class InterfazKerkly : AppCompatActivity() {
         setContentView(R.layout.activity_interfaz_kerkly)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
+        setProgressDialog.setProgressDialog(this)
         //Autenticacion
         providers = Arrays.asList(
             // EmailBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build())
         mAuth = FirebaseAuth.getInstance()
-
-
         id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-
         kerkly = Kerkly()
         b = intent.extras!!
-
         telefonoKerkly = b.getString("numT").toString()
-
 
         sesion(telefonoKerkly)
         getKerkly()
-
-
 
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -150,8 +165,39 @@ class InterfazKerkly : AppCompatActivity() {
         val myRef = database.getReference("message")
         myRef.setValue("Hola Luis luis")
         System.out.println("entro en lo de firebase")*/
+        askNotificationPermission()
+        createChanel()
+        //noti
+
+       /* val intent = Intent(this, MyIntentServiceMensajes::class.java)
+        intent.action = Constants.ACTION_RUN_ISERVICE
+        startService(intent)*/
 
 
+    }
+    companion object{
+        const val chanel_id = "chanelID"
+         var mensaje: String = "mensaje ejemplo"
+        var titulo: String = "soy luis"
+        const val ID_NOTIFICACION = 1
+    }
+
+    fun createChanel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                chanel_id,
+                "my channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+
+            ).apply {
+                description = "MisNotificaciones"
+
+            }
+
+            val notificationManager : NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+
+        }
     }
 
     private fun cerrarSesion() {
@@ -236,7 +282,7 @@ class InterfazKerkly : AppCompatActivity() {
         f.arguments = b2
         b2!!.putString("telefonoKerkly", telefonoKerkly)
         b2!!.putString("urlFotoKerkly", photoUrl)
-        b2!!.putString("nombreKerkly", name)
+        b2!!.putString("nombreCompletoKerkly", nombre_completo)
         b2!!.putString("correoKerkly", correoKerkly)
 
         var fm = supportFragmentManager.beginTransaction().apply {
@@ -247,10 +293,15 @@ class InterfazKerkly : AppCompatActivity() {
     private fun setFragmentPresupuesto() {
         val args = Bundle()
         val num = b.getString("numT")
+        args!!.putString("telefonoKerkly", telefonoKerkly)
+        args!!.putString("urlFotoKerkly", photoUrl)
+       // args!!.putString("nombreKerkly", name)
+        args!!.putString("correoKerkly", correoKerkly)
         args.putString("numNR", num)
         args.putString("Curp", curp)
-        args.putString("nombrekerkly", nombreKerkly)
+       // args.putString("nombrekerkly", nombreKerkly)
         args.putSerializable("arrayOfcios", postList)
+        args.putString("nombreCompletoKerkly", nombre_completo)
         val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
@@ -348,6 +399,7 @@ class InterfazKerkly : AppCompatActivity() {
                     }
                 }
                 txt_oficios.text = acumulador
+                setProgressDialog.dialog!!.dismiss()
 
             }
 
@@ -465,35 +517,38 @@ class InterfazKerkly : AppCompatActivity() {
         val networkInfo = connectivityManager.activeNetworkInfo
         if (networkInfo != null && networkInfo.isConnected) {
             if (currentUser != null) {
-
-//              val name = currentUser!!.getDisplayName()
-                //              val email = currentUser!!.getEmail()
-                //            val photoUrl = currentUser!!.getPhotoUrl()
-               // correo = user!!.email!!
-
-                //   Toast.makeText(this, "entro", Toast.LENGTH_LONG).show();
-                // Name, email address, and profile photo Url
-                 name = currentUser!!.displayName.toString()
-                 correoKerkly = currentUser!!.email.toString()
-                 photoUrl = currentUser!!.photoUrl.toString()
-                val uid = currentUser!!.uid
-                val foto = photoUrl.toString()
-
-               // Toast.makeText(this, "entro : $email ", Toast.LENGTH_SHORT).show()
-                // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
-                val database = FirebaseDatabase.getInstance()
+                //obtenerToken
+                FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                        return@OnCompleteListener
+                    }
+                     token = task.result
 
 
-               val databaseReference = database.getReference("UsuariosR").child("$telefonoKerkly")
-                val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
-               //val usuario = usuarios()
+                   // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+                    name = currentUser!!.displayName.toString()
+                    correoKerkly = currentUser!!.email.toString()
+                    photoUrl = currentUser!!.photoUrl.toString()
+                    val uid = currentUser!!.uid
+                    val foto = photoUrl.toString()
 
-               //val u = usuarios(uid, email, name, foto, currentDateTimeString)
-                databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString())) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
-                    Toast.makeText(this@InterfazKerkly, "Bienvenido $name", Toast.LENGTH_SHORT)
-                        .show()
+                    // Toast.makeText(this, "entro : $email ", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
+                    val database = FirebaseDatabase.getInstance()
 
-                }
+
+                    val databaseReference = database.getReference("UsuariosR").child("$telefonoKerkly")
+                    val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
+                    //val usuario = usuarios()
+
+                    //val u = usuarios(uid, email, name, foto, currentDateTimeString)
+                    databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                        // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
+
+                    }
+                })
+
 
             }else{
                 muestraOpciones()
@@ -517,4 +572,33 @@ class InterfazKerkly : AppCompatActivity() {
             }
     }
 
+//Permisos en tiempo de ejecucion para recibir Notificaciones
+// Declare the launcher at the top of your Activity/Fragment:
+private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+    if (isGranted) {
+        // FCM SDK (and your app) can post notifications.
+        Toast.makeText(this, "su aplicacion si Podra Recibir Notificaciones", Toast.LENGTH_SHORT).show()
+    } else {
+        // TODO: Inform user that that your app will not show notifications.
+        Toast.makeText(this, "Lo sentimos su aplicacion No Podra Recibir Notificaciones", Toast.LENGTH_SHORT).show()
+    }
+}
+    private fun askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
 }

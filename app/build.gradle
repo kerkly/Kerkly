@@ -54,6 +54,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation 'androidx.test:core-ktx:1.5.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.1.0'
+    implementation 'com.google.firebase:firebase-messaging:23.1.2'
+    implementation 'com.google.firebase:firebase-database:20.0.4'
     testImplementation 'junit:junit:'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -70,7 +72,7 @@ dependencies {
 
 
 // JSON Parsing
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
@@ -79,12 +81,15 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
     implementation files('libs/droidText.0.4.jar')
     implementation 'com.airbnb.android:paris:2.0.0'
-    implementation 'com.google.android.gms:play-services-auth:20.4.1'
+    implementation 'com.google.android.gms:play-services-auth:20.5.0'
 
 
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
+    implementation files('libs/droidText.0.4.jar')
+
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
     //implementation 'com.google.firebase:firebase-storage:20.1.0'
 
@@ -94,6 +99,9 @@ dependencies {
 
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+//Habilita el controlador de mensajes en modo de inicio directo en tu app
+    implementation 'com.google.firebase:firebase-messaging-directboot:23.1.2'
 
 
 }
+apply plugin: 'com.google.gms.google-services'

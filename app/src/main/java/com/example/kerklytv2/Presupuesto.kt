@@ -182,6 +182,7 @@ class Presupuesto : AppCompatActivity() {
             i.putExtra("longitud", longitudCliente)
            //System.out.println("clase presupuesto $cliente $latitudCliente $longitudCliente")
             i.putExtra("Nombre", cliente)
+            i.putExtra("Folio", folio)
             startActivity(i)
         }
 

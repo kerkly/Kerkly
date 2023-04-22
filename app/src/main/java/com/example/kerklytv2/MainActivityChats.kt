@@ -4,25 +4,26 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.request.RequestOptions
+import com.example.kerklytv2.Notificacion.llamartopico
 import com.example.kerklytv2.controlador.AdapterChat
 import com.example.kerklytv2.modelo.Mensaje
-import com.example.kerklytv2.modelo.listaDeUsuarios
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.picasso.Picasso
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
+import org.json.JSONException
+import org.json.JSONObject
 import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivityChats : AppCompatActivity() {
@@ -38,15 +39,23 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var b: Bundle
     private lateinit var nombrecliente: String
     private lateinit var fotoCliente:String
-    private lateinit var nombreKerkly: String
     private lateinit var nombre_txt: TextView
     private lateinit var telefonoCliente:String
     private lateinit var telefonoKerkly: String
+    private lateinit var nombreCompletoKerkly: String
+    private lateinit var tokenCliente: String
+    private val llamartopico = llamartopico()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_chats)
+
+       var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
+        firebaseMessaging.addOnCompleteListener {
+
+                //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()
+        }
 
         boton = findViewById(R.id.boton_chat)
         editText = findViewById(R.id.editTextChat)
@@ -56,12 +65,14 @@ class MainActivityChats : AppCompatActivity() {
 
         b = intent.extras!!
 
-        folio = b.getInt("folio")
+        folio = b.getInt("Folio")
         nombrecliente = b.getString("nombreCompletoCliente").toString()
-        nombreKerkly = b.getString("nombreKerkly").toString()
+        nombreCompletoKerkly = b.getString("nombreCompletoKerkly").toString()
+       // nombreKerkly = b.getString("nombreKerkly").toString()
         telefonoKerkly = b.getString("telefonoKerkly").toString()
         telefonoCliente = b.getString("telefonoCliente").toString()
         fotoCliente = b.getString("urlFotoCliente").toString()
+        tokenCliente = b.getString("tokenCliente")!!
 
 
 
@@ -112,9 +123,11 @@ class MainActivityChats : AppCompatActivity() {
             .child("$telefonoCliente"+"_"+"$telefonoKerkly")
 
         boton.setOnClickListener {
+
             //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime()))
             databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime()))
+            llamartopico.llamartopico(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly)
             editText.setText("")
         }
 
@@ -179,4 +192,5 @@ class MainActivityChats : AppCompatActivity() {
 
         })
     }
+
 }

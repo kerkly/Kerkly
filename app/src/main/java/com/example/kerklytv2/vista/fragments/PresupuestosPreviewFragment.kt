@@ -29,6 +29,12 @@ class PresupuestosPreviewFragment : Fragment() {
     private lateinit var boton_normal: MaterialButton
     private var b: Bundle? = null
     lateinit var postList: ArrayList<OficioKerkly>
+    private lateinit var telefonoKerkly: String
+    private lateinit var nombre_completo: String
+    private lateinit var nombreKerkly: String
+    lateinit var photoUrl: String
+    lateinit var name: String
+    lateinit var correoKerkly: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +65,10 @@ class PresupuestosPreviewFragment : Fragment() {
 
         b = arguments
         postList = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
-
+        telefonoKerkly = arguments?.getString("telefonoKerkly").toString()
+        photoUrl = arguments?.getString("urlFotoKerkly").toString()
+       // nombreKerkly = arguments?.getString("nombreKerkly").toString()
+        nombre_completo = arguments?.getString("nombreCompletoKerkly").toString()
 
         return v
     }
@@ -67,7 +76,10 @@ class PresupuestosPreviewFragment : Fragment() {
     private fun setPresupuestoUrgente() {
         val args = Bundle()
         val f = PresupuestoFragment()
+        args.getString("telefonoKerkly", telefonoKerkly)
+       // args.getString("nombreKerkly", nombreKerkly)
         args.putSerializable("arrayOfcios", postList)
+        args.putString("nombreCompletoKerkly", nombre_completo)
         f.arguments = args
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -76,6 +88,8 @@ class PresupuestosPreviewFragment : Fragment() {
     }
 
     private fun setPresupuestoNormal() {
+        val b = Bundle()
+        b.putString("numNR", telefonoKerkly)
         val f = PresupuestoNomalFragment()
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {

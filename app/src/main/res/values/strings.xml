@@ -117,4 +117,5 @@
 
     <string name="activitySeguimiento_txt1">Se ha notificado al cliente que acepto el servicio, informa al cliente sobre el horarios de llegada al servicio a travez del chat</string>
     <string name="activitySeguimiento_btn1">Iniciar Chat con el cliente</string>
+    <string name="default_notification_channel_id">Mi_ID_Chanel</string>
 </resources>

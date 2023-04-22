@@ -62,8 +62,6 @@ class BlankFragmentChat : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_blank_chat, container, false)
 
-
-
         boton = v.findViewById(R.id.boton_chat)
         editText = v.findViewById(R.id.editTextChat)
         recyclerView = v.findViewById(R.id.recycler_chat)

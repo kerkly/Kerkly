@@ -63,15 +63,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
     var distancia = 0
 
 
-
-   // private val callback = OnMapReadyCallback { googleMap ->
-        /*val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
-
-   // }
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,  savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_maps, container, false)
         context = requireActivity()
@@ -84,9 +75,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
         nombrekerkly = arguments?.getString("nombrekerkly").toString()
 
         //  System.out.println("latitud : $latitud2 $longitud2 $nombreCliente latitud del marcador")
-
-
-
 
         return v
     }
@@ -322,7 +310,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
 
         val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
 
-        GeoTask(this@MapsFragment).execute(url2)
+       // GeoTask(this@MapsFragment).execute(url2)
 
 
     }

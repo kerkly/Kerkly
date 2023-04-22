@@ -14,25 +14,17 @@
         android:layout_height="match_parent"
         android:layout_marginTop="5dp"
         tools:context=".MapsActivity" />
-<TextView
-    android:id="@+id/txtejemplo1"
-    android:textSize="20dp"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:orientation="vertical"
         android:layout_gravity="bottom">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/color_botonAzul"
-            android:orientation="horizontal">
 
-            <!--  <com.google.android.material.button.MaterialButton
+              <com.google.android.material.button.MaterialButton
          android:id="@+id/buttonAceptarServicio"
          android:layout_width="260dp"
          android:layout_height="wrap_content"
@@ -57,24 +49,7 @@
          android:gravity="center"
          android:layout_margin="10dp"
          tools:ignore="SpeakableTextPresentCheck" />
-          -->
 
-            <ImageView
-                android:id="@+id/imageViewACeptar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="25dp"
-                map:srcCompat="@drawable/ubicacion" />
-            <ImageView
-                android:id="@+id/imageViewChat"
-                android:layout_width="54dp"
-                android:layout_height="49dp"
-                android:layout_margin="25dp"
-                map:srcCompat="@drawable/chat" />
-
-
-
-        </LinearLayout>
 
 
     </LinearLayout>

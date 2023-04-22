@@ -30,6 +30,7 @@ private lateinit var b: Bundle
     lateinit var folio: String
     lateinit var context: Context
     lateinit var linearLayout: LinearLayout
+    private lateinit var urlFotoCliente: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +80,6 @@ private lateinit var b: Bundle
         transaction = manager.beginTransaction()
          when(view.getId()){
              R.id.imageViewACeptar1 ->{
-                 System.out.println("entrooo en seguimiento: $latitud2")
                  transaction.replace(R.id.ContenedorFragmentsTodos, mapa)
                  transaction.addToBackStack(null)
                  val args = Bundle()
@@ -95,11 +95,12 @@ private lateinit var b: Bundle
                  transaction.replace(R.id.ContenedorFragmentsTodos, chat)
                  transaction.addToBackStack(null)
                  var args = Bundle()
-                 args.putString("numeroKerkly", numeroKerkly)
-                 args.putString("numeroCliente", numeroCliente)
-                 args.putString("Folio", folio)
-                 args.putString("nombreCliente", nombreCliente)
+                 args.putString("telefonoKerkly", numeroKerkly)
+                 args.putString("telefonoCliente", numeroCliente)
+                 args.putString("folio", folio)
+                 args.putString("nombreCompletoCliente", nombreCliente)
                  args.putString("nombreKerkly", nombrekerkly)
+                 args.putString("urlFotoCliente", urlFotoCliente)
                 chat.arguments = args
                  linearLayout.setVisibility(View.INVISIBLE);
              }
