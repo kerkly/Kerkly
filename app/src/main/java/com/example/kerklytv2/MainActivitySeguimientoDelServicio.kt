@@ -101,6 +101,7 @@ private lateinit var b: Bundle
                  args.putString("nombreCompletoCliente", nombreCliente)
                  args.putString("nombreKerkly", nombrekerkly)
                  args.putString("urlFotoCliente", urlFotoCliente)
+
                 chat.arguments = args
                  linearLayout.setVisibility(View.INVISIBLE);
              }

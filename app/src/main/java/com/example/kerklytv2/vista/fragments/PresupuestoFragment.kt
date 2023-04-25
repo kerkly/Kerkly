@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.MainActivitySeguimientoDelServicio
 import com.example.kerklytv2.MapsActivity
+
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
 import com.example.kerklytv2.controlador.SetProgressDialog
@@ -68,9 +69,7 @@ class PresupuestoFragment : Fragment() {
     lateinit var nombreCompletoKerkly: String
     lateinit var ofi: MutableList<String>
     lateinit var postList2: ArrayList<OficioKerkly>
-
     private val setProgressDialog = SetProgressDialog()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,9 +111,8 @@ class PresupuestoFragment : Fragment() {
         adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
         autoCompleteTxt.setAdapter(adapterItems)
         autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id -> items = parent.getItemAtPosition(position).toString()
-               // Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
-                //  getJSON(items.toString())
            setProgressDialog.setProgressDialog(requireContext())
+
             getJSON()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
@@ -127,70 +125,8 @@ class PresupuestoFragment : Fragment() {
                         ?.commit();
                 }
 
-
-
             }
 
-
-
-        //primero se obtendra todos los oficios que tiene el kerkly
-/*
-      val ROOT_URL = Url().URL
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("$ROOT_URL/")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val oficios = retrofit.create(obtenerTodosLosOficios::class.java)
-        val call2 = oficios.getPost(numeroTelefono)
-        call2?.enqueue(object : Callback<List<todosLosOficios?>?>{
-            override fun onResponse(call: Call<List<todosLosOficios?>?>, response: Response<List<todosLosOficios?>?>) {
-                val postList: ArrayList<todosLosOficios> =
-                    response.body() as ArrayList<todosLosOficios>
-
-
-                ofi = mutableListOf()
-                for (i in 0 until postList.size) {
-                    val oficio = postList[i].nombreO
-                    System.out.println("oficios obtenidos " + oficio)
-                    ofi.add(oficio.toString())
-                }
-
-
-                //  System.out.println("tamaño del array " + items1!!.get(1))
-                autoCompleteTxt = view.findViewById(R.id.filtro);
-                adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
-                autoCompleteTxt.setAdapter(adapterItems)
-                autoCompleteTxt.onItemClickListener =
-                    OnItemClickListener { parent, view, position, id ->
-                        items = parent.getItemAtPosition(position).toString()
-                        Toast.makeText(context, "oficio: $items", Toast.LENGTH_SHORT).show()
-                        //  getJSON(items.toString())
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
-                                ?.commitNow();
-                            fragmentManager?.beginTransaction()?.attach(this@PresupuestoFragment)
-                                ?.commitNow();
-                        } else {
-                            fragmentManager?.beginTransaction()?.detach(this@PresupuestoFragment)
-                                ?.attach(this@PresupuestoFragment)
-                                ?.commit();
-                        }
-
-                        getJSON()
-
-                    }
-
-            }
-          override fun onFailure(call: Call<List<todosLosOficios?>?>, t: Throwable) {
-                Toast.makeText(context, "Codigo de respuesta de error: $t", Toast.LENGTH_SHORT).show();
-            }
-
-
-        })*/
 
         return view
     }
@@ -256,22 +192,8 @@ class PresupuestoFragment : Fragment() {
                         println("Teléfono: $numeroCliente, folio $folioo")
                         //Toast.makeText(context, "Teléfono: $numeroCliente, folio $folioo", Toast.LENGTH_SHORT).show()
 
-                        //cambios de diseño
-                       // val i = Intent(context, Presupuesto::class.java)
-                  /*      val i = Intent(context, MapsActivity::class.java)
-                        i.putExtra("latitud", latitud)
-                        i.putExtra("longitud", longitud)
-                        i.putExtra("Folio", folio)
-                        i.putExtra("Nombre", nombre)
-                        i.putExtra("Dirección", direccion)
-                        i.putExtra("Problema", problema)
-                        i.putExtra("Número", numero)
-                        i.putExtra("Normal", false)
-                        i.putExtra("Curp", curp)
-                        i.putExtra("numT", telK)
-                        i.putExtra("correo", correo)
-                        i.putExtra("nombrekerkly", nombrekerkly)
-                        startActivity(i)*/
+
+
                        val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
                         i.putExtra("longitud", longitud)

@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.ConnectivityManager
@@ -24,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -31,8 +33,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
@@ -103,20 +103,24 @@ class InterfazKerkly : AppCompatActivity() {
 
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interfaz_kerkly)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         setProgressDialog.setProgressDialog(this)
+
         //Autenticacion
         providers = Arrays.asList(
             // EmailBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build())
         mAuth = FirebaseAuth.getInstance()
+
         id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         kerkly = Kerkly()
         b = intent.extras!!
+        telefonoKerkly = b.getString("numT").toString()
         telefonoKerkly = b.getString("numT").toString()
 
         sesion(telefonoKerkly)
@@ -159,19 +163,8 @@ class InterfazKerkly : AppCompatActivity() {
             true
         }
 
-/*
-        //ejemplo en firebase
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("message")
-        myRef.setValue("Hola Luis luis")
-        System.out.println("entro en lo de firebase")*/
-        askNotificationPermission()
-        createChanel()
-        //noti
 
-       /* val intent = Intent(this, MyIntentServiceMensajes::class.java)
-        intent.action = Constants.ACTION_RUN_ISERVICE
-        startService(intent)*/
+
 
 
     }
@@ -198,6 +191,7 @@ class InterfazKerkly : AppCompatActivity() {
             notificationManager.createNotificationChannel(channel)
 
         }
+
     }
 
     private fun cerrarSesion() {
@@ -264,11 +258,11 @@ class InterfazKerkly : AppCompatActivity() {
     }
 
     private fun setFragmenTrabajos() {
-        print("aqui 260")
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", num)
         args.putString("Curp", curp)
+        args.putString("nombrekerkly", nombre_completo)
         val f =
             TrabajosPendientesFragment()
         f.arguments = args
@@ -302,6 +296,7 @@ class InterfazKerkly : AppCompatActivity() {
        // args.putString("nombrekerkly", nombreKerkly)
         args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
+
         val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
@@ -533,7 +528,7 @@ class InterfazKerkly : AppCompatActivity() {
                     val uid = currentUser!!.uid
                     val foto = photoUrl.toString()
 
-                    // Toast.makeText(this, "entro : $email ", Toast.LENGTH_SHORT).show()
+
                     // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
                     val database = FirebaseDatabase.getInstance()
 
@@ -549,8 +544,8 @@ class InterfazKerkly : AppCompatActivity() {
                     }
                 })
 
-
             }else{
+                //  Toast.makeText(this, "entro :  ", Toast.LENGTH_SHORT).show()
                 muestraOpciones()
             }
 

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<fragment
+    <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -24,31 +24,31 @@
         android:layout_gravity="bottom">
 
 
-              <com.google.android.material.button.MaterialButton
-         android:id="@+id/buttonAceptarServicio"
-         android:layout_width="260dp"
-         android:layout_height="wrap_content"
-         android:text="@string/AceptarServicio"
-         android:layout_gravity="center"
-         android:background="@drawable/fondo_boton"
-         android:textColor="@color/black"
-         app:backgroundTint="#78B1BF"
-         android:gravity="center"
-         android:layout_margin="10dp"
-         tools:ignore="SpeakableTextPresentCheck" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonAceptarServicio"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:text="@string/AceptarServicio"
+            android:layout_gravity="center"
+            android:background="@drawable/fondo_boton"
+            android:textColor="@color/black"
+            app:backgroundTint="#78B1BF"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
-     <com.google.android.material.button.MaterialButton
-         android:id="@+id/buttonCancelarServicio"
-         android:layout_width="260dp"
-         android:layout_height="wrap_content"
-         android:text="@string/CancelarServicio"
-         android:layout_gravity="center"
-         android:background="@drawable/fondo_botones_2"
-         android:textColor="@color/black"
-         app:backgroundTint="#C83939"
-         android:gravity="center"
-         android:layout_margin="10dp"
-         tools:ignore="SpeakableTextPresentCheck" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonCancelarServicio"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:text="@string/CancelarServicio"
+            android:layout_gravity="center"
+            android:background="@drawable/fondo_botones_2"
+            android:textColor="@color/black"
+            app:backgroundTint="#C83939"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
 
 

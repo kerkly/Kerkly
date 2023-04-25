@@ -62,7 +62,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
     var minutos: Double = 0.0
     var distancia = 0
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,  savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_maps, container, false)
         context = requireActivity()
@@ -310,7 +309,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
 
         val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
 
-       // GeoTask(this@MapsFragment).execute(url2)
+        GeoTask(requireContext()).execute(url2)
+
 
 
     }

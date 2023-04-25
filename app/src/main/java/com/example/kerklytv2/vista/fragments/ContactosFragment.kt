@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.MainActivityChats
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.SetProgressDialog
+
 import com.example.kerklytv2.controlador.adapterUsuarios
 import com.example.kerklytv2.modelo.usuarios
 import com.google.firebase.database.*
@@ -47,6 +48,7 @@ class ContactosFragment : Fragment() {
     private lateinit var telefonoCliente: String
     private lateinit var fotoUrlCliente: String
     private val setProgressDialog = SetProgressDialog()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -60,6 +62,7 @@ class ContactosFragment : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_contactos, container, false)
         recyclerView = v.findViewById(R.id.recycler_Usuarios)
+
         b= requireArguments()
 
         telefonokerkly = b.getString("telefonoKerkly").toString()
@@ -95,7 +98,6 @@ class ContactosFragment : Fragment() {
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                print("------->entro")
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -107,7 +109,6 @@ class ContactosFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                print("------->entro")
             }
 
         })
@@ -127,8 +128,6 @@ class ContactosFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val u2 = snapshot.getValue(usuarios::class.java)
                 MiAdapter.agregarUsuario(u2!!)
-
-
                 val mGestureDetector = GestureDetector(
                     requireContext(),
                     object : GestureDetector.SimpleOnGestureListener() {
@@ -147,6 +146,7 @@ class ContactosFragment : Fragment() {
                                  telefonoCliente = MiAdapter.lista[position].telefono
                                 val urlfoto = MiAdapter.lista[position].foto
                                 val tokebCliente = MiAdapter.lista[position].token
+
                                 //Toast.makeText(requireContext(),"$telefono",Toast.LENGTH_SHORT).show()
                                 val intent = Intent(requireContext(), MainActivityChats::class.java)
                                 b!!.putString("nombreCompletoCliente", nombre)
@@ -155,6 +155,7 @@ class ContactosFragment : Fragment() {
                                 b!!.putString("telefonoKerkly", telefonokerkly)
                                 b!!.putString("urlFotoCliente", urlfoto)
                                 b!!.putString("tokenCliente", tokebCliente)
+
                                 intent.putExtras(b!!)
                                 startActivity(intent)
                                 return true
@@ -171,7 +172,9 @@ class ContactosFragment : Fragment() {
 
                     override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
 
+                        TODO("Not yet implemented")
                     }
+
 
                 })
 
@@ -179,7 +182,7 @@ class ContactosFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                setProgressDialog.dialog!!.dismiss()
+                println(error)
             }
         })
 

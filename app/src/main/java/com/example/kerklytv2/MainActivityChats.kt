@@ -24,6 +24,10 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.DateFormat
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import java.util.*
 
 class MainActivityChats : AppCompatActivity() {
@@ -39,12 +43,15 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var b: Bundle
     private lateinit var nombrecliente: String
     private lateinit var fotoCliente:String
-    private lateinit var nombre_txt: TextView
-    private lateinit var telefonoCliente:String
-    private lateinit var telefonoKerkly: String
+
     private lateinit var nombreCompletoKerkly: String
     private lateinit var tokenCliente: String
     private val llamartopico = llamartopico()
+
+    private lateinit var nombreKerkly: String
+    private lateinit var nombre_txt: TextView
+    private lateinit var telefonoCliente:String
+    private lateinit var telefonoKerkly: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +63,6 @@ class MainActivityChats : AppCompatActivity() {
 
                 //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()
         }
-
         boton = findViewById(R.id.boton_chat)
         editText = findViewById(R.id.editTextChat)
         recyclerView = findViewById(R.id.recycler_chat)
@@ -73,6 +79,7 @@ class MainActivityChats : AppCompatActivity() {
         telefonoCliente = b.getString("telefonoCliente").toString()
         fotoCliente = b.getString("urlFotoCliente").toString()
         tokenCliente = b.getString("tokenCliente")!!
+
 
 
 
@@ -123,12 +130,15 @@ class MainActivityChats : AppCompatActivity() {
             .child("$telefonoCliente"+"_"+"$telefonoKerkly")
 
         boton.setOnClickListener {
-
+            if (editText.text == null){
+                Toast.makeText(this, "Escribe tu mensaje" , Toast.LENGTH_SHORT).show()
+            }else{
             //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime()))
             databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime()))
             llamartopico.llamartopico(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly)
             editText.setText("")
+            }
         }
 
         databaseReference.addChildEventListener(object : ChildEventListener {
@@ -192,5 +202,4 @@ class MainActivityChats : AppCompatActivity() {
 
         })
     }
-
 }

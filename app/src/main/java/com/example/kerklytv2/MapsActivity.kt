@@ -39,8 +39,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.database.*
+
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -73,16 +75,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     lateinit var longitud2: String
     lateinit var nombreCliente: String
     lateinit var nombrekerkly: String
-    private lateinit var Folio: String
+
 
     var minutos: Double = 0.0
     var distancia = 0
-
     private lateinit var firebase_databaseUsu: FirebaseDatabase
     private lateinit var databaseUsu: DatabaseReference
     private val setProgressDialog = SetProgressDialog()
     private val llamartopico = llamartopico()
+    private  var bandera: Boolean = false
 
+    private var folio = 0
+    private lateinit var correoCliente: String
+    private lateinit var problema:String
+    private lateinit var direccion:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +104,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         longitud2 = b.getString("longitud").toString()
         nombreCliente = b.getString("nombreCompletoCliente").toString()
         nombrekerkly = b.getString("nombreCompletoKerkly").toString()
-        Folio = b.getString("Folio").toString()
+        problema = b.getString("problema").toString()
+        direccion = b.getString("direccion").toString()
+        correoCliente = b.getString("correoCliente").toString()
+        folio = b.getInt("Folio")
+        bandera = b.getBoolean("Normal")
 
         context = this
         gpsTracker = GPSTracker(applicationContext)
@@ -112,36 +122,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
 
         getLocalizacion()
-        val buttonAceptarServicio: MaterialButton
-        buttonAceptarServicio = findViewById(R.id.buttonAceptarServicio)
-        buttonAceptarServicio.setOnClickListener {
-           // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
-            //pendiente
-            //val i = Intent(this, MainActivityEnviarUbicacionEnTiempoReal::class.java)
-           // startActivity(i)
+       val buttonAceptarServicio: MaterialButton
+    buttonAceptarServicio = findViewById(R.id.buttonAceptarServicio)
+    buttonAceptarServicio.setOnClickListener {
+        // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show()
+        //pendiente
+        //val i = Intent(this, MainActivityEnviarUbicacionEnTiempoReal::class.java)
+        // startActivity(i)
 
-            mostrarDialogoPersonalizado(minutos, distancia)
-        }
-        val buttonCancelarServicio : MaterialButton
-        buttonCancelarServicio = findViewById(R.id.buttonCancelarServicio)
-        buttonCancelarServicio.setOnClickListener{
-            mostrarDialogRechazar()
-        }
-
-        /*imageViewACeptar.setOnClickListener({
-            mostrarDialogoPersonalizado()
-        })
-
-        imageViewChat.setOnClickListener({
-            val f = BlankFragmentChat()
-            var fm = supportFragmentManager.beginTransaction().apply {
-                replace(R.id.fragmentContenedorL,f).commit()
-                buttonIniciarChat.setVisibility(android.view.View.GONE);
-            }
-
-        })*/
+        mostrarDialogoPersonalizado(minutos, distancia)
+    }
+    val buttonCancelarServicio : MaterialButton
+    buttonCancelarServicio = findViewById(R.id.buttonCancelarServicio)
+    buttonCancelarServicio.setOnClickListener{
+        mostrarDialogRechazar()
     }
 
+
+    }
 
     override fun setDouble(min: String?) {
         val res = min!!.split(",").toTypedArray()
@@ -150,6 +148,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
         System.out.println(" entrooooo en setDouble: "+ (minutos/60).toInt() +"hora" )
         mostrarDialogoPersonalizado(minutos, distancia)
+
         // txtejemplo1.setText(" " +(min/60).toInt() + " hr " + (min % 60).toInt() + " mins")
         // textView_result2.setText("$dist kilometros")
     }
@@ -328,7 +327,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 Utils_k.coordenadas.destinoLat.toString(),
                 Utils_k.coordenadas.destinoLng.toString()
             )
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -408,6 +406,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         GeoTask(this).execute(url2)
 
 
+
     }
 
 
@@ -464,17 +463,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
       //  txt.text = "¿Seguro que deseas aceptar el servicio?"
          val textView_result1: TextView = view.findViewById(R.id.textView_result1)
          val textView_result2: TextView = view.findViewById(R.id.textView_result2)
-         textView_result2.setText(" " +(min / 60).toInt() + " hr " + (min % 60).toInt() + " mins")
-         textView_result1.setText("$dist kilometros")
+
+         textView_result1.setText(" " +(minutos / 60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
+          textView_result2.setText("$distancia kilometros")
+
 
        val btnAceptar: Button = view!!.findViewById(R.id.btnAceptar)
         btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
 
             override fun onClick(p0: android.view.View?) {
-               // Toast.makeText(applicationContext, "Aceptado", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(applicationContext, "Aceptado $latitud, $longitud", Toast.LENGTH_SHORT).show()
+                if (bandera == true){
+                    val i = Intent(context, Presupuesto::class.java)
+                    i.putExtra("latitud", latitud2)
+                    i.putExtra("longitud", longitud2)
+                    i.putExtra("Folio", folio)
+                    i.putExtra("clientenombre", nombreCliente)
+                    i.putExtra("Dirección", direccion)
+                    i.putExtra("problemacliente", problema)
+                    i.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    i.putExtra("numerocliente", telefonoCliente)
+                    i.putExtra("Normal", true)
+                    i.putExtra("telefonok", telefonoKerkly)
+                    i.putExtra("correoCliente", correoCliente)
+                    startActivity(i)
+                    dialog.dismiss()
+                }else{
                 AceptarServicio()
                 dialog.dismiss()
-
+                }
             }
 
 
@@ -514,7 +531,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             .setEndpoint(ROOT_URL)
             .build()
         val api: AceptarServicioUrgente = adapter.create(AceptarServicioUrgente::class.java)
-        api.AceptarServicio(Folio, 1,
+        api.AceptarServicio(folio.toString(), 1,
         object : Callback<Response?>{
             override fun success(t: Response?, response: Response?) {
               var entrada: BufferedReader? = null

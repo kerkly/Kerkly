@@ -1,6 +1,7 @@
 package com.example.kerklytv2.modelo
 
 class usuarios(telefono: String, email: String, name: String, foto: String, currentDateTimeString: String, token: String) {
+
     var telefono: String = telefono
 
     var correo: String = email
@@ -13,10 +14,5 @@ class usuarios(telefono: String, email: String, name: String, foto: String, curr
 
     var token: String = token
     constructor() : this(""",""","","","","","")
-
-
-
-
-
 
 }

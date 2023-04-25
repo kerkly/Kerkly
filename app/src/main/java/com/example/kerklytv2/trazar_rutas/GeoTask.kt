@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
 import android.widget.Toast
-import com.example.kerklytv2.MapsActivity
+
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -16,6 +16,7 @@ import java.net.MalformedURLException
 import java.net.URL
 
 class GeoTask(var mContext: Context) : AsyncTask<String?, Void?, String?>() {
+
         var progressDialog: ProgressDialog? = null
         var geo1: Geo
 

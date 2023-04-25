@@ -37,6 +37,7 @@ class PresupuestosPreviewFragment : Fragment() {
     lateinit var correoKerkly: String
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -62,14 +63,12 @@ class PresupuestosPreviewFragment : Fragment() {
         boton_normal.setOnClickListener {
             setPresupuestoNormal()
         }
-
         b = arguments
         postList = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
         telefonoKerkly = arguments?.getString("telefonoKerkly").toString()
         photoUrl = arguments?.getString("urlFotoKerkly").toString()
        // nombreKerkly = arguments?.getString("nombreKerkly").toString()
         nombre_completo = arguments?.getString("nombreCompletoKerkly").toString()
-
         return v
     }
 
@@ -86,16 +85,15 @@ class PresupuestosPreviewFragment : Fragment() {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
     }
-
     private fun setPresupuestoNormal() {
         val b = Bundle()
-        b.putString("numNR", telefonoKerkly)
+        b.putString("telefonokerkly", telefonoKerkly)
+        b.putString("nombreCompletoKerkly", nombre_completo)
         val f = PresupuestoNomalFragment()
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
-
     }
 
 }
