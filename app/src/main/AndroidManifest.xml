@@ -3,8 +3,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -14,24 +13,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KerklyTV2">
-
+        <activity
+            android:name=".MainActivityAeptarKerkly"
+            android:exported="false" />
 
         <service
             android:name=".Notificacion.MyIntentServiceMensajes"
             android:enabled="true"
-            android:exported="true"/>
-
-        <service android:name=".Notificacion.MyServicioMen"
+            android:exported="true" />
+        <service
+            android:name=".Notificacion.MyServicioMen"
             android:enabled="true"
-            android:exported="true"/>
-
+            android:exported="true" />
         <service
             android:name=".Notificacion.MyFirebaseInstanceIDServic"
             android:directBootAware="true"
             android:exported="false">
-
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -65,18 +64,15 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@android:drawable/ic_popup_reminder" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo" />

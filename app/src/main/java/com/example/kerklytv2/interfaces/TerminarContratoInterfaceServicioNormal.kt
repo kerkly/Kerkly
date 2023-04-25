@@ -6,12 +6,13 @@ import retrofit.Callback
 import retrofit.client.Response
 import retrofit.http.Field
 
-interface TerminarContratoInterface {
+interface TerminarContratoInterfaceServicioNormal {
     @FormUrlEncoded
-    @POST("/TerminarContratoNR.php")
+    @POST("/TerminarContrato.php")
     fun terminarContrato(
-        @Field("idContraNoRegistrado") idContraNoRegistrado: Int,
-        @Field("Fecha_Final_NoRegistrado") Fecha_Final_NoRegistrado: String,
+        @Field("Fecha_Inicio") Fecha_Inicio: String,
+        @Field("Fecha_Final") Fecha_Final: String,
+        @Field("id_presupuesto") id_presupuesto: String,
         callback: Callback<Response?>
     )
 }

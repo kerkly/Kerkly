@@ -19,6 +19,7 @@ import com.example.kerklytv2.controlador.TimePricker
 import com.example.kerklytv2.interfaces.LoginInterface
 import com.example.kerklytv2.interfaces.ObtenerCoordenadasKekrly
 import com.example.kerklytv2.interfaces.TerminarContratoInterface
+import com.example.kerklytv2.interfaces.TerminarContratoInterfaceServicioNormal
 import com.example.kerklytv2.modelo.serial.CoordenadasKerkly
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.InterfazKerkly
@@ -71,6 +72,7 @@ class AgendaFragment : Fragment() {
     private var longitud = 0.0
     private lateinit var curp: String
     private var bandHistory = false
+    private lateinit var folio: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +103,19 @@ class AgendaFragment : Fragment() {
         btn_ubicacion = v.findViewById(R.id.btn_ubicacion_agenda)
 
         val aux = arguments?.get("Fragment")
+        edit_cliente.setText(arguments?.getString("Nombre Cliente NoR").toString())
+        edit_direccion.setText(arguments?.getString("Dirección").toString())
+        edit_problema.setText(arguments?.getString("Problema").toString())
+        contrato = arguments?.getInt("Contrato")!!
+        bandHistory = arguments?.getBoolean("Historial")!!
+        curp = arguments?.getString("Curp").toString()
+        var fecha = arguments?.getString("Fecha")
+        val hora = fecha?.substring(11,16)
+        fecha = fecha?.substring(0,10)
+         folio = arguments?.getString("folio")!!
+
+
+
 
         edit_fechaFinal.setOnClickListener {
             val fecha = DatePrickFragment {year, month, day -> mostrar(year, month, day)}
@@ -116,8 +131,7 @@ class AgendaFragment : Fragment() {
 
             if (edit_fechaFinal.text!!.isNotEmpty() && edit_horaFinal.text!!.isNotEmpty()) {
                 fechaFinal = "$fechaS $horaS"
-                Log.d("boton", "deberia jalar")
-                terminar(contrato, fechaFinal)
+                terminar("2023-04-25 05:46:00",fechaFinal, folio)
                 layoutFecha.error = null
                 layoutHora.error = null
             } else {
@@ -129,21 +143,6 @@ class AgendaFragment : Fragment() {
         btn_ubicacion.setOnClickListener {
 
         }
-
-
-        edit_cliente.setText(arguments?.getString("Nombre Cliente NoR").toString())
-        edit_direccion.setText(arguments?.getString("Dirección").toString())
-        edit_problema.setText(arguments?.getString("Problema").toString())
-        contrato = arguments?.getInt("Contrato")!!
-
-        bandHistory = arguments?.getBoolean("Historial")!!
-
-        curp = arguments?.getString("Curp").toString()
-
-        var fecha = arguments?.getString("Fecha")
-        val hora = fecha?.substring(11,16)
-        fecha = fecha?.substring(0,10)
-
 
         if (bandHistory) {
             btn_ubicacion.visibility = View.GONE
@@ -206,14 +205,14 @@ class AgendaFragment : Fragment() {
 
     }
 
-    private fun terminar(id: Int, fecha: String) {
+    private fun terminar(fechainicio:String, fechafinal: String, folio: String) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
             .build()
 
-        val api: TerminarContratoInterface = adapter.create(TerminarContratoInterface::class.java)
-        api.terminarContrato(id,fecha,
+        val api: TerminarContratoInterfaceServicioNormal = adapter.create(TerminarContratoInterfaceServicioNormal::class.java)
+        api.terminarContrato(fechainicio,fechaFinal,folio,
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
                     var entrada: BufferedReader? =  null
@@ -236,7 +235,7 @@ class AgendaFragment : Fragment() {
                 }
 
                 override fun failure(error: RetrofitError?) {
-                    Toast.makeText(context, "error $error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "error238 $error", Toast.LENGTH_SHORT).show()
                 }
 
             }

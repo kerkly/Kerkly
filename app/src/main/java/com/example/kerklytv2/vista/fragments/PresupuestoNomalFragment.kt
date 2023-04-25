@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kerklytv2.MapsActivity
 import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.AdapterPresupuesto
+import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.PresupuestoNormalInterface
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
@@ -42,17 +44,16 @@ class PresupuestoNomalFragment : Fragment() {
     private lateinit var context: Activity
     lateinit var MiAdapter: AdapterPresupuesto
     lateinit var recyclerview: RecyclerView
-    private lateinit var numeroTelefono: String
+    private lateinit var telefonokerkly: String
+    lateinit var nombreKerkly: String
     private var folio = 0
     private lateinit var direccion: String
     private lateinit var nombre: String
-    private lateinit var curp: String
-    private lateinit var telK: String
     private lateinit var img: ImageView
     private lateinit var txt: TextView
 
-    private lateinit var dialog: Dialog
-    private lateinit var progressBar: ProgressBar
+    private  val setProgressDialog = SetProgressDialog()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,12 +77,10 @@ class PresupuestoNomalFragment : Fragment() {
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager = LinearLayoutManager(context)
        // val intent = context.intent
-        numeroTelefono = arguments?.getString("numNR").toString()
-        Toast.makeText(context, "Teléfono: $numeroTelefono", Toast.LENGTH_SHORT).show()
-
-        curp = arguments?.getString("Curp").toString()
-        telK = arguments?.getString("numNR").toString()
-        setProgressDialog()
+        telefonokerkly = arguments?.getString("telefonokerkly").toString()
+        nombreKerkly = arguments?.getString("nombreCompletoKerkly")!!
+        //Toast.makeText(context, "Teléfono: $telefonokerkly", Toast.LENGTH_SHORT).show()
+        setProgressDialog.setProgressDialog(requireContext())
         getJSON()
         return v
     }
@@ -98,7 +97,7 @@ class PresupuestoNomalFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val presupuestoGET = retrofit.create(PresupuestoNormalInterface::class.java)
-        val call = presupuestoGET.getPost(numeroTelefono)
+        val call = presupuestoGET.getPost(telefonokerkly)
         call?.enqueue(object : Callback<List<com.example.kerklytv2.modelo.serial.Presupuesto?>?> {
 
             override fun onResponse(
@@ -111,9 +110,9 @@ class PresupuestoNomalFragment : Fragment() {
 
                if(postList.size == 0) {
                    recyclerview.visibility = View.GONE
-                   dialog.dismiss()
+                   setProgressDialog.dialog!!.dismiss()
                } else {
-                 dialog.dismiss()
+                 setProgressDialog.dialog!!.dismiss()
                    img.visibility = View.GONE
                    txt.visibility = View.GONE
 
@@ -133,10 +132,10 @@ class PresupuestoNomalFragment : Fragment() {
                        val ap = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Paterno
                        val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
 
-                       val numero = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
+                       val numerocliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
 
                        val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
-
+                       val correoCliente = postList[recyclerview.getChildAdapterPosition(it)].Correo
 
                        if (ext == "0") {
                            ext = "S/N"
@@ -146,19 +145,33 @@ class PresupuestoNomalFragment : Fragment() {
                        nombre = "$n $ap $am"
 
                      //  Toast.makeText(context, "Nombre: $n", Toast.LENGTH_SHORT).show()
+                       val i = Intent(requireContext(), MapsActivity::class.java)
+                       i.putExtra("Telefono", telefonokerkly)
+                       i.putExtra("telefonoCliente", numerocliente)
+                       i.putExtra("Normal", true)
+                       i.putExtra("latitud", latitud)
+                       i.putExtra("longitud", longitud)
+                       i.putExtra("nombreCompletoCliente", nombre)
+                       i.putExtra("nombreCompletoKerkly", nombreKerkly)
+                       i.putExtra("problema", problema)
+                       i.putExtra("direccion", direccion)
+                       i.putExtra("correoCliente", correoCliente)
+                       i.putExtra("Folio", folio)
+                       startActivity(i)
 
+                   /*    Log.d("tagg----: ", folio.toString())
                        val i = Intent(context, Presupuesto::class.java)
                        i.putExtra("latitud", latitud)
                        i.putExtra("longitud", longitud)
                        i.putExtra("Folio", folio)
-                       i.putExtra("Nombre", nombre)
+                       i.putExtra("clientenombre", nombre)
                        i.putExtra("Dirección", direccion)
-                       i.putExtra("Problema", problema)
-                       i.putExtra("Número", numero)
+                       i.putExtra("problemacliente", problema)
+                       i.putExtra("numerocliente", numerocliente)
                        i.putExtra("Normal", true)
-                       i.putExtra("Curp", curp)
-                       i.putExtra("numT", telK)
-                       startActivity(i)
+                       i.putExtra("telefonok", telefonokerkly)
+                       i.putExtra("correoCliente", correoCliente)
+                       startActivity(i)*/
                    }
 
                    recyclerview.adapter = MiAdapter
@@ -177,48 +190,4 @@ class PresupuestoNomalFragment : Fragment() {
         })
     }
 
-
-    fun setProgressDialog() {
-        val llPadding = 30
-        val ll = LinearLayout(requireContext())
-        ll.orientation = LinearLayout.HORIZONTAL
-        ll.setPadding(llPadding, llPadding, llPadding, llPadding)
-        ll.gravity = Gravity.CENTER
-        var llParam = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        llParam.gravity = Gravity.CENTER
-        ll.layoutParams = llParam
-        progressBar = ProgressBar(requireContext())
-
-        progressBar!!.isIndeterminate = true
-        progressBar!!.setPadding(0, 0, llPadding, 0)
-        progressBar!!.layoutParams = llParam
-        llParam = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        llParam.gravity = Gravity.CENTER
-        val tvText = TextView(requireContext())
-        tvText.text = "Por favor espere un momento..."
-        tvText.setTextColor(Color.parseColor("#000000"))
-        tvText.textSize = 20f
-        tvText.layoutParams = llParam
-        ll.addView(progressBar)
-        ll.addView(tvText)
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setCancelable(false)
-        builder.setView(ll)
-        dialog = builder.create()
-        dialog.show()
-        val window: Window? = dialog.window
-        if (window != null) {
-            val layoutParams = WindowManager.LayoutParams()
-            layoutParams.copyFrom(dialog.window!!.attributes)
-            layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-            layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-            dialog.window!!.attributes = layoutParams
-        }
-    }
 }

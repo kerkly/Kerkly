@@ -15,17 +15,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Pdf (nombreC: String, direccionC: String) {
+class Pdf (nombreC: String, direccionC: String, folio:Int) {
 
     var nombre = nombreC
     var direccion = direccionC
     lateinit var telefono: String
     var correo = ""
     lateinit var problema: String
-    var folio = 0
+    var folio2 = folio
     var total = 0.0
     private val NOMBRE_DIRECTORIO = "MiPdf1"
-    private val NOMBRE_DOCUMENTO = "prueba1.pdf"
+    private val NOMBRE_DOCUMENTO = "$nombreC $folio.pdf"
     private val ETIQUETA_ERROR = "ERROR"
     var cabecera = ArrayList<String>()
     var lista: MutableList<MutableList<String>>? = null
@@ -177,7 +177,7 @@ class Pdf (nombreC: String, direccionC: String) {
             documento.add(p)
 
 
-            var presupuestp = "Presupuesto No. $folio"
+            var presupuestp = "Presupuesto No. $folio2"
             p = Paragraph(presupuestp)
             p.alignment = Paragraph.ALIGN_RIGHT
 

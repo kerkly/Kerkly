@@ -3,6 +3,7 @@ package com.example.kerklytv2
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -17,18 +18,24 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import com.example.kerklytv2.Notificacion.llamartopico
 import com.example.kerklytv2.controlador.TablaDinamica
 import com.example.kerklytv2.interfaces.*
 import com.example.kerklytv2.modelo.Pdf
 import com.example.kerklytv2.modelo.TablaP
 import com.example.kerklytv2.modelo.serial.CoordenadasKerkly
 import com.example.kerklytv2.modelo.serial.OficioKerkly
+import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lowagie.text.*
@@ -66,20 +73,17 @@ class Presupuesto : AppCompatActivity() {
     private lateinit var total_txt: TextView
     private var total = 0.0
     private lateinit var boton: MaterialButton
-    private var problema = "Mi problema"
-    private var cliente = "José Luis López Durán"
-    private var direccion = "Mi direccion"
-    private var telefono = "7474747474"
-    private var correo = "josem_rl@hotmail.com"
+    private lateinit var problemacliente: String
+    private lateinit var clientenombre: String
+    private lateinit var direccioncliente: String
+    private lateinit var correocliente: String
+    lateinit var telefonoCliente: String
     private var band = false
-    private lateinit var btn_ubicacion: MaterialButton
-    private lateinit var curp: String
-    private var latitud = 0.0
-    private var longitud = 0.0
+
     lateinit var longitudCliente: String
     lateinit var  latitudCliente: String
     private lateinit var b: Bundle
-    private lateinit var telK: String
+    private lateinit var telefonoK: String
 
 
     var databaseReference: DatabaseReference? = null
@@ -87,6 +91,11 @@ class Presupuesto : AppCompatActivity() {
     //private val database: FirebaseDatabase? = null
 
     private lateinit var database: DatabaseReference
+    val llamartopico= llamartopico()
+    private lateinit var firebaseDatabaseUsu: FirebaseDatabase
+    private lateinit var databaseUsu: DatabaseReference
+    private lateinit var token: String
+    private lateinit var nombrekerkly: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +103,22 @@ class Presupuesto : AppCompatActivity() {
         setContentView(R.layout.activity_presupuesto)
 
         database = Firebase.database.reference
+
+        b = intent.extras!!
+        latitudCliente =  b.getString("latitud") as String
+        longitudCliente = b.getString("longitud") as String
+        folio = b.getInt("Folio")
+        problemacliente = b.getString("problemacliente") as String
+        clientenombre = b.getString("clientenombre").toString()
+        direccioncliente = b.getString("Dirección").toString()
+        telefonoK = b.getString("telefonok").toString()
+        telefonoCliente  = b.getString("numerocliente").toString()
+        correocliente = b.getString("correoCliente")!!
+        nombrekerkly = b.getString("nombreCompletoKerkly")!!
+
+        // System.out.println("$folio clase presupuesto $telefono")
+        band = b.getBoolean("Normal")
+
         //val database = Firebase.database
         //val myRef = database.getReference("message")
 
@@ -105,7 +130,7 @@ class Presupuesto : AppCompatActivity() {
         layout_concepto = findViewById(R.id.layout_concepto)
         layout_pago = findViewById(R.id.layout_pago)
         total_txt = findViewById(R.id.total_txt)
-        btn_ubicacion = findViewById(R.id.btn_ubicacion)
+
 
         edot_n = findViewById(R.id.editEdicion)
         layour_n = findViewById(R.id.layoutEdcion)
@@ -127,44 +152,30 @@ class Presupuesto : AppCompatActivity() {
         // Generaremos el documento al hacer click sobre el boton.
         boton.setOnClickListener {
             dbFirebase()
-            val p = Pdf(cliente, direccion)
-            p.telefono = telefono
+            val p = Pdf(clientenombre, direccioncliente,folio)
+            p.telefono = telefonoCliente
             p.cabecera = header
             val lista = tablaDinamica.getData()
             p.lista = lista
-            p.correo = correo
-            p.problema = problema
-            p.folio = folio
+            p.correo = correocliente
+            p.problema = problemacliente
             p.total = total
             p.generarPdf()
             //generarPdf()
-            Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
+
 
             if (band) {
-                mandarNormalPago()
+                Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
+                mandarNormalPago(folio, total)
+
             } else {
                 mandarPago()
             }
 
-            val i = Intent(this, InterfazKerkly::class.java)
-            i.putExtras(b)
-            startActivity(i)
 
         }
 
-        b = intent.extras!!
-        latitudCliente =  b.get("latitud") as String
-        longitudCliente = b.get("longitud") as String
-        folio = b.get("Folio") as Int
-        problema = b.get("Problema") as String
-        cliente = b.getString("Nombre").toString()
-        direccion = b.get("Dirección").toString()
-        telefono = b.get("Número").toString()
-       // System.out.println("$folio clase presupuesto $telefono")
-        band = b.getBoolean("Normal")
-        curp = b.getString("Curp").toString()
-        telK = b.getString("numT").toString()
-        Log.d("telefono kerkly", telK)
+
 
 
         tablaDinamica = TablaDinamica(tabla, applicationContext)
@@ -172,19 +183,6 @@ class Presupuesto : AppCompatActivity() {
         header.add("Descripción")
         header.add("Precio")
         tablaDinamica.addHeader(header)
-
-        btn_ubicacion.setOnClickListener {
-
-            val i = Intent(this, MapsActivity::class.java)
-            i.putExtra("Telefono", telefono)
-            i.putExtra("Normal", band)
-            i.putExtra("latitud", latitudCliente)
-            i.putExtra("longitud", longitudCliente)
-           //System.out.println("clase presupuesto $cliente $latitudCliente $longitudCliente")
-            i.putExtra("Nombre", cliente)
-            i.putExtra("Folio", folio)
-            startActivity(i)
-        }
 
        // getCoordenadas()
 
@@ -195,7 +193,7 @@ class Presupuesto : AppCompatActivity() {
         }
     }
 
-    private fun mandarNormalPago() {
+    private fun mandarNormalPago(folio: Int, total: Double) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
@@ -212,8 +210,12 @@ class Presupuesto : AppCompatActivity() {
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
-                    Toast.makeText(applicationContext, R.toString(), Toast.LENGTH_SHORT).show()
+                    //mandar notificacion
+                    obtenerToken(telefonoCliente,nombrekerkly, this@Presupuesto )
+                    //llamartopico.llamartopico(this@Presupuesto, "","","")
+                    Toast.makeText(applicationContext, R, Toast.LENGTH_SHORT).show()
 
+                   
                 }
 
                 override fun failure(error: RetrofitError?) {
@@ -222,6 +224,27 @@ class Presupuesto : AppCompatActivity() {
 
             }
         )
+    }
+
+    fun obtenerToken(telefoK: String, nombreK: String, context: Context){
+        firebaseDatabaseUsu = FirebaseDatabase.getInstance()
+        databaseUsu = firebaseDatabaseUsu.getReference("UsuariosR").child(telefoK).child("MisDatos")
+        databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val u2 = snapshot.getValue(usuarios::class.java)
+                token = u2!!.token
+                System.out.println("el token del kerkly " + token)
+                llamartopico.llamartopico(context, token, " En un momento se le atendera", "Gracias por su confianza-> $nombreK")
+                val intent = Intent(this@Presupuesto, PantallaInicio::class.java)
+                startActivity(intent)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                System.out.println("Firebase: $error")
+            }
+
+        })
+
     }
 
     private fun mandarPago() {
@@ -238,10 +261,11 @@ class Presupuesto : AppCompatActivity() {
                     try {
                         entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
                         R= entrada.readLine()
+                        Log.d("--------------)", "$folio, $total")
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
-                    Toast.makeText(applicationContext, R.toString(), Toast.LENGTH_SHORT).show()
+
 
                 }
 
@@ -266,7 +290,7 @@ class Presupuesto : AppCompatActivity() {
                 Log.d("lista", l[j])
                 val t = TablaP(l[1], l[2])
                 if (band) {
-                    database.child("Presupuesto Normal $folio").child((i+1).toString()).setValue(t)
+                    database.child("UsuariosR").child(telefonoK).child("Presupuestos Normal").child("Presupuesto Normal $folio").child((i+1).toString()).setValue(t)
                 } else {
                     database.child("Presupuesto $folio").child((i+1).toString()).setValue(t)
                 }
@@ -310,10 +334,13 @@ class Presupuesto : AppCompatActivity() {
             item.add(precio)
             //Log.d("items", "Los items son ${tablaDinamica.getItems()}")
             tablaDinamica.addItems(item)
+
         }
 
         total = tablaDinamica.getTotal()
         total_txt.text = "Total: $$total"
+        edit_concepto.setText("")
+       edit_pago.setText("")
     }
 
     @SuppressLint("SetTextI18n")
@@ -360,7 +387,7 @@ class Presupuesto : AppCompatActivity() {
         total_txt.text = "Total: $$total"
     }
 
-    private fun getCoordenadas() {
+    /*private fun getCoordenadas() {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -399,7 +426,7 @@ class Presupuesto : AppCompatActivity() {
             }
 
         })
-    }
+    }*/
 
 
     /*  fun generarRecibo (v: View) {

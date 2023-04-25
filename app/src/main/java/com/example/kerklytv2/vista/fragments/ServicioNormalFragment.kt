@@ -50,6 +50,7 @@ class ServicioNormalFragment : Fragment() {
     private lateinit var curp: String
     private lateinit var img: ImageView
     private lateinit var txt: TextView
+    lateinit var nombrekerkly:String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +77,7 @@ class ServicioNormalFragment : Fragment() {
         b = requireArguments()
         numeroTelefono = b.getString("numNR").toString()
         curp = arguments?.getString("Curp").toString()
-
+        nombrekerkly = arguments?.getString("nombrekerkly").toString()
         getJson()
 
       /*  img.setOnClickListener {
@@ -135,9 +136,6 @@ class ServicioNormalFragment : Fragment() {
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                        val idContrato = postList[recycler.getChildAdapterPosition(it)].idContrato
-
-                        val fecha = postList[recycler.getChildAdapterPosition(it)].Fecha_Inicio
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
@@ -154,14 +152,13 @@ class ServicioNormalFragment : Fragment() {
                         b.putString("Nombre Cliente NoR", nombre)
                         b.putString("Problema", problema)
                         b.putString("Dirección", direccion)
-                        b.putString("Fecha", fecha)
-                        b.putInt("Contrato", idContrato)
                         b.putString("Fragment", "0")
                         b.putString("Curp", curp)
 
 
                         val f = AgendaFragment()
                         b.putBoolean("Historial", false)
+                        b.putString("folio", folio.toString())
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()

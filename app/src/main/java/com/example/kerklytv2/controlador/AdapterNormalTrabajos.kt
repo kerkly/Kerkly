@@ -20,21 +20,27 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: 
 
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtFolio: TextView = view.findViewById(R.id.txt_folio_urgente)
+        val txtFolio: TextView = view.findViewById(R.id.txt_folio_folio)
 
         init {
             // Define click listener for the ViewHolder's View.
         }
 
-        val txtTelefono: TextView = view.findViewById(R.id.txt_fecha_urgente)
+        val nombre: TextView = view.findViewById(R.id.txt_folio_nombre)
 
         init {
             // Define click listener for the ViewHolder's View.
         }
 
-        val img = view.findViewById<ImageView>(R.id.chat_img)
+        val correo: TextView = view.findViewById(R.id.txt_folio_correo)
 
         init {}
+
+        var txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problema)
+
+        var txt_fecha_urgente: TextView = view.findViewById(R.id.txt_fecha_urgente)
+
+        var chat_img: ImageView = view.findViewById(R.id.chat_img)
 
     }
 
@@ -48,15 +54,18 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.txtFolio.text = datset[position].idContrato.toString()
-        holder.txtTelefono.text = datset[position].Fecha_Inicio
+        holder.txtFolio.text = datset[position].idPresupuesto.toString()
+        holder.nombre.text = datset[position].Nombre
+        holder.correo.text = datset[position].Correo
+        holder.txt_folio_problema.text = datset[position].problema
+        holder.txt_fecha_urgente.text = datset[position].fechaP
 
 
-        holder.img.setOnClickListener {
+        holder.chat_img.setOnClickListener {
             val f = ContactosFragment()
             val b = Bundle()
-            val nombre = "${datset[position].Nombre} ${datset[position].Apellido_Paterno}"
-            val folio = datset[position].idContrato
+            val nombre = "${datset[position].Nombre} ${datset[position].Apellido_Paterno} ${datset[position].Apellido_Materno}"
+            val folio = datset[position].idPresupuesto
 
             b.putString("Nombre", nombre)
             b.putInt("Contrato", folio)

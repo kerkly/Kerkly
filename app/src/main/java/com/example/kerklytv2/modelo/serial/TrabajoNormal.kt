@@ -4,15 +4,6 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class TrabajoNormal {
-
-    @SerializedName("Fecha_Inicio")
-    @Expose
-    var Fecha_Inicio: String? = null
-
-    @SerializedName("idContrato")
-    @Expose
-    var idContrato: Int = 0
-
     @SerializedName("Nombre")
     @Expose
     var Nombre: String? = null
@@ -25,6 +16,10 @@ class TrabajoNormal {
     @Expose
     var Apellido_Materno: String? = null
 
+    @SerializedName("Correo")
+    @Expose
+    var Correo= ""
+
     @SerializedName("telefonoCliente")
     @Expose
     var telefonoCliente: String? = null
@@ -36,6 +31,10 @@ class TrabajoNormal {
     @SerializedName("idPresupuesto")
     @Expose
     var idPresupuesto: Int = 0
+
+    @SerializedName("fechaP")
+    @Expose
+    var fechaP =""
 
     @SerializedName("Ciudad")
     @Expose
@@ -68,4 +67,5 @@ class TrabajoNormal {
     @SerializedName("Referencia")
     @Expose
     var Referencia: String? = null
+
 }
