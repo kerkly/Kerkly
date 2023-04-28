@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface TrabajoUrgenteInterface {
 
-    @GET("obtenerTrabajosPendientes.php")
+    @GET("obtenerTrabajosPendientesUrgente.php")
     open fun getPost(@Query("Telefono") Telefono: String?):
             Call<List<TrabajoUrgencia?>?>?
 }

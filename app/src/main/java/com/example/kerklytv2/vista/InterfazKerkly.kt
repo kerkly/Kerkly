@@ -109,7 +109,7 @@ class InterfazKerkly : AppCompatActivity() {
         setContentView(R.layout.activity_interfaz_kerkly)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        setProgressDialog.setProgressDialog(this)
+        //setProgressDialog.setProgressDialog(this)
 
         //Autenticacion
         providers = Arrays.asList(
@@ -121,7 +121,7 @@ class InterfazKerkly : AppCompatActivity() {
         kerkly = Kerkly()
         b = intent.extras!!
         telefonoKerkly = b.getString("numT").toString()
-        telefonoKerkly = b.getString("numT").toString()
+
 
         sesion(telefonoKerkly)
         getKerkly()
@@ -260,7 +260,7 @@ class InterfazKerkly : AppCompatActivity() {
     private fun setFragmenTrabajos() {
         val args = Bundle()
         val num = b.getString("numT")
-        args.putString("numNR", num)
+        args.putString("numNR", telefonoKerkly)
         args.putString("Curp", curp)
         args.putString("nombrekerkly", nombre_completo)
         val f =
@@ -394,7 +394,7 @@ class InterfazKerkly : AppCompatActivity() {
                     }
                 }
                 txt_oficios.text = acumulador
-                setProgressDialog.dialog!!.dismiss()
+               // setProgressDialog.dialog!!.dismiss()
 
             }
 

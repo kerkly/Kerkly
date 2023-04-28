@@ -5,29 +5,25 @@ import com.google.gson.annotations.SerializedName
 
 class TrabajoUrgencia {
 
-    @SerializedName("Fecha_Inicio_NoRegistrado")
+    @SerializedName("Nombre")
     @Expose
-    var Fecha_Inicio_NoRegistrado: String? = null
+    var Nombre: String? = null
 
-    @SerializedName("idContraNoRegistrado")
+    @SerializedName("Apellido_Paterno")
     @Expose
-    var idContraNoRegistrado: Int = 0
+    var Apellido_Paterno: String? = null
 
-    @SerializedName("nombre_noR")
+    @SerializedName("Apellido_Materno")
     @Expose
-    var nombre_noR: String? = null
+    var Apellido_Materno: String? = null
 
-    @SerializedName("apellidoP_noR")
+    @SerializedName("telefonoCliente")
     @Expose
-    var apellidoP_noR: String? = null
+    var telefonoCliente: String? = null
 
-    @SerializedName("apellidoM_noR")
+    @SerializedName("Correo")
     @Expose
-    var apellidoM_noR: String? = null
-
-    @SerializedName("telefono_NoR")
-    @Expose
-    var telefono_NoR: String? = null
+    var Correo: String? = null
 
     @SerializedName("problema")
     @Expose
@@ -35,7 +31,11 @@ class TrabajoUrgencia {
 
     @SerializedName("idPresupuestoNoRegistrado")
     @Expose
-    var idPresupuestoNoRegistrado: Int = 0
+    var idPresupuestoNoRegistrado: String? = null
+
+    @SerializedName("fechaPresupuesto")
+    @Expose
+    var fechaPresupuesto: String? = null
 
     @SerializedName("Ciudad")
     @Expose
@@ -52,6 +52,7 @@ class TrabajoUrgencia {
     @SerializedName("Calle")
     @Expose
     var Calle: String? = null
+
 
     @SerializedName("Colonia")
     @Expose

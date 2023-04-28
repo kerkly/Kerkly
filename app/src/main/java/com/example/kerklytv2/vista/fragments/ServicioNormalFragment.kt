@@ -136,6 +136,7 @@ class ServicioNormalFragment : Fragment() {
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
+                        val idpresupuesto = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
@@ -154,9 +155,10 @@ class ServicioNormalFragment : Fragment() {
                         b.putString("Dirección", direccion)
                         b.putString("Fragment", "0")
                         b.putString("Curp", curp)
-
+                        b.putString("idPresupuestoNoRegistrado", idpresupuesto.toString())
 
                         val f = AgendaFragment()
+
                         b.putBoolean("Historial", false)
                         b.putString("folio", folio.toString())
                         f.arguments = b

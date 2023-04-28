@@ -64,15 +64,16 @@ class AgendaFragment : Fragment() {
     private lateinit var fechaFinal: String
     private lateinit var fechaS: String
     private lateinit var horaS: String
-    private var contrato = 0
+    private var idPresupuestoNoRegistrado = ""
     private lateinit var layoutHora: TextInputLayout
     private lateinit var layoutFecha: TextInputLayout
     private lateinit var btn_ubicacion: MaterialButton
     private var latitud = 0.0
     private var longitud = 0.0
     private lateinit var curp: String
-    private var bandHistory = false
+    //private var bandHistory = false
     private lateinit var folio: String
+    private var Ban: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,16 +107,14 @@ class AgendaFragment : Fragment() {
         edit_cliente.setText(arguments?.getString("Nombre Cliente NoR").toString())
         edit_direccion.setText(arguments?.getString("Dirección").toString())
         edit_problema.setText(arguments?.getString("Problema").toString())
-        contrato = arguments?.getInt("Contrato")!!
-        bandHistory = arguments?.getBoolean("Historial")!!
+        idPresupuestoNoRegistrado = arguments?.getString("idPresupuestoNoRegistrado")!!
+       // bandHistory = arguments?.getBoolean("Historial")!!
         curp = arguments?.getString("Curp").toString()
         var fecha = arguments?.getString("Fecha")
         val hora = fecha?.substring(11,16)
         fecha = fecha?.substring(0,10)
          folio = arguments?.getString("folio")!!
-
-
-
+        Ban = arguments?.getBoolean("urgente")!!
 
         edit_fechaFinal.setOnClickListener {
             val fecha = DatePrickFragment {year, month, day -> mostrar(year, month, day)}
@@ -131,7 +130,14 @@ class AgendaFragment : Fragment() {
 
             if (edit_fechaFinal.text!!.isNotEmpty() && edit_horaFinal.text!!.isNotEmpty()) {
                 fechaFinal = "$fechaS $horaS"
-                terminar("2023-04-25 05:46:00",fechaFinal, folio)
+                if (Ban == true){
+                    Toast.makeText(context, "normal: $fechaFinal, $folio", Toast.LENGTH_SHORT).show()
+                    terminarServicioUrgente(fechaFinal, folio)
+                }else{
+                   Toast.makeText(context, "normal: $fechaFinal, $folio", Toast.LENGTH_SHORT).show()
+                    terminarServicioNormal(fechaFinal, folio)
+                }
+               
                 layoutFecha.error = null
                 layoutHora.error = null
             } else {
@@ -144,11 +150,11 @@ class AgendaFragment : Fragment() {
 
         }
 
-        if (bandHistory) {
-            btn_ubicacion.visibility = View.GONE
-        } else {
-            getCoordenadas()
-        }
+//        if (bandHistory) {
+//            btn_ubicacion.visibility = View.GONE
+//        } else {
+//            getCoordenadas()
+//        }
 
         edit_horInicio.setText(hora)
         edit_fechaInicio.setText(fecha)
@@ -169,6 +175,43 @@ class AgendaFragment : Fragment() {
         }
 
         return v
+    }
+
+    private fun terminarServicioUrgente(fechaFinal: String, folio: String) {
+        val ROOT_URL = Url().URL
+        val adapter = RestAdapter.Builder()
+            .setEndpoint(ROOT_URL)
+            .build()
+
+        val api: TerminarContratoInterface = adapter.create(TerminarContratoInterface::class.java)
+        api.terminarContrato(folio, fechaFinal,
+            object : Callback<Response?> {
+                override fun success(t: Response?, response: Response?) {
+                    var entrada: BufferedReader? =  null
+                    var Respuesta = ""
+                    try {
+                        entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
+                        Respuesta = entrada.readLine()
+                    }catch (e: Exception){
+                        e.printStackTrace()
+                    }
+                    val resp1 = "1"
+                    if (resp1.equals(Respuesta)){
+                        Toast.makeText(requireContext(), "Servicio Finalizado", Toast.LENGTH_SHORT).show()
+                        edit_horaFinal.isEnabled = false
+                        edit_fechaFinal.isEnabled = false
+                        boton.isEnabled = false
+                    }else{
+                        Toast.makeText(requireContext(), Respuesta, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun failure(error: RetrofitError?) {
+                    Toast.makeText(context, "error238 $error", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        )
     }
 
 
@@ -205,14 +248,14 @@ class AgendaFragment : Fragment() {
 
     }
 
-    private fun terminar(fechainicio:String, fechafinal: String, folio: String) {
+    private fun terminarServicioNormal(fechafinal: String, folio: String) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
             .build()
 
         val api: TerminarContratoInterfaceServicioNormal = adapter.create(TerminarContratoInterfaceServicioNormal::class.java)
-        api.terminarContrato(fechainicio,fechaFinal,folio,
+        api.terminarContrato(fechafinal,folio,
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
                     var entrada: BufferedReader? =  null

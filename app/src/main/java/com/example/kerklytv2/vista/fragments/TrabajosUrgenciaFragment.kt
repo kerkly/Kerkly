@@ -56,6 +56,9 @@ class TrabajosUrgenciaFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(context)
         numeroTelefono = arguments?.getString("numNR").toString()
         curp = arguments?.getString("Curp").toString()
+
+
+
         img = v.findViewById(R.id.img_servicio_urgente)
         txt = v.findViewById(R.id.txt_servicio_urgente)
         getJson()
@@ -103,19 +106,19 @@ class TrabajosUrgenciaFragment : Fragment() {
                         val referencia = postList[recycler.getChildAdapterPosition(it)].Referencia
                         var ext = postList[recycler.getChildAdapterPosition(it)].No_Exterior
 
-                        val n = postList[recycler.getChildAdapterPosition(it)].nombre_noR
-                        val ap = postList[recycler.getChildAdapterPosition(it)].apellidoP_noR
-                        val am = postList[recycler.getChildAdapterPosition(it)].apellidoM_noR
+                        val n = postList[recycler.getChildAdapterPosition(it)].Nombre
+                        val ap = postList[recycler.getChildAdapterPosition(it)].Apellido_Paterno
+                        val am = postList[recycler.getChildAdapterPosition(it)].Apellido_Materno
 
-                        val numero = postList[recycler.getChildAdapterPosition(it)].telefono_NoR
+                        val numero = postList[recycler.getChildAdapterPosition(it)].telefonoCliente
 
                         val problema = postList[recycler.getChildAdapterPosition(it)].problema
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                        val idContrato = postList[recycler.getChildAdapterPosition(it)].idContraNoRegistrado
+                        val idPresupuestoNoRegistrado = postList[recycler.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
 
-                        val fecha = postList[recycler.getChildAdapterPosition(it)].Fecha_Inicio_NoRegistrado
+                        val fecha = postList[recycler.getChildAdapterPosition(it)].fechaPresupuesto
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
@@ -125,20 +128,19 @@ class TrabajosUrgenciaFragment : Fragment() {
                         val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
                         val nombre = "$n $ap $am"
 
-                        Toast.makeText(context, "Teléfono: $colonia",
-                            Toast.LENGTH_SHORT).show()
 
                         val b = Bundle()
                         b.putString("Nombre Cliente NoR", nombre)
                         b.putString("Problema", problema)
                         b.putString("Dirección", direccion)
                         b.putString("Fecha", fecha)
-                        b.putInt("Contrato", idContrato)
+                        b.putString("idPresupuestoNoRegistrado", idPresupuestoNoRegistrado)
                         b.putString("Fragment", "0")
+                        b.putString("folio", folio)
                         b.putString("Curp", curp)
 
                         val f = AgendaFragment()
-                        b.putBoolean("Historial", false)
+                        b.putBoolean("urgente", true)
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()

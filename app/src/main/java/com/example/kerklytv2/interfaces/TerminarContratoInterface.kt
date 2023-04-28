@@ -10,7 +10,7 @@ interface TerminarContratoInterface {
     @FormUrlEncoded
     @POST("/TerminarContratoNR.php")
     fun terminarContrato(
-        @Field("idContraNoRegistrado") idContraNoRegistrado: Int,
+        @Field("idPresupuestoNoRegistrado") idPresupuestoNoRegistrado: String,
         @Field("Fecha_Final_NoRegistrado") Fecha_Final_NoRegistrado: String,
         callback: Callback<Response?>
     )

@@ -15,19 +15,26 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
 
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtFolio: TextView = view.findViewById(R.id.txt_folio_urgente)
+        val txtFolio: TextView = view.findViewById(R.id.txt_folio_folio)
 
         init {
             // Define click listener for the ViewHolder's View.
         }
 
-        val txtTelefono: TextView = view.findViewById(R.id.txt_fecha_urgente)
+        val txtTelefono: TextView = view.findViewById(R.id.txt_folio_problema)
 
         init {
             // Define click listener for the ViewHolder's View.
         }
 
 
+        val txtnombre: TextView = view.findViewById(R.id.txt_folio_nombre)
+
+        val txt_folio_correo: TextView = view.findViewById(R.id.txt_folio_correo)
+
+        val txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problema)
+
+        val txt_fecha_urgente: TextView = view.findViewById(R.id.txt_fecha_urgente)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,8 +47,13 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.txtFolio.text = datset[position].idContraNoRegistrado.toString()
-        holder.txtTelefono.text = datset[position].Fecha_Inicio_NoRegistrado
+        holder.txtFolio.text = datset[position].idPresupuestoNoRegistrado.toString()
+
+        val nombreCompleto = datset[position].Nombre +" "+ datset[position].Apellido_Paterno +" "+ datset[position].Apellido_Materno
+        holder.txtnombre.text = nombreCompleto
+        holder.txt_folio_correo.text = datset[position].Correo
+        holder.txt_folio_problema.text = datset[position].problema
+        holder.txt_fecha_urgente.text = datset[position].fechaPresupuesto
     }
 
     override fun getItemCount(): Int {
