@@ -8,7 +8,7 @@ import retrofit2.http.Query
 interface ObtenerKerklyaOficiosInterface {
 
     @GET("Obtener_oficios_kerkly.php")
-    open fun getOficios_kerkly(@Query("curp") curp: String?):
+    open fun getOficios_kerkly(@Query("Curp") curp: String?):
             Call<List<OficioKerkly?>?>?
 
 }
