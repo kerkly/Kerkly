@@ -83,7 +83,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private lateinit var databaseUsu: DatabaseReference
     private val setProgressDialog = SetProgressDialog()
     private val llamartopico = llamartopico()
-    private  var bandera: Boolean = false
+    private  var TipoServicio: String = ""
 
     private var folio = 0
     private lateinit var correoCliente: String
@@ -108,7 +108,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         direccion = b.getString("direccion").toString()
         correoCliente = b.getString("correoCliente").toString()
         folio = b.getInt("Folio")
-        bandera = b.getBoolean("Normal")
+         TipoServicio  = b.getString("tipoServicio").toString()
 
         context = this
         gpsTracker = GPSTracker(applicationContext)
@@ -473,7 +473,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
             override fun onClick(p0: android.view.View?) {
                 //Toast.makeText(applicationContext, "Aceptado $latitud, $longitud", Toast.LENGTH_SHORT).show()
-                if (bandera == true){
+                if (TipoServicio == "normal"){
                     val i = Intent(context, Presupuesto::class.java)
                     i.putExtra("latitud", latitud2)
                     i.putExtra("longitud", longitud2)
@@ -483,15 +483,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("problemacliente", problema)
                     i.putExtra("nombreCompletoKerkly", nombrekerkly)
                     i.putExtra("numerocliente", telefonoCliente)
-                    i.putExtra("Normal", true)
+                    i.putExtra("tipoServicio", "urgente")
                     i.putExtra("telefonok", telefonoKerkly)
                     i.putExtra("correoCliente", correoCliente)
                     startActivity(i)
                     dialog.dismiss()
-                }else{
-                AceptarServicio()
-                dialog.dismiss()
                 }
+                if(TipoServicio == "urgente"){
+                    AceptarServicio()
+                    dialog.dismiss()
+                }
+
+
             }
 
 
@@ -516,12 +519,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         firebaseDatabaseLista = FirebaseDatabase.getInstance()
         databaseReferenceCliente = firebaseDatabaseLista.getReference("UsuariosR").child(numeroCliente)
             .child("Lista de Usuarios")
-        databaseReferenceCliente.push().child("telefono").setValue(numeroKerkly)
+        databaseReferenceCliente.child("telefono").setValue(numeroKerkly)
 
         databaseReferencekerkly = firebaseDatabaseLista.getReference("UsuariosR").child(numeroKerkly)
             .child("Lista de Usuarios")
-        databaseReferencekerkly.push().child("telefono").setValue(numeroCliente)
-
+        databaseReferencekerkly.child("telefono").setValue(numeroCliente)
 
     }
 

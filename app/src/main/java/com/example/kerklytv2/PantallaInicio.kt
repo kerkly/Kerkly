@@ -25,10 +25,7 @@ class PantallaInicio : AppCompatActivity() {
 
         ivLogo = findViewById(R.id.img_logo_inicio)
         //Instanciamos un objeto
-        //Instanciamos un objeto
         animation = AnimationUtils.loadAnimation(this, R.anim.animation)
-
-        //Establecemos la animacion al image view
 
         //Establecemos la animacion al image view
         ivLogo.startAnimation(animation)

@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
-import com.example.kerklytv2.modelo.serial.PresupuestoDatosClienteRegistrado
+import com.example.kerklytv2.modelo.serial.PresupuestourgentesDatosCliente
 
-class ClaseAdapterR(val datset: ArrayList<PresupuestoDatosClienteRegistrado>) :
+class ClaseAdapterR(val datset: ArrayList<PresupuestourgentesDatosCliente>) :
     RecyclerView.Adapter<ClaseAdapterR.ViewHolder>(), View.OnClickListener {
 
     private lateinit var listener: View.OnClickListener
@@ -37,12 +37,18 @@ class ClaseAdapterR(val datset: ArrayList<PresupuestoDatosClienteRegistrado>) :
         init {
             // Define click listener for the ViewHolder's View.
         }
+        val idOficio: TextView = view.findViewById(R.id.idofcio)
+
+        init {
+            // Define click listener for the ViewHolder's View.
+        }
+
 
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ClaseAdapterR.ViewHolder, position: Int) {
-        viewHolder.txtFolio.text = datset[position].idPresupuestoNoRegistrado.toString()
+        viewHolder.txtFolio.text = datset[position].idPresupuesto.toString()
         if (datset[position].telefonoCliente == null) {
             viewHolder.txtTelefono.text = datset[position].telefonoCliente
         } else {
@@ -53,6 +59,7 @@ class ClaseAdapterR(val datset: ArrayList<PresupuestoDatosClienteRegistrado>) :
 
         viewHolder.txtProblema.text = datset[position].problema.toString()
         viewHolder.txtFecha.text = datset[position].fechaPresupuesto.toString()
+        viewHolder.idOficio.text = "Cliente Registrado "+datset[position].Nombre +" " +datset[position].Apellido_Paterno+ " "+ datset[position].Apellido_Materno +" Necesita un "+ datset[position].nombreOficios
     }
 
     // Create new views (invoked by the layout manager)

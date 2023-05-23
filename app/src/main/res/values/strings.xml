@@ -119,4 +119,7 @@
     <string name="activitySeguimiento_btn1">Iniciar Chat con el cliente</string>
     <string name="default_notification_channel_id">Mi_ID_Chanel</string>
 
+    <string name="servicioClienteNR">Servicios de clientes No Registrados</string>
+
+
 </resources>

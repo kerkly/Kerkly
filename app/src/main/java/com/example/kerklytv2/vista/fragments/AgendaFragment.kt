@@ -64,7 +64,7 @@ class AgendaFragment : Fragment() {
     private lateinit var fechaFinal: String
     private lateinit var fechaS: String
     private lateinit var horaS: String
-    private var idPresupuestoNoRegistrado = ""
+    private var idPresupuesto = ""
     private lateinit var layoutHora: TextInputLayout
     private lateinit var layoutFecha: TextInputLayout
     private lateinit var btn_ubicacion: MaterialButton
@@ -107,7 +107,7 @@ class AgendaFragment : Fragment() {
         edit_cliente.setText(arguments?.getString("Nombre Cliente NoR").toString())
         edit_direccion.setText(arguments?.getString("Dirección").toString())
         edit_problema.setText(arguments?.getString("Problema").toString())
-        idPresupuestoNoRegistrado = arguments?.getString("idPresupuestoNoRegistrado")!!
+        idPresupuesto = arguments?.getString("folio")!!
        // bandHistory = arguments?.getBoolean("Historial")!!
         curp = arguments?.getString("Curp").toString()
         var fecha = arguments?.getString("Fecha")

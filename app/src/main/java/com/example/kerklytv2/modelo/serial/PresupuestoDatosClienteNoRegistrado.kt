@@ -3,64 +3,54 @@ package com.example.kerklytv2.modelo.serial
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class TrabajoUrgencia {
-    @SerializedName("idPresupuesto")
+class PresupuestoDatosClienteNoRegistrado {
+    @SerializedName("idPresupuestoNoRegistrado")
     @Expose
-    var idPresupuesto: String? = null
+    var idPresupuestoNoRegistrado =0
 
     @SerializedName("problema")
     @Expose
     var problema: String? = null
 
-
-    @SerializedName("fechaP")
+    @SerializedName("fechaPresupuesto")
     @Expose
-    var fechaP: String? = null
+    val fechaPresupuesto: String? = null
 
-    @SerializedName("Nombre")
+    @SerializedName("telefono_NoR")
     @Expose
-    var Nombre: String? = null
+    var telefono_NoR: String? = null
 
-    @SerializedName("Apellido_Paterno")
+    @SerializedName("nombre_noR")
     @Expose
-    var Apellido_Paterno: String? = null
+    var nombre_noR = ""
 
-    @SerializedName("Apellido_Materno")
+    @SerializedName("apellidoP_noR")
     @Expose
-    var Apellido_Materno: String? = null
+    var apellidoP_noR = ""
 
-    @SerializedName("telefonoCliente")
+    @SerializedName("apellidoM_noR")
     @Expose
-    var telefonoCliente: String? = null
-
-    @SerializedName("Correo")
-    @Expose
-    var Correo: String? = null
+    var apellidoM_noR = ""
 
     @SerializedName("latitud")
     @Expose
-    var latitud: String? = null
+    var latitud: String?=null
 
     @SerializedName("longitud")
     @Expose
-    var longitud: String? = null
-
-    @SerializedName("Ciudad")
-    @Expose
-    var Ciudad: String? = null
-
-    @SerializedName("Estado")
-    @Expose
-    var Estado: String? = null
+    var longitud: String?=null
 
     @SerializedName("Pais")
     @Expose
     var Pais: String? = null
 
+    @SerializedName("Ciudad")
+    @Expose
+    var Ciudad: String? = null
+
     @SerializedName("Calle")
     @Expose
     var Calle: String? = null
-
 
     @SerializedName("Colonia")
     @Expose
@@ -80,5 +70,6 @@ class TrabajoUrgencia {
 
     @SerializedName("nombreO")
     @Expose
-    var nombreOficio: String? = null
+    var nombreO: String? = null
+
 }

@@ -3,7 +3,7 @@ package com.example.kerklytv2.modelo.serial
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class PresupuestoDatosClienteRegistrado {
+class PresupuestourgentesDatosCliente {
     @SerializedName("latitud")
     @Expose
     var latitud: String?=null
@@ -36,13 +36,13 @@ class PresupuestoDatosClienteRegistrado {
     @Expose
     var Referencia: String? = null
 
-    @SerializedName("fechaPresupuesto")
+    @SerializedName("fechaP")
     @Expose
     val fechaPresupuesto: String? = null
 
-    @SerializedName("idPresupuestoNoRegistrado")
+    @SerializedName("idPresupuesto")
     @Expose
-    var idPresupuestoNoRegistrado =0
+    var idPresupuesto =0
 
     @SerializedName("Correo")
     @Expose
@@ -63,4 +63,9 @@ class PresupuestoDatosClienteRegistrado {
     @SerializedName("telefonoCliente")
     @Expose
     var telefonoCliente: String? = null
+
+    @SerializedName("nombreO")
+    @Expose
+    var nombreOficios: String? = null
+
 }

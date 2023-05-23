@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.OficioKerkly
@@ -35,6 +36,7 @@ class PresupuestosPreviewFragment : Fragment() {
     lateinit var photoUrl: String
     lateinit var name: String
     lateinit var correoKerkly: String
+    private lateinit var btonClienteNR: MaterialButton
 
 
 
@@ -55,6 +57,7 @@ class PresupuestosPreviewFragment : Fragment() {
 
         boton_normal = v.findViewById(R.id.boton_normalPresupuesto)
         boton_urg = v.findViewById(R.id.boton_urgenciaPresupuesto)
+        btonClienteNR = v.findViewById(R.id.boton_serviciosClientesNR)
 
         boton_urg.setOnClickListener {
             setPresupuestoUrgente()
@@ -69,6 +72,10 @@ class PresupuestosPreviewFragment : Fragment() {
         photoUrl = arguments?.getString("urlFotoKerkly").toString()
        // nombreKerkly = arguments?.getString("nombreKerkly").toString()
         nombre_completo = arguments?.getString("nombreCompletoKerkly").toString()
+
+        btonClienteNR.setOnClickListener {
+            setServiciosClienteNR()
+        }
         return v
     }
 
@@ -93,6 +100,15 @@ class PresupuestosPreviewFragment : Fragment() {
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
+        }
+    }
+
+    private fun setServiciosClienteNR(){
+        val b = Bundle()
+        val fragment = BlankFragmentServiciosClientesNR()
+        fragment.arguments = b
+        var frag =  requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.nav_host_fragment_content_interfaz_kerkly, fragment).commit()
         }
     }
 

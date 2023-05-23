@@ -9,25 +9,20 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TableLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.example.kerklytv2.Notificacion.llamartopico
 import com.example.kerklytv2.controlador.TablaDinamica
 import com.example.kerklytv2.interfaces.*
 import com.example.kerklytv2.modelo.Pdf
 import com.example.kerklytv2.modelo.TablaP
-import com.example.kerklytv2.modelo.serial.CoordenadasKerkly
-import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -40,17 +35,11 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.lowagie.text.*
 import com.lowagie.text.pdf.*
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -78,7 +67,7 @@ class Presupuesto : AppCompatActivity() {
     private lateinit var direccioncliente: String
     private lateinit var correocliente: String
     lateinit var telefonoCliente: String
-    private var band = false
+    private var TipoServicio = ""
 
     lateinit var longitudCliente: String
     lateinit var  latitudCliente: String
@@ -117,7 +106,7 @@ class Presupuesto : AppCompatActivity() {
         nombrekerkly = b.getString("nombreCompletoKerkly")!!
 
         // System.out.println("$folio clase presupuesto $telefono")
-        band = b.getBoolean("Normal")
+        TipoServicio = b.getString("tipoServicio").toString()
 
         //val database = Firebase.database
         //val myRef = database.getReference("message")
@@ -164,12 +153,15 @@ class Presupuesto : AppCompatActivity() {
             //generarPdf()
 
 
-            if (band) {
+            if (TipoServicio == "normal") {
                 Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
-                mandarNormalPago(folio, total)
+                mandarNormalElPagoTotal(folio, total)
 
             } else {
-                mandarPago()
+                if (TipoServicio == "urgente"){
+                    mandarPagoTotal()
+                }
+
             }
 
 
@@ -193,7 +185,7 @@ class Presupuesto : AppCompatActivity() {
         }
     }
 
-    private fun mandarNormalPago(folio: Int, total: Double) {
+    private fun mandarNormalElPagoTotal(folio: Int, total: Double) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
@@ -247,7 +239,7 @@ class Presupuesto : AppCompatActivity() {
 
     }
 
-    private fun mandarPago() {
+    private fun mandarPagoTotal() {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
@@ -289,16 +281,17 @@ class Presupuesto : AppCompatActivity() {
             for (j in 0 until l.size) {
                 Log.d("lista", l[j])
                 val t = TablaP(l[1], l[2])
-                if (band) {
+                if (TipoServicio == "normal") {
                     database.child("UsuariosR").child(telefonoK).child("Presupuestos Normal").child("Presupuesto Normal $folio").child((i+1).toString()).setValue(t)
-                } else {
-                    database.child("Presupuesto $folio").child((i+1).toString()).setValue(t)
+                }
+                if (TipoServicio == "urgente"){
+                    database.child("UsuariosR").child(telefonoK).child("Presupuestos Urgente").child("Presupuesto Urgente $folio").child((i+1).toString()).setValue(t)
                 }
 
 
             }
         }
-        Log.d("Bieeen","todo bien")
+
         // mandarPago()
     }
 

@@ -14,38 +14,6 @@
         android:gravity="center"
         android:layout_margin="10dp"/>
 
-    <View
-        android:id="@+id/image_12"
-        android:layout_width="133dp"
-        android:layout_height="140.2dp"
-        android:layout_marginLeft="108dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/image_12"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/flitrar_sol"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="25sp"
-        android:id="@+id/flitrar_sol"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:hint="Seleccionar Oficio"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-        <AutoCompleteTextView
-            android:id="@+id/filtro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_presupuesto"
         android:layout_width="match_parent"

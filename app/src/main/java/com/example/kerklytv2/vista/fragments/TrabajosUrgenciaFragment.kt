@@ -99,7 +99,7 @@ class TrabajosUrgenciaFragment : Fragment() {
                     MiAdapter = AdapterUrgencia(postList)
 
                     MiAdapter.setOnClickListener {
-                        val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
+                        val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
                         val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
                         val calle = postList[recycler.getChildAdapterPosition(it)].Calle
                         val cp = postList[recycler.getChildAdapterPosition(it)].Codigo_Postal
@@ -116,9 +116,9 @@ class TrabajosUrgenciaFragment : Fragment() {
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                        val idPresupuestoNoRegistrado = postList[recycler.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
 
-                        val fecha = postList[recycler.getChildAdapterPosition(it)].fechaPresupuesto
+
+                        val fecha = postList[recycler.getChildAdapterPosition(it)].fechaP
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
@@ -134,11 +134,9 @@ class TrabajosUrgenciaFragment : Fragment() {
                         b.putString("Problema", problema)
                         b.putString("Dirección", direccion)
                         b.putString("Fecha", fecha)
-                        b.putString("idPresupuestoNoRegistrado", idPresupuestoNoRegistrado)
                         b.putString("Fragment", "0")
                         b.putString("folio", folio)
                         b.putString("Curp", curp)
-
                         val f = AgendaFragment()
                         b.putBoolean("urgente", true)
                         f.arguments = b

@@ -29,7 +29,7 @@ class MyServicioMen: Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags1: Int, startId: Int): Int {
-        Log.d(TAG, "Servicio iniciado...")
+       /* Log.d(TAG, "Servicio iniciado...")
 
         val localIntent = Intent(Constants.ACTION_RUN_SERVICE)
         // Emitir el intent a la actividad
@@ -66,7 +66,7 @@ class MyServicioMen: Service() {
             //stopForeground(true)
         } catch (e: InterruptedException) {
             e.printStackTrace()
-        }
+        }*/
 
         return START_NOT_STICKY
     }

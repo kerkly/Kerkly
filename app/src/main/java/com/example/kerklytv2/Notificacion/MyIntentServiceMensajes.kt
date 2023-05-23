@@ -33,7 +33,7 @@ class MyIntentServiceMensajes : IntentService("MyIntentServiceMensajes") {
     }
 
     private fun handleActionRun() {
-        val intent = Intent(applicationContext, PantallaInicio::class.java).apply {
+     /*   val intent = Intent(applicationContext, PantallaInicio::class.java).apply {
             //usamos el siguiente codigo para que no se creen varias aplicaciones
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             // Quitar de primer plano
@@ -63,7 +63,7 @@ class MyIntentServiceMensajes : IntentService("MyIntentServiceMensajes") {
            //stopForeground(true)
         } catch (e: InterruptedException) {
             e.printStackTrace()
-        }
+        }*/
     }
 
    /* override fun onDestroy() {

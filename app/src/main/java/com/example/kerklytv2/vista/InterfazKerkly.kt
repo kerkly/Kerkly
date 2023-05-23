@@ -10,13 +10,18 @@ import android.content.Context
 import android.content.Intent
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.TextUtils.join
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -33,6 +38,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.request.RequestOptions
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
@@ -51,8 +59,11 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.squareup.picasso.Picasso
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONException
@@ -100,17 +111,24 @@ class InterfazKerkly : AppCompatActivity() {
     lateinit var correoKerkly: String
     private lateinit var token: String
     val setProgressDialog = SetProgressDialog()
-
-
-
+    private lateinit var ImageViewPerfil : ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interfaz_kerkly)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        //setProgressDialog.setProgressDialog(this)
+        setProgressDialog.setProgressDialog(this)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
 
+        val view = navView.getHeaderView(0)
+        txt_correo = view.findViewById(R.id.correo_header)
+        txt_nombre = view.findViewById(R.id.nombre_header)
+        txt_oficios = view.findViewById(R.id.oficios_header)
+
+        ImageViewPerfil = view.findViewById(R.id.imageViewPerfil)
         //Autenticacion
         providers = Arrays.asList(
             // EmailBuilder().build(),
@@ -124,18 +142,6 @@ class InterfazKerkly : AppCompatActivity() {
 
 
         sesion(telefonoKerkly)
-        getKerkly()
-
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
-
-        val view = navView.getHeaderView(0)
-        txt_correo = view.findViewById(R.id.correo_header)
-        txt_nombre = view.findViewById(R.id.nombre_header)
-        txt_oficios = view.findViewById(R.id.oficios_header)
-
-
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -159,39 +165,29 @@ class InterfazKerkly : AppCompatActivity() {
                 R.id.cerrar_sesion_nav -> cerrarSesion() // cerrar sesion
             }
 
-            drawerLayout.closeDrawer(GravityCompat.START)
+           drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
 
 
 
+        /*val first = arrayOf("A", "B")
+        val second = arrayOf("C", "D", "E")
+
+        val result = join(first, second)
+
+        println(result.contentToString())*/
+
 
 
     }
-    companion object{
-        const val chanel_id = "chanelID"
-         var mensaje: String = "mensaje ejemplo"
-        var titulo: String = "soy luis"
-        const val ID_NOTIFICACION = 1
-    }
 
-    fun createChanel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channel = NotificationChannel(
-                chanel_id,
-                "my channel",
-                NotificationManager.IMPORTANCE_DEFAULT
 
-            ).apply {
-                description = "MisNotificaciones"
 
-            }
 
-            val notificationManager : NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
 
-        }
-
+    fun <T> join(first: Array<T>, second: Array<T>): Array<T> {
+        return first.plus(second)
     }
 
     private fun cerrarSesion() {
@@ -263,8 +259,7 @@ class InterfazKerkly : AppCompatActivity() {
         args.putString("numNR", telefonoKerkly)
         args.putString("Curp", curp)
         args.putString("nombrekerkly", nombre_completo)
-        val f =
-            TrabajosPendientesFragment()
+        val f = TrabajosPendientesFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
@@ -275,7 +270,6 @@ class InterfazKerkly : AppCompatActivity() {
         val f = ContactosFragment()
         f.arguments = b2
         b2!!.putString("telefonoKerkly", telefonoKerkly)
-        b2!!.putString("urlFotoKerkly", photoUrl)
         b2!!.putString("nombreCompletoKerkly", nombre_completo)
         b2!!.putString("correoKerkly", correoKerkly)
 
@@ -394,7 +388,7 @@ class InterfazKerkly : AppCompatActivity() {
                     }
                 }
                 txt_oficios.text = acumulador
-               // setProgressDialog.dialog!!.dismiss()
+                setProgressDialog.dialog!!.dismiss()
 
             }
 
@@ -404,6 +398,7 @@ class InterfazKerkly : AppCompatActivity() {
                     "Codigo de respuesta de error: $t",
                     Toast.LENGTH_SHORT
                 ).show()
+                setProgressDialog.dialog!!.dismiss()
             }
         })
     }
@@ -412,17 +407,20 @@ class InterfazKerkly : AppCompatActivity() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            val alert: AlertDialog.Builder = AlertDialog.Builder(this)
+            //finish()
+            setFragmentHome()
+           /* val alert: AlertDialog.Builder = AlertDialog.Builder(this)
             alert.setTitle(getString(R.string.cerrar_app))
             alert.setMessage(getString(R.string.mensaje_alertaCerrarApp))
             alert.setCancelable(false)
-            alert.setPositiveButton(getString(R.string.confirmar_alertCerrarApp)) { dialogo1, id -> finish() }
+            alert.setPositiveButton(getString(R.string.confirmar_alertCerrarApp)) {
+                    dialogo1, id -> finish() }
             alert.setNegativeButton(getString(R.string.cancelar_alertCerrarApp)) { dialogo1, id -> dialogo1.dismiss() }
-            alert.show()
+            alert.show()*/
         }
     }
 
-    private fun getKerkly() {
+    private fun getKerkly(foto:String) {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -445,7 +443,7 @@ class InterfazKerkly : AppCompatActivity() {
                         ArrayList<com.example.kerklytv2.modelo.serial.Kerkly>
 
                 if (postList.size == 0){
-                    Toast.makeText(this@InterfazKerkly, "lista vacia", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@InterfazKerkly, "ocurio un error", Toast.LENGTH_SHORT).show()
                 }else{
                     correo = postList[0].correo
                     val nombre = postList[0].nombre
@@ -457,9 +455,13 @@ class InterfazKerkly : AppCompatActivity() {
 
                     txt_nombre.text = nombre_completo
                     txt_correo.text = correo
-
-                    Log.d("correo", correo)
-                    getOficiosKerkly()
+                    if (foto.equals("no")){
+                        getOficiosKerkly()
+                    }else {
+                        cargarImagen(foto)
+                        Log.d("correo", correo)
+                        getOficiosKerkly()
+                    }
                 }
 
             }
@@ -477,7 +479,31 @@ class InterfazKerkly : AppCompatActivity() {
         })
     }
 
+    private fun cargarImagen(urlImagen: String) {
+        val file: Uri
+        file = Uri.parse(urlImagen)
+        System.out.println("imagen aqui: "+ file)
 
+        Picasso.get().load(urlImagen).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                val multi = MultiTransformation<Bitmap>(RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.ALL))
+
+                Glide.with(this@InterfazKerkly).load(file)
+                    .apply(RequestOptions.bitmapTransform(multi))
+                    .into(ImageViewPerfil)
+            }
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                System.out.println("Respuesta error 3 "+ e.toString())
+                //Toast.makeText(this@SolicitarServicio, "si hay foto respuesta 3", Toast.LENGTH_SHORT).show()
+            }
+
+
+        })
+    }
     //metodos para la Autenticacion con cuenta de google
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -513,6 +539,11 @@ class InterfazKerkly : AppCompatActivity() {
         if (networkInfo != null && networkInfo.isConnected) {
             if (currentUser != null) {
                 //obtenerToken
+                var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
+                firebaseMessaging.addOnCompleteListener {
+                    //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()
+                }
+
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
                         Log.w(TAG, "Fetching FCM registration token failed", task.exception)
@@ -540,13 +571,15 @@ class InterfazKerkly : AppCompatActivity() {
                     //val u = usuarios(uid, email, name, foto, currentDateTimeString)
                     databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                         // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
-
+                        getKerkly(foto)
                     }
                 })
 
             }else{
                 //  Toast.makeText(this, "entro :  ", Toast.LENGTH_SHORT).show()
                 muestraOpciones()
+
+                getKerkly("no")
             }
 
         } else {
@@ -559,7 +592,9 @@ class InterfazKerkly : AppCompatActivity() {
     fun metodoSalir() {
         AuthUI.getInstance()
             .signOut(applicationContext)
-            .addOnCompleteListener { muestraOpciones() }.addOnFailureListener { e ->
+            .addOnCompleteListener {
+
+            }.addOnFailureListener { e ->
                 Toast.makeText(
                     applicationContext, ""
                             + e.message, Toast.LENGTH_LONG
@@ -567,33 +602,4 @@ class InterfazKerkly : AppCompatActivity() {
             }
     }
 
-//Permisos en tiempo de ejecucion para recibir Notificaciones
-// Declare the launcher at the top of your Activity/Fragment:
-private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-    if (isGranted) {
-        // FCM SDK (and your app) can post notifications.
-        Toast.makeText(this, "su aplicacion si Podra Recibir Notificaciones", Toast.LENGTH_SHORT).show()
-    } else {
-        // TODO: Inform user that that your app will not show notifications.
-        Toast.makeText(this, "Lo sentimos su aplicacion No Podra Recibir Notificaciones", Toast.LENGTH_SHORT).show()
-    }
-}
-    private fun askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
-            } else {
-                // Directly ask for the permission
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
 }

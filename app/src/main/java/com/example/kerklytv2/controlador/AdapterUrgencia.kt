@@ -33,6 +33,7 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
         val txt_folio_correo: TextView = view.findViewById(R.id.txt_folio_correo)
 
         val txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problema)
+        val txtOficio: TextView= view.findViewById(R.id.txt_folio_oficio)
 
         val txt_fecha_urgente: TextView = view.findViewById(R.id.txt_fecha_urgente)
     }
@@ -47,13 +48,14 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.txtFolio.text = datset[position].idPresupuestoNoRegistrado.toString()
+        holder.txtFolio.text = datset[position].idPresupuesto.toString()
 
         val nombreCompleto = datset[position].Nombre +" "+ datset[position].Apellido_Paterno +" "+ datset[position].Apellido_Materno
         holder.txtnombre.text = nombreCompleto
         holder.txt_folio_correo.text = datset[position].Correo
         holder.txt_folio_problema.text = datset[position].problema
-        holder.txt_fecha_urgente.text = datset[position].fechaPresupuesto
+        holder.txtOficio.text = datset[position].nombreOficio
+        holder.txt_fecha_urgente.text = datset[position].fechaP
     }
 
     override fun getItemCount(): Int {

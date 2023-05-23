@@ -26,12 +26,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         controlador = MainActiityControlador()
-
         id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-
         //controlador.verificarSesion(id, this)
-
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -43,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 
     fun entrar(view: View) {
         val t = editUsuario.text.toString()

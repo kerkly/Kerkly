@@ -51,7 +51,14 @@
            android:layout_gravity="center"
            android:text="@string/servicioUrgente"
            />
-
+       <com.google.android.material.button.MaterialButton
+           android:id="@+id/boton_serviciosClientesNR"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="20dp"
+           android:layout_gravity="center"
+           android:text="@string/servicioClienteNR"
+           />
        <com.google.android.material.button.MaterialButton
            android:id="@+id/boton_normalPresupuesto"
            android:layout_width="wrap_content"
@@ -64,9 +71,5 @@
    </LinearLayout>
 
     </LinearLayout>
-
-
-
-
 
 </FrameLayout>

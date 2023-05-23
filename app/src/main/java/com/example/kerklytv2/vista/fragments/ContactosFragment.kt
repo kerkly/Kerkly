@@ -33,7 +33,7 @@ class ContactosFragment : Fragment() {
 
     private lateinit var correoK: String
     private lateinit var nombreK: String
-    private lateinit var urlFotoK: String
+
 
     private lateinit var array: ArrayList<String>
     private lateinit var arrayListDatos: ArrayList<usuarios>
@@ -67,7 +67,6 @@ class ContactosFragment : Fragment() {
 
         telefonokerkly = b.getString("telefonoKerkly").toString()
         nombreK = b.getString("nombreKerkly").toString()
-        urlFotoK =b.getString("urlFotoKerkly").toString()
         correoK = b.getString("correoKerkly").toString()
 
         arrayListDatos = ArrayList()
@@ -117,11 +116,11 @@ class ContactosFragment : Fragment() {
     }
 
     private fun mostrarUsuarios(snapshot: DataSnapshot) {
-        println(" tel: " + snapshot.child("telefono").value)
-        array = arrayListOf(snapshot.child("telefono").value.toString())
+        println(" tel: " + snapshot.value)
+        array = arrayListOf(snapshot.value.toString())
         firebase_databaseUsu = FirebaseDatabase.getInstance()
         databaseUsu = firebase_databaseUsu.getReference("UsuariosR")
-            .child(snapshot.child("telefono").value.toString())
+            .child(snapshot.value.toString())
             .child("MisDatos")
 
         databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {

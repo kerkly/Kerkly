@@ -29,7 +29,6 @@ public class TrabajosPendientesFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private MaterialButton btn_urgencia;
     private MaterialButton btn_servicio;
     private Bundle b;
@@ -37,16 +36,6 @@ public class TrabajosPendientesFragment extends Fragment {
     public TrabajosPendientesFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TrabajosPendientesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static TrabajosPendientesFragment newInstance(String param1, String param2) {
         TrabajosPendientesFragment fragment = new TrabajosPendientesFragment();
         Bundle args = new Bundle();
@@ -106,3 +95,7 @@ public class TrabajosPendientesFragment extends Fragment {
                 replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit();
     }
 }
+
+
+//
+

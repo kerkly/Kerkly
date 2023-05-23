@@ -1,31 +1,22 @@
 package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.*
-import android.widget.AdapterView.OnItemClickListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kerklytv2.MainActivitySeguimientoDelServicio
 import com.example.kerklytv2.MapsActivity
 
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.ClaseAdapterR
 import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.PresupuestoInterface
-import com.example.kerklytv2.interfaces.obtenerTodosLosOficios
 import com.example.kerklytv2.modelo.serial.OficioKerkly
 
-import com.example.kerklytv2.modelo.serial.PresupuestoDatosClienteRegistrado
-import com.example.kerklytv2.modelo.serial.todosLosOficios
+import com.example.kerklytv2.modelo.serial.PresupuestourgentesDatosCliente
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -62,8 +53,8 @@ class PresupuestoFragment : Fragment() {
     private lateinit var img: ImageView
     private lateinit var txt: TextView
 
-    lateinit var postList: ArrayList<PresupuestoDatosClienteRegistrado>
-    lateinit var autoCompleteTxt: AutoCompleteTextView
+    lateinit var postList: ArrayList<PresupuestourgentesDatosCliente>
+   // lateinit var autoCompleteTxt: AutoCompleteTextView
     lateinit  var adapterItems: ArrayAdapter<String>
     lateinit var items: String
     lateinit var nombreCompletoKerkly: String
@@ -100,17 +91,18 @@ class PresupuestoFragment : Fragment() {
         //nombrekerkly = arguments?.getString("nombrekerkly").toString()
 
         postList2 = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
-
+        setProgressDialog.setProgressDialog(requireContext())
+        getJSON()
        ofi = mutableListOf()
         for (i in 0 until postList2.size) {
             val oficio = postList2[i].nombreOficio
             ofi.add(oficio)
         }
 
-        autoCompleteTxt = view.findViewById(R.id.filtro);
+     //   autoCompleteTxt = view.findViewById(R.id.filtro);
         adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
-        autoCompleteTxt.setAdapter(adapterItems)
-        autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id -> items = parent.getItemAtPosition(position).toString()
+       // autoCompleteTxt.setAdapter(adapterItems)
+     /*   autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id -> items = parent.getItemAtPosition(position).toString()
            setProgressDialog.setProgressDialog(requireContext())
 
             getJSON()
@@ -125,7 +117,7 @@ class PresupuestoFragment : Fragment() {
                         ?.commit();
                 }
 
-            }
+            }*/
 
 
         return view
@@ -147,26 +139,25 @@ class PresupuestoFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val presupuestoGET = retrofit.create(PresupuestoInterface::class.java)
-        val call = presupuestoGET.getPresupuestoClienteRegistrado(numeroTelefono, items)
-        call?.enqueue(object : Callback<List<PresupuestoDatosClienteRegistrado?>?> {
+        val call = presupuestoGET.getPresupuestoClienteRegistrado(numeroTelefono)
+        call?.enqueue(object : Callback<List<PresupuestourgentesDatosCliente?>?> {
 
-            override fun onResponse(call: Call<List<PresupuestoDatosClienteRegistrado?>?>, response: Response<List<PresupuestoDatosClienteRegistrado?>?>) {
+            override fun onResponse(call: Call<List<PresupuestourgentesDatosCliente?>?>, response: Response<List<PresupuestourgentesDatosCliente?>?>) {
 
-                postList = response.body() as ArrayList<PresupuestoDatosClienteRegistrado>
-
+                postList = response.body() as ArrayList<PresupuestourgentesDatosCliente>
                 //carsModels = response.body() as ArrayList<presupuestok>
                // Log.d("Lista", postList.toString())
                 MiAdapter = ClaseAdapterR(postList)
 
                 if(postList.size == 0) {
                     recyclerview.visibility = View.GONE
-                } else {
                     setProgressDialog.dialog!!.dismiss()
+                } else {
                     img.visibility = View.GONE
                     txt.visibility = View.GONE
 
                     MiAdapter.setOnClickListener {
-                      val  folioo = postList[recyclerview.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
+                      val  folioo = postList[recyclerview.getChildAdapterPosition(it)].idPresupuesto
                        val latitud = postList[recyclerview.getChildAdapterPosition(it)].latitud
                         val longitud = postList[recyclerview.getChildAdapterPosition(it)].longitud
                         val colonia = postList[recyclerview.getChildAdapterPosition(it)].Colonia
@@ -182,17 +173,13 @@ class PresupuestoFragment : Fragment() {
                         val numeroCliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
                         val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
 
-
                         if (ext == "0") {
                             ext = "S/N"
                         }
-
                         direccion = "$calle $colonia $ext $cp $referencia"
                         nombre = "$n $ap $am"
                         println("Teléfono: $numeroCliente, folio $folioo")
                         //Toast.makeText(context, "Teléfono: $numeroCliente, folio $folioo", Toast.LENGTH_SHORT).show()
-
-
 
                        val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
@@ -202,7 +189,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("Dirección", direccion)
                         i.putExtra("Problema", problema)
                         i.putExtra("telefonoCliente", numeroCliente)
-                        i.putExtra("Normal", false)
+                        i.putExtra("tipoServicio", "urgente")
                         i.putExtra("Curp", curp)
                         i.putExtra("telefonoKerkly", telK)
                         i.putExtra("correo", correo)
@@ -212,11 +199,12 @@ class PresupuestoFragment : Fragment() {
                     }
 
                     recyclerview.adapter = MiAdapter
+                    setProgressDialog.dialog!!.dismiss()
                 }
 
             }
 
-            override fun onFailure(call: Call<List<PresupuestoDatosClienteRegistrado?>?>, t: Throwable) {
+            override fun onFailure(call: Call<List<PresupuestourgentesDatosCliente?>?>, t: Throwable) {
                 Toast.makeText(
                     context,
                     "Codigo de respuesta de error: $t",

@@ -51,10 +51,7 @@ class PresupuestoNomalFragment : Fragment() {
     private lateinit var nombre: String
     private lateinit var img: ImageView
     private lateinit var txt: TextView
-
     private  val setProgressDialog = SetProgressDialog()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,7 +145,7 @@ class PresupuestoNomalFragment : Fragment() {
                        val i = Intent(requireContext(), MapsActivity::class.java)
                        i.putExtra("Telefono", telefonokerkly)
                        i.putExtra("telefonoCliente", numerocliente)
-                       i.putExtra("Normal", true)
+                       i.putExtra("tipoServicio", "urgente")
                        i.putExtra("latitud", latitud)
                        i.putExtra("longitud", longitud)
                        i.putExtra("nombreCompletoCliente", nombre)
