@@ -99,7 +99,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         b = intent.extras!!
         //recibimos las coordenas
         telefonoCliente = b.getString("telefonoCliente").toString()
-        telefonoKerkly = b.getString("telefonoKerkly").toString()
+        telefonoKerkly = b.getString("telefonok").toString()
         latitud2 = b.getString("latitud").toString()
         longitud2 = b.getString("longitud").toString()
         nombreCliente = b.getString("nombreCompletoCliente").toString()
@@ -483,7 +483,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("problemacliente", problema)
                     i.putExtra("nombreCompletoKerkly", nombrekerkly)
                     i.putExtra("numerocliente", telefonoCliente)
-                    i.putExtra("tipoServicio", "urgente")
+                    i.putExtra("tipoServicio", "normal")
                     i.putExtra("telefonok", telefonoKerkly)
                     i.putExtra("correoCliente", correoCliente)
                     startActivity(i)

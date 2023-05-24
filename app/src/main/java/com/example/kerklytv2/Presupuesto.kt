@@ -155,7 +155,7 @@ class Presupuesto : AppCompatActivity() {
 
             if (TipoServicio == "normal") {
                 Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
-                mandarNormalElPagoTotal(folio, total)
+               // mandarNormalElPagoTotal(folio, total)
 
             } else {
                 if (TipoServicio == "urgente"){
@@ -282,6 +282,7 @@ class Presupuesto : AppCompatActivity() {
                 Log.d("lista", l[j])
                 val t = TablaP(l[1], l[2])
                 if (TipoServicio == "normal") {
+                    println("entroooo --->telfono kerkly $telefonoK folio $folio  datos $t 285")
                     database.child("UsuariosR").child(telefonoK).child("Presupuestos Normal").child("Presupuesto Normal $folio").child((i+1).toString()).setValue(t)
                 }
                 if (TipoServicio == "urgente"){

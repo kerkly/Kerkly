@@ -143,9 +143,9 @@ class PresupuestoNomalFragment : Fragment() {
 
                      //  Toast.makeText(context, "Nombre: $n", Toast.LENGTH_SHORT).show()
                        val i = Intent(requireContext(), MapsActivity::class.java)
-                       i.putExtra("Telefono", telefonokerkly)
+                       i.putExtra("telefonok", telefonokerkly)
                        i.putExtra("telefonoCliente", numerocliente)
-                       i.putExtra("tipoServicio", "urgente")
+                       i.putExtra("tipoServicio", "normal")
                        i.putExtra("latitud", latitud)
                        i.putExtra("longitud", longitud)
                        i.putExtra("nombreCompletoCliente", nombre)
@@ -185,6 +185,7 @@ class PresupuestoNomalFragment : Fragment() {
             }
 
         })
+        setProgressDialog.dialog!!.dismiss()
     }
 
 }
