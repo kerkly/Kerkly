@@ -89,6 +89,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private lateinit var correoCliente: String
     private lateinit var problema:String
     private lateinit var direccion:String
+    private lateinit var Curp: String
+    private lateinit var correoKerly: String
+    private lateinit var direccionKerly: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +112,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         correoCliente = b.getString("correoCliente").toString()
         folio = b.getInt("Folio")
          TipoServicio  = b.getString("tipoServicio").toString()
-
+        Curp = b.getString("Curp").toString()
+        correoKerly = b.getString("correoKerly").toString()
+        direccionKerly = b.getString("direccionKerly").toString()
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
@@ -475,17 +480,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 //Toast.makeText(applicationContext, "Aceptado $latitud, $longitud", Toast.LENGTH_SHORT).show()
                 if (TipoServicio == "normal"){
                     val i = Intent(context, Presupuesto::class.java)
+                    i.putExtra("telefonoCliente", telefonoCliente)
+                    i.putExtra("telefonok", telefonoKerkly)
                     i.putExtra("latitud", latitud2)
                     i.putExtra("longitud", longitud2)
-                    i.putExtra("Folio", folio)
-                    i.putExtra("clientenombre", nombreCliente)
-                    i.putExtra("Dirección", direccion)
-                    i.putExtra("problemacliente", problema)
+                    i.putExtra("nombreCompletoCliente", nombreCliente)
                     i.putExtra("nombreCompletoKerkly", nombrekerkly)
-                    i.putExtra("numerocliente", telefonoCliente)
-                    i.putExtra("tipoServicio", "normal")
-                    i.putExtra("telefonok", telefonoKerkly)
+                    i.putExtra("problema", problema)
+                    i.putExtra("direccion", direccion)
                     i.putExtra("correoCliente", correoCliente)
+                    i.putExtra("Folio", folio)
+                    i.putExtra("tipoServicio", "normal")
+                    i.putExtra("Curp", Curp)
+                    i.putExtra("correoKerly", correoKerly)
+                    i.putExtra("direccionKerly", direccionKerly)
                     startActivity(i)
                     dialog.dismiss()
                 }
@@ -494,6 +502,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     dialog.dismiss()
                 }
 
+                if(TipoServicio == "ServicioNR"){
+                    println("entroooo 502")
+                    val intent = Intent(this@MapsActivity, Presupuesto::class.java)
+                    intent.putExtra("telefonoCliente", telefonoCliente)
+                    intent.putExtra("telefonok", telefonoKerkly)
+                    intent.putExtra("latitud", latitud2)
+                    intent.putExtra("longitud", longitud2)
+                    intent.putExtra("nombreCompletoCliente", nombreCliente)
+                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    intent.putExtra("problema", problema)
+                    intent.putExtra("direccion", direccion)
+                    intent.putExtra("correoCliente", correoCliente)
+                    intent.putExtra("Folio", folio)
+                    intent.putExtra("tipoServicio", "ServicioNR")
+                    intent.putExtra("Curp", Curp)
+                    intent.putExtra("correoKerly", correoKerly)
+                    intent.putExtra("direccionKerly", direccionKerly)
+                    startActivity(intent)
+                    dialog.dismiss()
+                }
 
             }
 

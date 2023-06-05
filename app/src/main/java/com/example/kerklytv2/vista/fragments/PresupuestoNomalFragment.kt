@@ -51,7 +51,10 @@ class PresupuestoNomalFragment : Fragment() {
     private lateinit var nombre: String
     private lateinit var img: ImageView
     private lateinit var txt: TextView
+    private lateinit var Curp: String
     private  val setProgressDialog = SetProgressDialog()
+    private lateinit var correoKerly: String
+    private lateinit var direccionKerly: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +79,9 @@ class PresupuestoNomalFragment : Fragment() {
        // val intent = context.intent
         telefonokerkly = arguments?.getString("telefonokerkly").toString()
         nombreKerkly = arguments?.getString("nombreCompletoKerkly")!!
+        Curp = arguments?.getString("Curp").toString()
+        correoKerly = arguments?.getString("correoKerly").toString()
+        direccionKerly = arguments?.getString("direccionKerly").toString()
         //Toast.makeText(context, "Teléfono: $telefonokerkly", Toast.LENGTH_SHORT).show()
         setProgressDialog.setProgressDialog(requireContext())
         getJSON()
@@ -154,21 +160,11 @@ class PresupuestoNomalFragment : Fragment() {
                        i.putExtra("direccion", direccion)
                        i.putExtra("correoCliente", correoCliente)
                        i.putExtra("Folio", folio)
+                       i.putExtra("Curp", Curp)
+                       i.putExtra("correoKerly", correoKerly)
+                       i.putExtra("direccionKerly", direccionKerly)
                        startActivity(i)
 
-                   /*    Log.d("tagg----: ", folio.toString())
-                       val i = Intent(context, Presupuesto::class.java)
-                       i.putExtra("latitud", latitud)
-                       i.putExtra("longitud", longitud)
-                       i.putExtra("Folio", folio)
-                       i.putExtra("clientenombre", nombre)
-                       i.putExtra("Dirección", direccion)
-                       i.putExtra("problemacliente", problema)
-                       i.putExtra("numerocliente", numerocliente)
-                       i.putExtra("Normal", true)
-                       i.putExtra("telefonok", telefonokerkly)
-                       i.putExtra("correoCliente", correoCliente)
-                       startActivity(i)*/
                    }
 
                    recyclerview.adapter = MiAdapter

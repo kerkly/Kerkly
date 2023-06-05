@@ -36,7 +36,9 @@ class PresupuestosPreviewFragment : Fragment() {
     lateinit var photoUrl: String
     lateinit var name: String
     lateinit var correoKerkly: String
+    lateinit var Curp: String
     private lateinit var btonClienteNR: MaterialButton
+    private lateinit var direccionKerly: String
 
 
 
@@ -72,6 +74,9 @@ class PresupuestosPreviewFragment : Fragment() {
         photoUrl = arguments?.getString("urlFotoKerkly").toString()
        // nombreKerkly = arguments?.getString("nombreKerkly").toString()
         nombre_completo = arguments?.getString("nombreCompletoKerkly").toString()
+        Curp = arguments?.getString("Curp").toString()
+        correoKerkly = arguments?.getString("correoKerly").toString()
+        direccionKerly = arguments?.getString("direccionKerly").toString()
 
         btonClienteNR.setOnClickListener {
             setServiciosClienteNR()
@@ -86,6 +91,8 @@ class PresupuestosPreviewFragment : Fragment() {
        // args.getString("nombreKerkly", nombreKerkly)
         args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
+        args.putString("Curp", Curp)
+
         f.arguments = args
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -96,6 +103,9 @@ class PresupuestosPreviewFragment : Fragment() {
         val b = Bundle()
         b.putString("telefonokerkly", telefonoKerkly)
         b.putString("nombreCompletoKerkly", nombre_completo)
+        b.putString("Curp", Curp)
+        b.putString("correoKerly", correoKerkly)
+        b.getString("direccionKerly", direccionKerly)
         val f = PresupuestoNomalFragment()
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -105,7 +115,13 @@ class PresupuestosPreviewFragment : Fragment() {
 
     private fun setServiciosClienteNR(){
         val b = Bundle()
+        b.putString("telefonokerkly", telefonoKerkly)
+        b.putString("nombreCompletoKerkly", nombre_completo)
+        b.putString("Curp", Curp)
+        b.putString("correoKerly", correoKerkly)
         val fragment = BlankFragmentServiciosClientesNR()
+        b.putString("direccionKerly", direccionKerly)
+        println("----------> interfaz $direccionKerly")
         fragment.arguments = b
         var frag =  requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly, fragment).commit()
