@@ -48,7 +48,7 @@ class MainActiityControlador {
 
                     }else{
                         //Toast.makeText(context, "El Usuario o contraseña Son Incorrectos", Toast.LENGTH_SHORT).show()
-                        //  Toast.makeText(context, "$Respuesta", Toast.LENGTH_SHORT).show()
+                         Toast.makeText(context, "$Respuesta", Toast.LENGTH_SHORT).show()
                     }
                 }
 

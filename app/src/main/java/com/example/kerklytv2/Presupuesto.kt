@@ -85,6 +85,9 @@ class Presupuesto : AppCompatActivity() {
     private lateinit var databaseUsu: DatabaseReference
     private lateinit var token: String
     private lateinit var nombrekerkly: String
+    private lateinit var CURP: String
+    private lateinit var correoKerly: String
+    private lateinit var direccionKerly:String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,19 +97,20 @@ class Presupuesto : AppCompatActivity() {
         database = Firebase.database.reference
 
         b = intent.extras!!
+        telefonoCliente  = b.getString("telefonoCliente").toString()
+        telefonoK = b.getString("telefonok").toString()
         latitudCliente =  b.getString("latitud") as String
         longitudCliente = b.getString("longitud") as String
-        folio = b.getInt("Folio")
-        problemacliente = b.getString("problemacliente") as String
-        clientenombre = b.getString("clientenombre").toString()
-        direccioncliente = b.getString("Dirección").toString()
-        telefonoK = b.getString("telefonok").toString()
-        telefonoCliente  = b.getString("numerocliente").toString()
-        correocliente = b.getString("correoCliente")!!
+        clientenombre = b.getString("nombreCompletoCliente").toString()
         nombrekerkly = b.getString("nombreCompletoKerkly")!!
-
-        // System.out.println("$folio clase presupuesto $telefono")
+        problemacliente = b.getString("problema") as String
+        direccioncliente = b.getString("direccion").toString()
+        correocliente = b.getString("correoCliente")!!
+        folio = b.getInt("Folio")
         TipoServicio = b.getString("tipoServicio").toString()
+        CURP = b.getString("Curp").toString()
+        correoKerly = b.getString("correoKerly").toString()
+        direccionKerly = b.getString("direccionKerly").toString()
 
         //val database = Firebase.database
         //val myRef = database.getReference("message")
@@ -140,44 +144,50 @@ class Presupuesto : AppCompatActivity() {
 
         // Generaremos el documento al hacer click sobre el boton.
         boton.setOnClickListener {
-            dbFirebase()
-            val p = Pdf(clientenombre, direccioncliente,folio)
-            p.telefono = telefonoCliente
-            p.cabecera = header
-            val lista = tablaDinamica.getData()
-            p.lista = lista
-            p.correo = correocliente
-            p.problema = problemacliente
-            p.total = total
-            p.generarPdf()
-            //generarPdf()
 
 
             if (TipoServicio == "normal") {
-                Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
+                dbFirebase()
+                val p = Pdf(clientenombre,direccionKerly ,folio, TipoServicio, nombrekerkly)
+                p.telefono = telefonoK
+                p.cabecera = header
+                val lista = tablaDinamica.getData()
+                p.lista = lista
+                p.correo = correoKerly
+                p.problema = problemacliente
+                p.total = total
+                p.generarPdf()
                 mandarNormalElPagoTotal(folio, total)
+                Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
 
             } else {
-                if (TipoServicio == "urgente"){
-                    mandarPagoTotal()
+                if (TipoServicio == "ServicioNR"){
+                    dbFirebase()
+                    val p = Pdf(clientenombre, direccionKerly,folio, TipoServicio, nombrekerkly)
+                    p.telefono = telefonoK
+                    p.cabecera = header
+                    val lista = tablaDinamica.getData()
+                    p.lista = lista
+                    p.correo = ""
+                    p.problema = problemacliente
+                    p.total = total
+                    p.generarPdf()
+                    println("tipo: $TipoServicio nombreC: $clientenombre, Direccion: $direccionKerly" +
+                            " folio: $folio nombre kerly : $nombrekerkly telefonoClien: $telefonoCliente" +
+                            "priblema: $problemacliente total: $total")
+                    mandarPagoTotalPresupuestoNR()
+                    Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
+
                 }
-
             }
-            if (TipoServicio == "clienteNoRegistrado"){
-                mandarpagoTotalClienteNR(folio, total)
-            }
-
         }
         tablaDinamica = TablaDinamica(tabla, applicationContext)
         header.add("Item")
         header.add("Descripción")
         header.add("Precio")
         tablaDinamica.addHeader(header)
-
        // getCoordenadas()
-
         inicializarTabla()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             tablaDinamica.fondoCabecera(getColor(R.color.verdeBajoTabla))
         }
@@ -206,7 +216,7 @@ class Presupuesto : AppCompatActivity() {
                     }
                     //mandar notificacion
                     obtenerToken(telefonoCliente,nombrekerkly, this@Presupuesto )
-                    //llamartopico.llamartopico(this@Presupuesto, "","","")
+                  //  llamartopico.llamartopico(this@Presupuesto, "","","")
                     Toast.makeText(applicationContext, R, Toast.LENGTH_SHORT).show()
 
                    
@@ -241,13 +251,13 @@ class Presupuesto : AppCompatActivity() {
 
     }
 
-    private fun mandarPagoTotal() {
+    private fun mandarPagoTotalPresupuestoNR() {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
             .build()
-        val api: PagoPInterface = adapter.create(PagoPInterface::class.java)
-        api.MandarPago(folio, total.toString(),
+        val api: PagoPInterfaceNR = adapter.create(PagoPInterfaceNR::class.java)
+        api.MandarPago(folio, total.toString(), CURP,
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
                     var entrada: BufferedReader?=null
@@ -256,6 +266,7 @@ class Presupuesto : AppCompatActivity() {
                         entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
                         R= entrada.readLine()
                         Log.d("--------------)", "$folio, $total")
+                        Toast.makeText(applicationContext, entrada.toString(), Toast.LENGTH_SHORT).show()
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
@@ -284,13 +295,13 @@ class Presupuesto : AppCompatActivity() {
                 Log.d("lista", l[j])
                 val t = TablaP(l[1], l[2])
                 if (TipoServicio == "normal") {
-                    println("entroooo --->telfono kerkly $telefonoK folio $folio  datos $t 285")
+                  //  println("entroooo --->telfono kerkly $telefonoK folio $folio  datos $t 285")
                     database.child("UsuariosR").child(telefonoK).child("Presupuestos Normal").child("Presupuesto Normal $folio").child((i+1).toString()).setValue(t)
-                }
-                if (TipoServicio == "urgente"){
-                    database.child("UsuariosR").child(telefonoK).child("Presupuestos Urgente").child("Presupuesto Urgente $folio").child((i+1).toString()).setValue(t)
-                }
 
+                }
+                if (TipoServicio == "ServicioNR"){
+                    database.child("UsuariosR").child(telefonoK).child("Presupuestos NR").child("Presupuesto NR $folio").child((i+1).toString()).setValue(t)
+                }
 
             }
         }
@@ -383,50 +394,5 @@ class Presupuesto : AppCompatActivity() {
         total_txt.text = "Total: $$total"
     }
 
-    /*private fun getCoordenadas() {
-        val ROOT_URL = Url().URL
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("$ROOT_URL/")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val coordenadas = retrofit.create(ObtenerCoordenadasKekrly::class.java)
-        val call = coordenadas.getCoordenadas(curp)
-
-        call?.enqueue(object : retrofit2.Callback<List<CoordenadasKerkly?>?> {
-            override fun onResponse(
-                call: Call<List<CoordenadasKerkly?>?>,
-                response: retrofit2.Response<List<CoordenadasKerkly?>?>
-            ) {
-                val postList: ArrayList<CoordenadasKerkly> = response.body() as ArrayList<CoordenadasKerkly>
-                longitud = postList[0].longitud!!
-                latitud = postList[0].latitud!!
-
-                Log.d("latitud", "$latitud")
-                Log.d("longitud", "$longitud")
-
-
-            }
-
-            override fun onFailure(call: Call<List<CoordenadasKerkly?>?>, t: Throwable) {
-                Toast.makeText(
-                    applicationContext,
-                    "Codigo de respuesta de error: $t",
-                    Toast.LENGTH_SHORT
-                ).show();
-            }
-
-        })
-    }*/
-
-
-    /*  fun generarRecibo (v: View) {
-          mandarPago()
-      }*/
 
 }

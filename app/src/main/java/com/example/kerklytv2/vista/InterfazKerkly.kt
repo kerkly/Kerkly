@@ -112,6 +112,7 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var token: String
     val setProgressDialog = SetProgressDialog()
     private lateinit var ImageViewPerfil : ImageView
+    private lateinit var direccionKerly: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -290,6 +291,8 @@ class InterfazKerkly : AppCompatActivity() {
        // args.putString("nombrekerkly", nombreKerkly)
         args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
+        args.putString("correoKerly", correoKerkly)
+        args.putString("direccionKerly", direccionKerly)
 
         val f = PresupuestosPreviewFragment()
         f.arguments = args
@@ -455,6 +458,7 @@ class InterfazKerkly : AppCompatActivity() {
 
                     txt_nombre.text = nombre_completo
                     txt_correo.text = correo
+                    direccionKerly = postList[0].Pais + " " + postList[0].Ciudad + " " + postList[0].Colonia + " " + postList[0].Calle
                     if (foto.equals("no")){
                         getOficiosKerkly()
                     }else {

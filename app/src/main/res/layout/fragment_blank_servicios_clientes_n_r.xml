@@ -9,11 +9,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Solicitudes de clientes no Registrados"
+        android:text="Solicitudes de clientes no Registrados"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/servicioClienteNR"
         android:textColor="@color/black"
         android:textSize="25sp"
         android:layout_margin="10dp"/>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_presupuesto_ClienteNR"
@@ -23,12 +27,14 @@
 
     <ImageView
         android:id="@+id/img_presupuesto_ClienteNR"
+        android:id="@+id/img_presupuesto_NR"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:src="@drawable/imagen_lista_vacia" />
 
     <TextView
         android:id="@+id/txt_presupuesto_ClienteNR"
+        android:id="@+id/txt_presupuesto_NR"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:text="@string/lista_vacia_trabajosPendientes"

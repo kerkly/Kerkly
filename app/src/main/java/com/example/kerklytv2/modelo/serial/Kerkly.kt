@@ -24,4 +24,20 @@ class Kerkly {
     @SerializedName("correo_electronico")
     @Expose
     val correo: String = ""
+
+    @SerializedName("Pais")
+    @Expose
+    val Pais: String = ""
+
+    @SerializedName("Ciudad")
+    @Expose
+    val Ciudad: String = ""
+
+    @SerializedName("Colonia")
+    @Expose
+    val Colonia: String = ""
+
+    @SerializedName("Calle")
+    @Expose
+    val Calle: String = ""
 }

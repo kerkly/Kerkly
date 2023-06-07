@@ -7,12 +7,13 @@ import retrofit.http.Field
 import retrofit.http.FormUrlEncoded
 import retrofit.http.POST
 
-interface PagoPInterface {
+interface PagoPInterfaceNR {
     @FormUrlEncoded
-    @POST("/precioTotalUrgente.php")
+    @POST("/precioTotalPresupuestoNR.php")
     fun MandarPago(
-        @Field("idPresupuesto") idPresupuesto: Int,
+        @Field("idPresupuestoNoRegistrado") idPresupuesto: Int,
         @Field("PagoTotal") PagoTotal: String,
+        @Field("CURP") CURP: String,
         callback: Callback<Response?>
     )
 }

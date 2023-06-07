@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/ic_akar_icons_paper"
+            android:id="@+id/ivimage"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo de Solicitud: "
+                    android:textSize="16dp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/nombreOficioNR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Plomero"
+                    android:textSize="16dp"
+                    android:textStyle="normal"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Folio: "/>
+
+                <TextView
+                    android:id="@+id/txtFolioNR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:text="311"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Telefono: "/>
+
+                <TextView
+                    android:id="@+id/txttelefono"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7471130682"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Nombre: "/>
+                <TextView
+                    android:id="@+id/txtNombreClienteNR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="nombre Completo"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Fecha y Hora: "/>
+                <TextView
+                    android:id="@+id/tvfecha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10/09/2021  03:26 p.m."/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Problema: "/>
+                <TextView
+                    android:id="@+id/tvproblema"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aquí mi problema"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/black"/>
+
+
+</LinearLayout>
