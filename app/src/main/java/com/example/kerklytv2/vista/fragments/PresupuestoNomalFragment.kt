@@ -69,8 +69,8 @@ class PresupuestoNomalFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_presupuesto_nomal, container, false)
         context = requireActivity()
         recyclerview = v.findViewById(R.id.recycler_presupuesto_normal)
-        img = v.findViewById(R.id.img_presupuesto_urgente)
-        txt = v.findViewById(R.id.txt_presupuesto_urgente)
+        img = v.findViewById(R.id.img_presupuesto_normal)
+        txt = v.findViewById(R.id.txt_presupuesto_Normal)
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager = LinearLayoutManager(context)
        // val intent = context.intent

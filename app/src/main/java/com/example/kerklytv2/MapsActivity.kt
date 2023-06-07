@@ -493,6 +493,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     AceptarServicio()
                     dialog.dismiss()
                 }
+                if(TipoServicio == "clienteNoRegistrado"){
+                    val i = Intent(context, Presupuesto::class.java)
+                    i.putExtra("latitud", latitud2)
+                    i.putExtra("longitud", longitud2)
+                    i.putExtra("Folio", folio)
+                    i.putExtra("clientenombre", nombreCliente)
+                    i.putExtra("Dirección", direccion)
+                    i.putExtra("problemacliente", problema)
+                    i.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    i.putExtra("numerocliente", telefonoCliente)
+                    i.putExtra("tipoServicio", "clienteNoRegistrado")
+                    i.putExtra("telefonok", telefonoKerkly)
+                    i.putExtra("correoCliente", correoCliente)
+                    startActivity(i)
+                    dialog.dismiss()
+                }
 
 
             }

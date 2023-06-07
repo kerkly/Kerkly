@@ -155,7 +155,7 @@ class Presupuesto : AppCompatActivity() {
 
             if (TipoServicio == "normal") {
                 Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
-               // mandarNormalElPagoTotal(folio, total)
+                mandarNormalElPagoTotal(folio, total)
 
             } else {
                 if (TipoServicio == "urgente"){
@@ -163,13 +163,11 @@ class Presupuesto : AppCompatActivity() {
                 }
 
             }
-
+            if (TipoServicio == "clienteNoRegistrado"){
+                mandarpagoTotalClienteNR(folio, total)
+            }
 
         }
-
-
-
-
         tablaDinamica = TablaDinamica(tabla, applicationContext)
         header.add("Item")
         header.add("Descripción")
@@ -185,13 +183,17 @@ class Presupuesto : AppCompatActivity() {
         }
     }
 
+    private fun mandarpagoTotalClienteNR(folio: Int, total: Double) {
+
+    }
+
     private fun mandarNormalElPagoTotal(folio: Int, total: Double) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
             .build()
-        val api = adapter.create(PrecioNormalInterface::class.java)
-        api.MandarPago(folio, total.toString(),
+        val api = adapter.create(PrecioInterfaceNR::class.java)
+        api.MandarPago(folio, total.toString(), curp,
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
                     var entrada: BufferedReader?=null

@@ -21,13 +21,13 @@
         android:layout_margin="10dp"/>
 
     <ImageView
-        android:id="@+id/img_presupuesto_urgente"
+        android:id="@+id/img_presupuesto_normal"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:src="@drawable/imagen_lista_vacia" />
 
     <TextView
-        android:id="@+id/txt_presupuesto_urgente"
+        android:id="@+id/txt_presupuesto_Normal"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:text="@string/lista_vacia_trabajosPendientes"

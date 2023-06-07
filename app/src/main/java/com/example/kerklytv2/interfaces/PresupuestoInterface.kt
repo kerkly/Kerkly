@@ -15,7 +15,6 @@ interface PresupuestoInterface {
 
 
     @GET("ConsultaPresupuestourgenteClienteNR.php")
-    open fun getPresupuestoCliente_NO_Registrado(@Query("Telefono") Telefono: String?,
-                                             @Query("oficio") oficio: String?,):
+    open fun getPresupuestoCliente_NO_Registrado(@Query("Telefono") Telefono: String?):
             Call<List<PresupuestoDatosClienteNoRegistrado?>?>?
 }

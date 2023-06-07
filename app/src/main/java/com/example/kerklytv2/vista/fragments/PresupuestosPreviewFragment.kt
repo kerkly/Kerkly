@@ -105,6 +105,8 @@ class PresupuestosPreviewFragment : Fragment() {
 
     private fun setServiciosClienteNR(){
         val b = Bundle()
+        b.putString("telefonokerkly", telefonoKerkly)
+        b.putString("nombreCompletoKerkly", nombre_completo)
         val fragment = BlankFragmentServiciosClientesNR()
         fragment.arguments = b
         var frag =  requireActivity().supportFragmentManager.beginTransaction().apply {
