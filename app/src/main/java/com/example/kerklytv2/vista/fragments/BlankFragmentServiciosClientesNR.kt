@@ -15,14 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.MapsActivity
 import com.example.kerklytv2.R
-import com.example.kerklytv2.controlador.AdapterPresupuesto
 import com.example.kerklytv2.controlador.AdapterPresupuestoClienteNR
-import com.example.kerklytv2.controlador.AdapterPresupuestoNR
 
 import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.PresupuestoInterface
-import com.example.kerklytv2.interfaces.PresupuestoNormalInterface
-import com.example.kerklytv2.modelo.serial.Presupuesto
 import com.example.kerklytv2.modelo.serial.PresupuestoDatosClienteNoRegistrado
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
@@ -45,7 +41,7 @@ class BlankFragmentServiciosClientesNR : Fragment() {
 
     private lateinit var context: Activity
 
-    lateinit var MiAdapter: AdapterPresupuestoNR
+    lateinit var MiAdapter: AdapterPresupuestoClienteNR
     lateinit var recyclerview: RecyclerView
     private lateinit var telefonokerkly: String
     lateinit var nombreKerkly: String
@@ -74,14 +70,15 @@ class BlankFragmentServiciosClientesNR : Fragment() {
         val v = inflater.inflate(R.layout.fragment_blank_servicios_clientes_n_r, container, false)
         context = requireActivity()
         recyclerview = v.findViewById(R.id.recycler_presupuesto_ClienteNR)
-        img = v.findViewById(R.id.img_presupuesto_ClienteNR)
-        txt = v.findViewById(R.id.txt_presupuesto_ClienteNR)
+        img = v.findViewById(R.id.img_presupuesto_NR)
+        txt = v.findViewById(R.id.txt_presupuesto_NR)
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager = LinearLayoutManager(context)
         nombreKerkly = arguments?.getString("nombreCompletoKerkly").toString()
         Curp = arguments?.getString("Curp").toString()
         direccionKerly = arguments?.getString("direccionKerly").toString()
         correoKerly = arguments?.getString("correoKerly").toString()
+        telefonokerkly = arguments?.getString("telefonokerkly").toString()
         //Toast.makeText(context, "Teléfono: $telefonokerkly", Toast.LENGTH_SHORT).show()
         setProgressDialog.setProgressDialog(requireContext())
         ObtenerServicioNR()
@@ -181,7 +178,7 @@ class BlankFragmentServiciosClientesNR : Fragment() {
         })
     }
 
-    private fun obtenerSolicitudes() {
+   /* private fun obtenerSolicitudes() {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -267,7 +264,7 @@ class BlankFragmentServiciosClientesNR : Fragment() {
 
         })
         setProgressDialog.dialog!!.dismiss()
-    }
+    }*/
 
 
     companion object {

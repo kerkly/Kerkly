@@ -191,7 +191,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("telefonoCliente", numeroCliente)
                         i.putExtra("tipoServicio", "urgente")
                         i.putExtra("Curp", curp)
-                        i.putExtra("telefonoKerkly", telK)
+                        i.putExtra("telefonok", telK)
                         i.putExtra("correo", correo)
                         i.putExtra("nombreCompletoKerkly", nombreCompletoKerkly)
                         startActivity(i)

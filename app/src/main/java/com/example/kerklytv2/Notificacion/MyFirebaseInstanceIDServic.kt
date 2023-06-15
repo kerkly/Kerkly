@@ -70,7 +70,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
 
         val nf = Intent(applicationContext, PantallaInicio::class.java)
         val pendingIntent : PendingIntent = PendingIntent.getActivity(applicationContext, 0, nf, flags)
-        nf.putExtra("color", "rojo")
+        nf.putExtra("notificacion", "chat")
         nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         return PendingIntent.getActivity(this, 0, nf, flags)
 

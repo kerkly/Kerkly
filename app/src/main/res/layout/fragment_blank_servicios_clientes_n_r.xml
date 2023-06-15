@@ -4,12 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#9400AE"
     tools:context=".vista.fragments.BlankFragmentServiciosClientesNR">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Solicitudes de clientes no Registrados"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,14 +23,12 @@
         android:layout_margin="10dp"/>
 
     <ImageView
-        android:id="@+id/img_presupuesto_ClienteNR"
         android:id="@+id/img_presupuesto_NR"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:src="@drawable/imagen_lista_vacia" />
 
     <TextView
-        android:id="@+id/txt_presupuesto_ClienteNR"
         android:id="@+id/txt_presupuesto_NR"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -41,7 +36,7 @@
         android:textColor="@color/black"
         android:gravity="center"
         android:layout_gravity="center"
-        android:lines="2"
-        android:textSize="20sp"
-        />
+        android:textStyle="bold"
+        android:textSize="25dp"
+    />
 </LinearLayout>

@@ -292,7 +292,8 @@ class InterfazKerkly : AppCompatActivity() {
         args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
         args.putString("correoKerly", correoKerkly)
-        args.putString("direccionKerly", direccionKerly)
+        args.putString("direccionkerkly", direccionKerly)
+
 
         val f = PresupuestosPreviewFragment()
         f.arguments = args

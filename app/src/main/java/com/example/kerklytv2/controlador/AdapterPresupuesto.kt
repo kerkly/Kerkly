@@ -14,6 +14,7 @@ class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
     private lateinit var listener: View.OnClickListener
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val txtTipoSolicitud: TextView = view.findViewById(R.id.nombreOficio)
         val txtFolio: TextView = view.findViewById(R.id.tvfolio)
 
         init {
@@ -21,6 +22,7 @@ class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
         }
 
         val txtTelefono: TextView = view.findViewById(R.id.tvtelefono)
+        val txtnombreCompletoCliente: TextView = view.findViewById(R.id.txtNombreCliente)
 
         init {
             // Define click listener for the ViewHolder's View.
@@ -42,10 +44,15 @@ class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        viewHolder.txtTipoSolicitud.text = datset[position].nombreO
         viewHolder.txtFolio.text = datset[position].idPresupuesto.toString()
         viewHolder.txtTelefono.text = datset[position].telefonoCliente
         viewHolder.txtProblema.text = datset[position].problema
         viewHolder.txtFecha.text = datset[position].fechaP
+        val nombre = datset[position].Nombre
+        val apeP = datset[position].Apellido_Paterno
+        val apeM = datset[position].Apellido_Materno
+        viewHolder.txtnombreCompletoCliente.text = "$nombre $apeP $apeM"
     }
 
     // Create new views (invoked by the layout manager)

@@ -62,4 +62,7 @@ class Presupuesto {
     @SerializedName("Correo")
     @Expose
     var Correo = ""
+    @SerializedName("nombreO")
+    @Expose
+    var nombreO = ""
 }

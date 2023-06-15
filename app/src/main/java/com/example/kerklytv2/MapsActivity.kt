@@ -103,6 +103,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         //recibimos las coordenas
         telefonoCliente = b.getString("telefonoCliente").toString()
         telefonoKerkly = b.getString("telefonok").toString()
+
         latitud2 = b.getString("latitud").toString()
         longitud2 = b.getString("longitud").toString()
         nombreCliente = b.getString("nombreCompletoCliente").toString()
@@ -114,11 +115,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
          TipoServicio  = b.getString("tipoServicio").toString()
         Curp = b.getString("Curp").toString()
         correoKerly = b.getString("correoKerly").toString()
-        direccionKerly = b.getString("direccionKerly").toString()
+        direccionKerly = b.getString("direccionkerkly").toString()
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
         request = Volley.newRequestQueue(applicationContext)
+
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment

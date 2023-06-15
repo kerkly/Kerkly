@@ -101,11 +101,12 @@ class PresupuestosPreviewFragment : Fragment() {
     }
     private fun setPresupuestoNormal() {
         val b = Bundle()
-        b.putString("telefonokerkly", telefonoKerkly)
+        b.putString("telefonok", telefonoKerkly)
         b.putString("nombreCompletoKerkly", nombre_completo)
         b.putString("Curp", Curp)
         b.putString("correoKerly", correoKerkly)
-        b.getString("direccionKerly", direccionKerly)
+        b.putString("direccionkerkly", direccionKerly)
+
         val f = PresupuestoNomalFragment()
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {

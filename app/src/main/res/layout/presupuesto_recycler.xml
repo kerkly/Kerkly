@@ -27,36 +27,119 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/idofcio"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="oficio"
-                android:textSize="16dp"
-                android:textStyle="bold"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo de Solicitud: "
+                    android:textSize="16dp"
+                    android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/tvfolio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="15200"/>
+                <TextView
+                    android:id="@+id/nombreOficio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Plomero"
+                    android:textSize="16dp"
+                    android:textStyle="normal"/>
 
-            <TextView
-                android:id="@+id/tvtelefono"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="7471130682"/>
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvfecha"
-                android:layout_width="wrap_content"
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="10/09/2021  03:26 p.m."/>
-            <TextView
-                android:id="@+id/tvproblema"
-                android:layout_width="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Folio: "/>
+
+                <TextView
+                    android:id="@+id/tvfolio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:text="311"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="Aquí mi problema"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Telefono: "/>
+
+                <TextView
+                    android:id="@+id/tvtelefono"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7471130682"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Nombre: "/>
+                <TextView
+                    android:id="@+id/txtNombreCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="nombre Completo"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Fecha y Hora: "/>
+                <TextView
+                    android:id="@+id/tvfecha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10/09/2021  03:26 p.m."/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:text="Problema: "/>
+                <TextView
+                    android:id="@+id/tvproblema"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aquí mi problema"/>
+            </LinearLayout>
+
 
         </LinearLayout>
 

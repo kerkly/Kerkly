@@ -158,7 +158,7 @@ class Presupuesto : AppCompatActivity() {
                 p.total = total
                 p.generarPdf()
                 mandarNormalElPagoTotal(folio, total)
-                Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
+
 
             } else {
                 if (TipoServicio == "ServicioNR"){
@@ -202,8 +202,8 @@ class Presupuesto : AppCompatActivity() {
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
             .build()
-        val api = adapter.create(PrecioInterfaceNR::class.java)
-        api.MandarPago(folio, total.toString(), curp,
+        val api = adapter.create(PrecioNormalInterface::class.java)
+        api.MandarPago(folio, total.toString(),
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
                     var entrada: BufferedReader?=null
@@ -214,10 +214,16 @@ class Presupuesto : AppCompatActivity() {
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
-                    //mandar notificacion
-                    obtenerToken(telefonoCliente,nombrekerkly, this@Presupuesto )
-                  //  llamartopico.llamartopico(this@Presupuesto, "","","")
-                    Toast.makeText(applicationContext, R, Toast.LENGTH_SHORT).show()
+                    if (entrada.toString() == "pago enviado"){
+                        Toast.makeText(applicationContext, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
+                        //mandar notificacion
+                        obtenerToken(telefonoCliente,nombrekerkly, this@Presupuesto )
+                        //  llamartopico.llamartopico(this@Presupuesto, "","","")
+                        Toast.makeText(applicationContext, R, Toast.LENGTH_SHORT).show()
+
+                    }else{
+                        Toast.makeText(applicationContext, "$entrada", Toast.LENGTH_SHORT).show()
+                    }
 
                    
                 }
@@ -393,6 +399,4 @@ class Presupuesto : AppCompatActivity() {
         total = tablaDinamica.getTotal()
         total_txt.text = "Total: $$total"
     }
-
-
 }

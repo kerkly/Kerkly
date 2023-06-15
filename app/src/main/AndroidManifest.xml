@@ -15,14 +15,6 @@
         android:theme="@style/Theme.KerklyTV2">
 
         <service
-            android:name=".Notificacion.MyIntentServiceMensajes"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".Notificacion.MyServicioMen"
-            android:enabled="true"
-            android:exported="true" />
-        <service
             android:name=".Notificacion.MyFirebaseInstanceIDServic"
             android:directBootAware="true"
             android:exported="false">
@@ -77,7 +69,8 @@
         <activity
             android:name=".PantallaInicio"
             android:exported="true"
-            android:screenOrientation="fullSensor">
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,15 +79,19 @@
         </activity>
         <activity
             android:name=".Presupuesto"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".vista.InterfazKerkly"
             android:exported="true"
             android:label="@string/title_activity_interfaz_kerkly"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.KerklyTV2.NoActionBar" />
         <activity
             android:name=".vista.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
+
     </application>
 
 </manifest>

@@ -77,11 +77,12 @@ class PresupuestoNomalFragment : Fragment() {
         recyclerview.setHasFixedSize(true)
         recyclerview.layoutManager = LinearLayoutManager(context)
        // val intent = context.intent
-        telefonokerkly = arguments?.getString("telefonokerkly").toString()
+        telefonokerkly = arguments?.getString("telefonok").toString()
         nombreKerkly = arguments?.getString("nombreCompletoKerkly")!!
         Curp = arguments?.getString("Curp").toString()
         correoKerly = arguments?.getString("correoKerly").toString()
-        direccionKerly = arguments?.getString("direccionKerly").toString()
+        direccionKerly = arguments?.getString("direccionkerkly").toString()
+        println("------> direccion kerkly $direccionKerly $correoKerly")
         //Toast.makeText(context, "Teléfono: $telefonokerkly", Toast.LENGTH_SHORT).show()
         setProgressDialog.setProgressDialog(requireContext())
         getJSON()
@@ -136,7 +137,6 @@ class PresupuestoNomalFragment : Fragment() {
                        val am = postList[recyclerview.getChildAdapterPosition(it)].Apellido_Materno
 
                        val numerocliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
-
                        val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
                        val correoCliente = postList[recyclerview.getChildAdapterPosition(it)].Correo
 
