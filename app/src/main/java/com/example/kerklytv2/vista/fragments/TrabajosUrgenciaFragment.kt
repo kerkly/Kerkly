@@ -35,8 +35,6 @@ class TrabajosUrgenciaFragment : Fragment() {
     private lateinit var img: ImageView
     private lateinit var txt: TextView
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -81,11 +79,7 @@ class TrabajosUrgenciaFragment : Fragment() {
         val call = presupuestoGET.getPost(numeroTelefono)
         call?.enqueue(object : Callback<List<TrabajoUrgencia?>?> {
 
-            override fun onResponse(
-                call: Call<List<TrabajoUrgencia?>?>,
-                response: Response<List<TrabajoUrgencia?>?>
-            ) {
-
+            override fun onResponse(call: Call<List<TrabajoUrgencia?>?>, response: Response<List<TrabajoUrgencia?>?>) {
                 val postList: ArrayList<TrabajoUrgencia> = response.body() as
                         ArrayList<TrabajoUrgencia>
 

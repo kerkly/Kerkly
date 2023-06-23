@@ -341,7 +341,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     }
 
     private fun AsignarRuta(latInicial: String, lngInicial: String, latFinal: String, lngFinal: String) {
-        val url = "https://maps.googleapis.com/maps/api/directions/json?origin=$latInicial,$lngInicial&destination=$latFinal,$lngFinal&key=AIzaSyAp-2jznuGLfRJ_en09y1sp6A-467zrXm0&mode=drive"
+        val url = "https://maps.googleapis.com/maps/api/directions/json?origin=$latInicial,$lngInicial&destination=$latFinal,$lngFinal&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo&mode=drive"
 
         jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null, { response ->
             var jRoutes: JSONArray? = null
@@ -496,7 +496,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("tipoServicio", "normal")
                     i.putExtra("Curp", Curp)
                     i.putExtra("correoKerly", correoKerly)
-                    i.putExtra("direccionKerly", direccionKerly)
+                    i.putExtra("direccionkerkly", direccionKerly)
                     startActivity(i)
                     dialog.dismiss()
                 }
@@ -517,6 +517,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("tipoServicio", "clienteNoRegistrado")
                     i.putExtra("telefonok", telefonoKerkly)
                     i.putExtra("correoCliente", correoCliente)
+                    i.putExtra("direccionkerkly", direccionKerly)
                     startActivity(i)
                     dialog.dismiss()
                 }

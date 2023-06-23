@@ -76,8 +76,7 @@ class PresupuestosPreviewFragment : Fragment() {
         nombre_completo = arguments?.getString("nombreCompletoKerkly").toString()
         Curp = arguments?.getString("Curp").toString()
         correoKerkly = arguments?.getString("correoKerly").toString()
-        direccionKerly = arguments?.getString("direccionKerly").toString()
-
+        direccionKerly = arguments?.getString("direccionkerkly").toString()
         btonClienteNR.setOnClickListener {
             setServiciosClienteNR()
         }

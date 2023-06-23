@@ -11,9 +11,6 @@ class Kerkly (telefono: String, contrasenia: String) {
     private lateinit var apellidoM: String
     private lateinit var curp: String
     private var sexo: Char = ' '
-
-
-
     constructor(): this("", "")
 
     //métodos set

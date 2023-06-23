@@ -164,35 +164,21 @@ class ContactosFragment : Fragment() {
                         }
                         return false
                     }
-
                     override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
 
                     }
-
                     override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-
                         TODO("Not yet implemented")
                     }
-
-
                 })
-
-
             }
-
             override fun onCancelled(error: DatabaseError) {
                 println(error)
             }
         })
 
     }
-
-
-
     private fun setScrollBar() {
         recyclerView.scrollToPosition(MiAdapter.itemCount-1)
     }
-
-
-
 }

@@ -114,7 +114,7 @@ class BlankFragmentChat : Fragment() {
 
          boton.setOnClickListener {
              //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
-             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime()))
+             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),""))
              editText.setText("")
          }
 

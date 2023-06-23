@@ -88,6 +88,7 @@ class Presupuesto : AppCompatActivity() {
     private lateinit var CURP: String
     private lateinit var correoKerly: String
     private lateinit var direccionKerly:String
+    var lista: MutableList<MutableList<String>>? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +111,7 @@ class Presupuesto : AppCompatActivity() {
         TipoServicio = b.getString("tipoServicio").toString()
         CURP = b.getString("Curp").toString()
         correoKerly = b.getString("correoKerly").toString()
-        direccionKerly = b.getString("direccionKerly").toString()
+        direccionKerly = b.getString("direccionkerkly").toString()
 
         //val database = Firebase.database
         //val myRef = database.getReference("message")
@@ -144,40 +145,63 @@ class Presupuesto : AppCompatActivity() {
 
         // Generaremos el documento al hacer click sobre el boton.
         boton.setOnClickListener {
+            if (total ==0.0 ){
+                Toast.makeText(applicationContext, "Por favor Ingrese los precios del servicio", Toast.LENGTH_SHORT).show()
+            }else {
+                if (TipoServicio == "normal") {
+                    // Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
 
-
-            if (TipoServicio == "normal") {
-                dbFirebase()
-                val p = Pdf(clientenombre,direccionKerly ,folio, TipoServicio, nombrekerkly)
-                p.telefono = telefonoK
-                p.cabecera = header
-                val lista = tablaDinamica.getData()
-                p.lista = lista
-                p.correo = correoKerly
-                p.problema = problemacliente
-                p.total = total
-                p.generarPdf()
-                mandarNormalElPagoTotal(folio, total)
-
-
-            } else {
-                if (TipoServicio == "ServicioNR"){
                     dbFirebase()
-                    val p = Pdf(clientenombre, direccionKerly,folio, TipoServicio, nombrekerkly)
+                    lista = tablaDinamica.getData()
+                    val p = Pdf(
+                        clientenombre,
+                        direccionKerly,
+                        folio,
+                        correoKerly,
+                        TipoServicio,
+                        nombrekerkly
+                    )
                     p.telefono = telefonoK
                     p.cabecera = header
-                    val lista = tablaDinamica.getData()
-                    p.lista = lista
-                    p.correo = ""
                     p.problema = problemacliente
+                    p.direccion = direccionKerly
+                    p.folio = folio
                     p.total = total
+                    p.lista = lista
+                    p.correo = correoKerly
                     p.generarPdf()
-                    println("tipo: $TipoServicio nombreC: $clientenombre, Direccion: $direccionKerly" +
-                            " folio: $folio nombre kerly : $nombrekerkly telefonoClien: $telefonoCliente" +
-                            "priblema: $problemacliente total: $total")
-                    mandarPagoTotalPresupuestoNR()
-                    Toast.makeText(this, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
 
+                    mandarNormalElPagoTotal(folio, total)
+
+
+                } else {
+                    if (TipoServicio == "ServicioNR") {
+                        dbFirebase()
+                        val p = Pdf(
+                            clientenombre,
+                            direccionKerly,
+                            folio,
+                            correoKerly,
+                            TipoServicio,
+                            nombrekerkly
+                        )
+                        p.telefono = telefonoK
+                        p.cabecera = header
+                        val lista = tablaDinamica.getData()
+                        p.lista = lista
+                        p.correo = correoKerly
+                        p.problema = problemacliente
+                        p.total = total
+                        p.generarPdf()
+                        println(
+                            "tipo: $TipoServicio nombreC: $clientenombre, Direccion: $direccionKerly" +
+                                    " folio: $folio nombre kerly : $nombrekerkly telefonoClien: $telefonoCliente" +
+                                    "priblema: $problemacliente total: $total"
+                        )
+                        mandarPagoTotalPresupuestoNR()
+
+
+                    }
                 }
             }
         }
@@ -206,23 +230,23 @@ class Presupuesto : AppCompatActivity() {
         api.MandarPago(folio, total.toString(),
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
-                    var entrada: BufferedReader?=null
-                    var R = ""
+                    var reader: BufferedReader?=null
+                    var entrada = ""
                     try {
-                        entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
-                        R= entrada.readLine()
+                        reader = BufferedReader(InputStreamReader(t?.body?.`in`()))
+                        entrada= reader.readLine()
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
                     if (entrada.toString() == "pago enviado"){
-                        Toast.makeText(applicationContext, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
                         //mandar notificacion
                         obtenerToken(telefonoCliente,nombrekerkly, this@Presupuesto )
                         //  llamartopico.llamartopico(this@Presupuesto, "","","")
-                        Toast.makeText(applicationContext, R, Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(applicationContext, entrada, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Se creo tu archivo pdf", Toast.LENGTH_SHORT).show()
 
                     }else{
-                        Toast.makeText(applicationContext, "$entrada", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "else $entrada", Toast.LENGTH_SHORT).show()
                     }
 
                    
@@ -244,7 +268,7 @@ class Presupuesto : AppCompatActivity() {
                 val u2 = snapshot.getValue(usuarios::class.java)
                 token = u2!!.token
                 System.out.println("el token del kerkly " + token)
-                llamartopico.llamartopico(context, token, " En un momento se le atendera", "Gracias por su confianza-> $nombreK")
+                llamartopico.llamartopico(context, token, " En un momento se le atendera", "Gracias por su confianza-> $clientenombre")
                 val intent = Intent(this@Presupuesto, PantallaInicio::class.java)
                 startActivity(intent)
             }
@@ -266,11 +290,11 @@ class Presupuesto : AppCompatActivity() {
         api.MandarPago(folio, total.toString(), CURP,
             object : Callback<Response?> {
                 override fun success(t: Response?, response: Response?) {
-                    var entrada: BufferedReader?=null
-                    var R = ""
+                    var reader: BufferedReader?=null
+                    var entrada = ""
                     try {
-                        entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
-                        R= entrada.readLine()
+                        reader = BufferedReader(InputStreamReader(t?.body?.`in`()))
+                        entrada= reader.readLine()
                         Log.d("--------------)", "$folio, $total")
                         Toast.makeText(applicationContext, entrada.toString(), Toast.LENGTH_SHORT).show()
                     }catch (e: Exception){

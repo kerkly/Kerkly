@@ -1,12 +1,18 @@
 package com.example.kerklytv2.controlador
 
+import android.app.Activity
+import android.os.Bundle
+import android.text.TextUtils.replace
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.TrabajoUrgencia
+import com.example.kerklytv2.vista.fragments.ContactosFragment
 
 class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
                     RecyclerView.Adapter<AdapterUrgencia.ViewHolder>(), View.OnClickListener {
@@ -15,27 +21,17 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
 
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val txtTipoSolicitud: TextView = view.findViewById(R.id.nombreOficio)
         val txtFolio: TextView = view.findViewById(R.id.txt_folio_folio)
-
-        init {
-            // Define click listener for the ViewHolder's View.
-        }
-
-        val txtTelefono: TextView = view.findViewById(R.id.txt_folio_problema)
-
-        init {
-            // Define click listener for the ViewHolder's View.
-        }
-
-
-        val txtnombre: TextView = view.findViewById(R.id.txt_folio_nombre)
-
+        val txtTelefono: TextView = view.findViewById(R.id.tvtelefonoUrgente)
+        val txtnombre: TextView = view.findViewById(R.id.txt_folio_nombreUrgnt)
         val txt_folio_correo: TextView = view.findViewById(R.id.txt_folio_correo)
-
-        val txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problema)
-        val txtOficio: TextView= view.findViewById(R.id.txt_folio_oficio)
-
+        val txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problemaUrgente)
         val txt_fecha_urgente: TextView = view.findViewById(R.id.txt_fecha_urgente)
+
+        var chat_img: ImageView = view.findViewById(R.id.chat_img)
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,11 +47,24 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
         holder.txtFolio.text = datset[position].idPresupuesto.toString()
 
         val nombreCompleto = datset[position].Nombre +" "+ datset[position].Apellido_Paterno +" "+ datset[position].Apellido_Materno
+        holder.txtTipoSolicitud.text = datset[position].nombreOficio
+        holder.txtFolio.text = datset[position].idPresupuesto
+        holder.txtTelefono.text = datset[position].telefonoCliente
         holder.txtnombre.text = nombreCompleto
         holder.txt_folio_correo.text = datset[position].Correo
         holder.txt_folio_problema.text = datset[position].problema
-        holder.txtOficio.text = datset[position].nombreOficio
         holder.txt_fecha_urgente.text = datset[position].fechaP
+
+        holder.chat_img.setOnClickListener {
+            val f = ContactosFragment()
+            val b = Bundle()
+            val nombre = "${datset[position].Nombre} ${datset[position].Apellido_Paterno} ${datset[position].Apellido_Materno}"
+            val folio = datset[position].idPresupuesto
+
+            b.putString("Nombre", nombre)
+            b.putInt("Contrato", folio!!.toInt())
+
+        }
     }
 
     override fun getItemCount(): Int {

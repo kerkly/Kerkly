@@ -82,7 +82,7 @@ class PresupuestoNomalFragment : Fragment() {
         Curp = arguments?.getString("Curp").toString()
         correoKerly = arguments?.getString("correoKerly").toString()
         direccionKerly = arguments?.getString("direccionkerkly").toString()
-        println("------> direccion kerkly $direccionKerly $correoKerly")
+
         //Toast.makeText(context, "Teléfono: $telefonokerkly", Toast.LENGTH_SHORT).show()
         setProgressDialog.setProgressDialog(requireContext())
         getJSON()
@@ -162,7 +162,7 @@ class PresupuestoNomalFragment : Fragment() {
                        i.putExtra("Folio", folio)
                        i.putExtra("Curp", Curp)
                        i.putExtra("correoKerly", correoKerly)
-                       i.putExtra("direccionKerly", direccionKerly)
+                       i.putExtra("direccionkerkly", direccionKerly)
                        startActivity(i)
 
                    }

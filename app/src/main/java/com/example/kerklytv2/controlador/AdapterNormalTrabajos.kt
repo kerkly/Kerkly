@@ -20,25 +20,13 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: 
 
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val txtTipoSolicitud: TextView = view.findViewById(R.id.nombreOficio)
         val txtFolio: TextView = view.findViewById(R.id.txt_folio_folio)
-
-        init {
-            // Define click listener for the ViewHolder's View.
-        }
-
-        val nombre: TextView = view.findViewById(R.id.txt_folio_nombre)
-
-        init {
-            // Define click listener for the ViewHolder's View.
-        }
-
-        val correo: TextView = view.findViewById(R.id.txt_folio_correo)
-
-        init {}
-
-        var txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problema)
-
-        var txt_fecha_urgente: TextView = view.findViewById(R.id.txt_fecha_urgente)
+        val txtTelefono: TextView = view.findViewById(R.id.tvtelefonoUrgente)
+        val txtnombre: TextView = view.findViewById(R.id.txt_folio_nombreUrgnt)
+        val txt_folio_correo: TextView = view.findViewById(R.id.txt_folio_correo)
+        val txt_folio_problema: TextView = view.findViewById(R.id.txt_folio_problemaUrgente)
+        val txt_fecha_urgente: TextView = view.findViewById(R.id.txt_fecha_urgente)
 
         var chat_img: ImageView = view.findViewById(R.id.chat_img)
 
@@ -54,12 +42,15 @@ class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        val nombreCompleto = datset[position].Nombre +" "+ datset[position].Apellido_Paterno +" "+ datset[position].Apellido_Materno
+     //   holder.txtTipoSolicitud.text = datset[position].
         holder.txtFolio.text = datset[position].idPresupuesto.toString()
-        holder.nombre.text = datset[position].Nombre
-        holder.correo.text = datset[position].Correo
+        holder.txtTelefono.text = datset[position].telefonoCliente
+        holder.txtnombre.text = nombreCompleto
+        holder.txt_folio_correo.text = datset[position].Correo
         holder.txt_folio_problema.text = datset[position].problema
         holder.txt_fecha_urgente.text = datset[position].fechaP
-
 
         holder.chat_img.setOnClickListener {
             val f = ContactosFragment()

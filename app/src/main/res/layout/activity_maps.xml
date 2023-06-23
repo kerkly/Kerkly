@@ -48,10 +48,7 @@
             app:backgroundTint="#C83939"
             android:gravity="center"
             android:layout_margin="10dp"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-
-
+            />
     </LinearLayout>
 
 </FrameLayout>

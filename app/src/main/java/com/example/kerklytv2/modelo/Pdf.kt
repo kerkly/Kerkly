@@ -15,17 +15,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, nombreKerly: String) {
+class Pdf (nombreC: String, direccionC: String, folio:Int, correo: String, TipoUsuario: String, nombreKerly: String) {
 
     var nombre = nombreC
     var direccion = direccionC
     lateinit var telefono: String
-    var correo = ""
     lateinit var problema: String
     var folio = folio
     var total = 0.0
+    var correo = ""
     var tipoUsuario = TipoUsuario
-    private val NOMBRE_DIRECTORIO = "Presupuestos $tipoUsuario"
+    private val NOMBRE_DIRECTORIO = "Presupuestos Enviados"
     private val NOMBRE_DOCUMENTO = "$nombreC $folio.pdf"
     private val ETIQUETA_ERROR = "ERROR"
     var cabecera = ArrayList<String>()
@@ -34,18 +34,11 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
 
 
     fun getRuta(): File? {
-
         // El fichero sera almacenado en un directorio dentro del directorio
         // Descargas
         var ruta: File? = null
-        if (Environment.MEDIA_MOUNTED == Environment
-                .getExternalStorageState()
-        ) {
-            ruta = File(
-                Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                NOMBRE_DIRECTORIO
-            )
+        if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()) {
+            ruta = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), NOMBRE_DIRECTORIO)
             if (ruta != null) {
                 if (!ruta.mkdirs()) {
                     if (!ruta.exists()) {
@@ -56,7 +49,6 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
         }
         return ruta
     }
-
     @Throws(IOException::class)
     fun crearFichero(nombreFichero: String?): File? {
         val ruta = getRuta()
@@ -66,34 +58,20 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
     }
 
     fun generarPdf() {
-
         // Creamos el documento.
         val documento = Document()
         try {
             val f = crearFichero(NOMBRE_DOCUMENTO)
-
             // Creamos el flujo de datos de salida para el fichero donde
             // guardaremos el pdf.
-            val ficheroPdf = FileOutputStream(
-                f?.getAbsolutePath()
-            )
-
+            val ficheroPdf = FileOutputStream(f?.getAbsolutePath())
             // Asociamos el flujo que acabamos de crear al documento.
             val writer = PdfWriter.getInstance(documento, ficheroPdf)
-
             // Incluimos el pie de pagina y una cabecera
-            val cabecera = HeaderFooter(
-                Phrase(
-                    "KERKLY"
-                ), false
-            )
+            val cabecera = HeaderFooter(Phrase("KERKLY"), false)
             cabecera.setAlignment(HeaderFooter.ALIGN_CENTER)
 
-            val pie = HeaderFooter(
-                Phrase(
-                    "KERKLY"
-                ), false
-            )
+            val pie = HeaderFooter(Phrase("KERKLY"), false)
             pie.setAlignment(HeaderFooter.ALIGN_CENTER)
 
             documento.setHeader(cabecera)
@@ -101,8 +79,6 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
 
             // Abrimos el documento.
             documento.open()
-
-
             /* val date = Calendar.getInstance()
 
              var dia = date.get
@@ -156,9 +132,7 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
             p.add(ph2)
             documento.add(p)
 
-            if (tipoUsuario =="ServicioNR"){
 
-            }else{
                 f1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD)
                 f2 = FontFactory.getFont(FontFactory.HELVETICA)
                 ph2 = Phrase(correo, f2)
@@ -166,8 +140,6 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
                 p = Paragraph(ph1)
                 p.add(ph2)
                 documento.add(p)
-
-            }
 
             f1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD)
             f2 = FontFactory.getFont(FontFactory.HELVETICA)
@@ -191,7 +163,7 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
             documento.add(p)
 
             documento.add(Paragraph("En el presente documento se le hace llegar la cotización" +
-                    "de sericios solicitados que se de detallan a continuación."))
+                    "de servicios solicitados que se de detallan a continuación."))
 
             documento.add(Paragraph("\n"))
 
@@ -281,7 +253,6 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
             //documento.add(Paragraph("KERKLY", font2))
 
 
-
             // Agregar marca de agua
             /*font = FontFactory.getFont(
                 FontFactory.HELVETICA, 42f, Font.BOLD,
@@ -310,6 +281,7 @@ class Pdf (nombreC: String, direccionC: String, folio:Int, TipoUsuario: String, 
             // Cerramos el documento.
             println("aquiii 311")
             documento.close()
+
         }
     }
 

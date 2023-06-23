@@ -97,23 +97,16 @@ dependencies {
     // FirebaseUI for Cloud Storage
     implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
     implementation 'com.google.firebase:firebase-storage:20.1.0'
-
     implementation files('libs/droidText.0.4.jar')
     implementation 'com.airbnb.android:paris:2.0.0'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
-
-
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
-
-
-    //noinspection GradleCompatible,GradleCompatible
-    implementation 'com.android.support:cardview-v7:28.0.0'
-
+    //nonspection GradleCompatible,GradleCompatible
+    //implementation 'com.android.support:cardview-v7:28.0.0'
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:28.0.0'
 //Habilita el controlador de mensajes en modo de inicio directo en tu app
-
-
+    implementation 'com.itextpdf:itextg:5.5.10' // La última versión de la biblioteca iText PDF
 }
 apply plugin: 'com.google.gms.google-services'

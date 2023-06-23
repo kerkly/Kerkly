@@ -13,17 +13,12 @@
         android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-
-
-
         <LinearLayout
             android:id="@+id/layout_chat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@color/fondo1"
-            >
+            android:background="@color/fondo1">
 
             <ImageView
                 android:src="@drawable/ic_frame_46"
@@ -82,7 +77,7 @@
             />
 
         <ImageButton
-            android:id="@+id/imageButtonSelecionarFoto"
+            android:id="@+id/imageButtonEnviarArchivo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
