@@ -94,8 +94,6 @@ class BlankFragmentChat : Fragment() {
         databaseReferenceCliente = firebaseDatabaseCliente.getReference("UsuariosR")
             .child(telefonoCliente).child("Lista de Usuarios")
         databaseReferenceCliente.push().setValue(listaDeUsuarios(telefonoKerkly))
-
-
          databaseReference = firebaseDatabase.getReference("UsuariosR")
              .child(telefonoKerkly).child("chats").child("$telefonoKerkly"+"_"+"$telefonoCliente")
 
@@ -114,7 +112,7 @@ class BlankFragmentChat : Fragment() {
 
          boton.setOnClickListener {
              //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
-             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),""))
+             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
              editText.setText("")
          }
 

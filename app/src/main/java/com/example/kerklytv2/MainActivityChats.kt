@@ -1,10 +1,13 @@
 package com.example.kerklytv2
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,10 +21,13 @@ import com.example.kerklytv2.modelo.Mensaje
 import com.example.kerklytv2.modelo.MensajeCopia
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import java.text.DateFormat
 import java.util.*
+
 
 class MainActivityChats : AppCompatActivity() {
     private lateinit var boton: ImageButton
@@ -50,6 +56,10 @@ class MainActivityChats : AppCompatActivity() {
      var childEventListener: ChildEventListener? = null
     var childEventListener2: ChildEventListener? = null
     private lateinit var botonArchivos: ImageButton
+    private val REQUEST_CODE_FILE = 1
+    private lateinit var progressBar: ProgressBar
+    private lateinit var uriArchivo: Uri
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +86,7 @@ class MainActivityChats : AppCompatActivity() {
         telefonoCliente = b.getString("telefonoCliente").toString()
         fotoCliente = b.getString("urlFotoCliente").toString()
         tokenCliente = b.getString("tokenCliente")!!
+
 
         nombre_txt.text = nombrecliente
         val photoUrl = Uri.parse(fotoCliente)
@@ -124,9 +135,9 @@ class MainActivityChats : AppCompatActivity() {
             if (editText.text.toString() == ""){
                 Toast.makeText(this, "Escribe tu mensaje" , Toast.LENGTH_SHORT).show()
             }else{
-            //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
-            databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),""))
-            databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime(),""))
+           //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
+            databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
+            databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
             llamartopico.llamartopico(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly)
             editText.setText("")
             }
@@ -192,24 +203,142 @@ class MainActivityChats : AppCompatActivity() {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
+                adapter.notifyDataSetChanged()
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
+                adapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                adapter.notifyDataSetChanged()
             }
 
         })
 
+        progressBar= findViewById(R.id.progressBar)
         botonArchivos = findViewById(R.id.imageButtonEnviarArchivo)
         botonArchivos.setOnClickListener {
+            seleccionarArchivoPDF();
 
         }
     }
+    private fun seleccionarArchivoPDF() {
+        progressBar.visibility = View.VISIBLE
+//        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//        intent.type = "application/pdf"
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.type = "*/*" // Puedes especificar el tipo de archivo deseado, por ejemplo, "application/pdf" para archivos PDF
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        startActivityForResult(intent, REQUEST_CODE_FILE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_FILE && resultCode == RESULT_OK && data != null) {
+             uriArchivo = data.data!!
+
+            uriArchivo?.let { uri ->
+                val fileType: String? = contentResolver.getType(uri)
+                fileType?.let {
+                    // Aquí tienes el tipo de archivo seleccionado
+                    // Puedes realizar acciones adicionales en función del tipo de archivo
+                    System.out.println("uri $fileType")
+                    if (fileType  == "application/pdf"){
+                        println("seleciono un pdf")
+                        // Realiza las operaciones necesarias con el archivo PDF seleccionado
+                        EnviarArchivo(uriArchivo, "pdf")
+                    }else{
+                        EnviarArchivo(uriArchivo, "imagen")
+                        println("otro archivo")
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun EnviarArchivo(uriArchivo: Uri, tipoArchivo: String){
+        val nombreArchivo: String = obtenerNombreArchivo(uriArchivo)
+        // Obtén una referencia al storage de Firebase
+        val storageRef = FirebaseStorage.getInstance().reference
+        // Crea un nombre de archivo único para evitar conflictos
+        val filename = nombreArchivo
+        val fileRef = storageRef.child("UsuariosR").child(telefonoKerkly.toString()).child("chats")
+            .child("$telefonoKerkly"+"_"+"$telefonoCliente").child(filename)
+
+        if (tipoArchivo == "pdf"){
+            println("nombre del archivo " + nombreArchivo)
+            // Carga el archivo PDF en Firebase Storage
+            val uploadTask = fileRef.putFile(uriArchivo)
+            // Registra un Listener para obtener la URL del archivo una vez cargado
+            uploadTask.addOnProgressListener {taskSnapshot ->
+                // Calcula el progreso en porcentaje
+                val progress = 100.0 * taskSnapshot!!.bytesTransferred / taskSnapshot!!.totalByteCount
+                // Actualiza la barra de progreso
+                progressBar.progress = progress.toInt()
+            }
+            uploadTask.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
+                // Obtiene la URL de descarga del archivo
+                fileRef.downloadUrl
+                    .addOnSuccessListener { uri: Uri ->
+                        // Guarda la URL del archivo en Firebase Realtime Database
+                        //val databaseRef = FirebaseDatabase.getInstance().reference
+                         val fileUrl = uri.toString()
+                        databaseReference.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+                        databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+                            storageRef.child("$tipoArchivo").child(fileUrl)
+                        llamartopico.llamartopico(this,tokenCliente, nombreArchivo, nombreCompletoKerkly)
+                        Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }else{
+            // Carga el archivo PDF en Firebase Storage
+            val uploadTask = fileRef.putFile(uriArchivo)
+            // Registra un Listener para obtener la URL del archivo una vez cargado
+            uploadTask.addOnProgressListener {taskSnapshot ->
+                // Calcula el progreso en porcentaje
+                val progress = 100.0 * taskSnapshot!!.bytesTransferred / taskSnapshot!!.totalByteCount
+                // Actualiza la barra de progreso
+                progressBar.progress = progress.toInt()
+            }
+            uploadTask.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
+                // Obtiene la URL de descarga del archivo
+                fileRef.downloadUrl
+                    .addOnSuccessListener { uri: Uri ->
+                        // Guarda la URL del archivo en Firebase Realtime Database
+                        //val databaseRef = FirebaseDatabase.getInstance().reference
+                        val fileUrl = uri.toString()
+                        databaseReference.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+                        databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+                        storageRef.child("$tipoArchivo").child(fileUrl)
+                        llamartopico.llamartopico(this,tokenCliente, nombreArchivo, nombreCompletoKerkly)
+                        Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+    }
+
+    @SuppressLint("Range")
+    private fun obtenerNombreArchivo(uri: Uri): String {
+        var nombre: String? = null
+        if (uri.scheme.equals("content")) {
+            contentResolver.query(uri, null, null, null, null).use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    nombre = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                }
+            }
+        }
+        if (nombre == null) {
+            nombre = uri.path
+            val index = nombre!!.lastIndexOf("/")
+            if (index != -1) {
+                nombre = nombre!!.substring(index + 1)
+            }
+        }
+        return nombre!!
+    }
+
 
     private fun mensajesVistoCliente(key: String) {
         firebaseDatabase = FirebaseDatabase.getInstance()
