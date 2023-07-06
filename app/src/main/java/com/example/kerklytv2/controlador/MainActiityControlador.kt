@@ -74,10 +74,7 @@ class MainActiityControlador {
                     var output = ""
                     try {
                         reader = BufferedReader(InputStreamReader(t?.body?.`in`()))
-
                         output = reader.readLine()
-
-
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
@@ -98,7 +95,8 @@ class MainActiityControlador {
                 }
 
                 override fun failure(error: RetrofitError) {
-                    println("error 101 $error")
+                    Toast.makeText(contexto, "Tenemos Problemas con el Servidor.... por favor intente mas tarde",Toast.LENGTH_SHORT).show()
+                    contexto.finish()
                 }
 
             }

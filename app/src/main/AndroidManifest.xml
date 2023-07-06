@@ -6,8 +6,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -25,17 +26,25 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
+        <service android:name=".MisServicios.LocationService" />
+        <service android:name=".MisServicios.ForegroundLocationService" />
         <activity
             android:name=".MainActivityChats"
-            android:exported="false" />
+            android:screenOrientation="portrait"
+            android:exported="false"
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"/>
         <activity
             android:name=".MainActivitySeguimientoDelServicio"
-            android:exported="false" />
+            android:screenOrientation="portrait"
+            android:exported="false"
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"/>
 
         <activity
             android:name=".MainActivityEnviarUbicacionEnTiempoReal"
-            android:exported="false" />
+
+            android:screenOrientation="portrait"
+            android:exported="false"
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"/>
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -67,23 +76,26 @@
 
         <activity
             android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait"
             android:exported="false"
-            android:label="@string/title_activity_maps" />
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"/>
         <activity
             android:name=".PantallaInicio"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Presupuesto"
             android:screenOrientation="portrait"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"/>
         <activity
             android:name=".vista.InterfazKerkly"
             android:exported="true"
@@ -93,7 +105,8 @@
         <activity
             android:name=".vista.MainActivity"
             android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.KerklyTV2.NoActionBar"/>
 
     </application>
 

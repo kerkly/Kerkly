@@ -1,4 +1,5 @@
 package com.example.kerklytv2.vista
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.request.RequestOptions
 import com.example.kerklytv2.R
+import com.example.kerklytv2.clases.NetworkSpeedChecker
 import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyInterface
@@ -61,7 +63,6 @@ import java.text.DateFormat
 import java.util.*
 
 class InterfazKerkly : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var kerkly: Kerkly
     private lateinit var b: Bundle
@@ -103,6 +104,7 @@ class InterfazKerkly : AppCompatActivity() {
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
 
+        NetworkSpeedChecker(this)
         val view = navView.getHeaderView(0)
         txt_correo = view.findViewById(R.id.correo_header)
         txt_nombre = view.findViewById(R.id.nombre_header)
@@ -146,11 +148,6 @@ class InterfazKerkly : AppCompatActivity() {
            drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
-        /*val first = arrayOf("A", "B")
-        val second = arrayOf("C", "D", "E")
-        val result = join(first, second)
-        println(result.contentToString())*/
-
     }
 
     fun <T> join(first: Array<T>, second: Array<T>): Array<T> {
@@ -197,7 +194,6 @@ class InterfazKerkly : AppCompatActivity() {
         menuInflater.inflate(R.menu.interfaz_kerkly, menu)
         return true
     }
-
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
@@ -209,7 +205,6 @@ class InterfazKerkly : AppCompatActivity() {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
         }
     }
-
     private fun setFragmenTrabajos() {
         val args = Bundle()
         val num = b.getString("numT")
@@ -260,14 +255,10 @@ class InterfazKerkly : AppCompatActivity() {
         val f = PresupuestoFragment()
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
-
-
-
     private fun setFragmentAgenda() {
         val f = PresupuestoFragment()
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
-
     private fun setFragmentHistorial() {
         val args = Bundle()
         val num = b.getString("numT")
@@ -277,7 +268,6 @@ class InterfazKerkly : AppCompatActivity() {
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
-
     private fun sesion(telefono: String) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
@@ -293,22 +283,17 @@ class InterfazKerkly : AppCompatActivity() {
                     var output = ""
                     try {
                         reader = BufferedReader(InputStreamReader(t?.body?.`in`()))
-
                         output = reader.readLine()
-
 
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
-
                    // Log.e("nosee", output)
 
                 }
-
                 override fun failure(error: RetrofitError) {
                     println("error $error")
                 }
-
             }
         )
     }
@@ -323,7 +308,6 @@ class InterfazKerkly : AppCompatActivity() {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         val oficios = retrofit.create(ObtenerKerklyaOficiosInterface::class.java)
         val call = oficios.getOficios_kerkly(curp)
 
@@ -375,7 +359,7 @@ class InterfazKerkly : AppCompatActivity() {
         }
     }
 
-    private fun getKerkly2(foto:String) {
+    private fun getKerkly(foto:String) {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -389,6 +373,7 @@ class InterfazKerkly : AppCompatActivity() {
         val presupuestoGET = retrofit.create(ObtenerKerklyInterface::class.java)
         val call = presupuestoGET.getKerkly(telefonoKerkly)
         call?.enqueue(object: Callback<List<com.example.kerklytv2.modelo.serial.Kerkly?>?> {
+            @SuppressLint("SuspiciousIndentation")
             override fun onResponse(
                 call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
                 response: retrofit2.Response<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>
@@ -507,8 +492,8 @@ class InterfazKerkly : AppCompatActivity() {
                             photoUrl = currentUser!!.photoUrl.toString()
                             correoKerkly = currentUser!!.email.toString()
                             name = currentUser!!.displayName.toString()
-                            val foto = photoUrl.toString()
-                                cargarImagen(foto)
+
+                                cargarImagen(photoUrl)
                                 Log.d("correo", correo)
 
                             //obtenerToken
@@ -530,7 +515,7 @@ class InterfazKerkly : AppCompatActivity() {
                                 val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
                                 //val usuario = usuarios()
                                 //val u = usuarios(uid, email, name, foto, currentDateTimeString)
-                                databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                                databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                                     // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
                                    // getKerkly(foto)
                                     getOficiosKerkly()

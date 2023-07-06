@@ -30,16 +30,12 @@ class MainActivity : AppCompatActivity() {
         //controlador.verificarSesion(id, this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         editUsuario = findViewById(R.id.input_user)
         editContra = findViewById(R.id.input_password)
         layoutUsuario = findViewById(R.id.textnputUser)
         layoutContra = findViewById(R.id.textnputPassword)
         kerkly = Kerkly()
-
-
     }
-
 
     fun entrar(view: View) {
         val t = editUsuario.text.toString()
@@ -48,14 +44,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             layoutUsuario.error = null
         }
-
         val c = editContra.text.toString()
         if (c.equals("")) {
             layoutContra.error = getText(R.string.campoRequerico)
         } else {
             layoutContra.error = null
         }
-
         if (!t.equals("") && !c.equals("")) {
             if (t.length != 10) {
                 layoutUsuario.error = getText(R.string.telefonoNoValido)
@@ -67,10 +61,8 @@ class MainActivity : AppCompatActivity() {
 
                 controlador = MainActiityControlador()
                 controlador.verificarUsuario(kerkly, this)
-
             }
         }
-        // val intent = Intent(this, InterfazKerkly::class.java)
-        //k startActivity(intent)
+
     }
 }

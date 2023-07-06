@@ -23,6 +23,7 @@ import com.example.kerklytv2.modelo.Pdf
 import com.example.kerklytv2.modelo.TablaP
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.url.Url
+import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -297,6 +298,10 @@ class Presupuesto : AppCompatActivity() {
                         entrada= reader.readLine()
                         Log.d("--------------)", "$folio, $total")
                         Toast.makeText(applicationContext, entrada.toString(), Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@Presupuesto, InterfazKerkly::class.java)
+                        intent.putExtra("numT", telefonoK)
+                        startActivity(intent)
+                        finish()
                     }catch (e: Exception){
                         e.printStackTrace()
                     }

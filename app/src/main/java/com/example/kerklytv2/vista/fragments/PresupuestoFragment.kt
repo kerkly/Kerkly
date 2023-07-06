@@ -179,7 +179,6 @@ class PresupuestoFragment : Fragment() {
                         direccion = "$calle $colonia $ext $cp $referencia"
                         nombre = "$n $ap $am"
                         println("Teléfono: $numeroCliente, folio $folioo")
-                        //Toast.makeText(context, "Teléfono: $numeroCliente, folio $folioo", Toast.LENGTH_SHORT).show()
 
                        val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
@@ -195,6 +194,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("correo", correo)
                         i.putExtra("nombreCompletoKerkly", nombreCompletoKerkly)
                         startActivity(i)
+
 
                     }
 

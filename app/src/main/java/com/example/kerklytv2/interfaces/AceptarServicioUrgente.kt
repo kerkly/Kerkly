@@ -11,8 +11,8 @@ interface AceptarServicioUrgente {
     @FormUrlEncoded
     @POST("/AceptarServicioUrgente.php")
     fun AceptarServicio (
-        @Field("idPresupuestoNoRegistrado") idPresupuesto: String,
-        @Field("kerkly_aceptado") Aceptado: Int,
+        @Field("idPresupuesto") idPresupuesto: String,
+        @Field("Curp") Curp: String,
         callback: Callback<Response?>
     )
 }

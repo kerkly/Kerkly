@@ -93,7 +93,8 @@ class ContactosFragment : Fragment() {
 
         databaseReferenceLista.addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                mostrarUsuarios(snapshot)
+                println("mis contactos"+snapshot.child("telefono").value)
+               mostrarUsuarios(snapshot)
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -117,10 +118,11 @@ class ContactosFragment : Fragment() {
 
     private fun mostrarUsuarios(snapshot: DataSnapshot) {
         println(" tel: " + snapshot.value)
+        val telefono =snapshot.child("telefono").value
         array = arrayListOf(snapshot.value.toString())
         firebase_databaseUsu = FirebaseDatabase.getInstance()
         databaseUsu = firebase_databaseUsu.getReference("UsuariosR")
-            .child(snapshot.value.toString())
+            .child(telefono.toString())
             .child("MisDatos")
 
         databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {

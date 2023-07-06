@@ -6,6 +6,7 @@ import android.provider.Settings
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import com.example.kerklytv2.clases.NetworkSpeedChecker
 import com.example.kerklytv2.controlador.MainActiityControlador
 
 class PantallaInicio : AppCompatActivity() {
@@ -18,7 +19,7 @@ class PantallaInicio : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pantalla_inicio)
         var context = this
-
+        NetworkSpeedChecker(this)
         controlador = MainActiityControlador()
         id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         controlador.verificarSesion(id, this)

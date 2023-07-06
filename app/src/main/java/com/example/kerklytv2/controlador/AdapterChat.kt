@@ -31,7 +31,7 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 class AdapterChat(c: Context): RecyclerView.Adapter<AdapterChat.ViewHolder>() {
 
-    private var lista = ArrayList<Mensaje>()
+     var lista = ArrayList<Mensaje>()
     var context = c
     lateinit var databaseReference: DatabaseReference
 
@@ -73,7 +73,7 @@ class AdapterChat(c: Context): RecyclerView.Adapter<AdapterChat.ViewHolder>() {
                     // agregarFotoDelCliente(photoUrl, imageViewfotoCliente)
                     Picasso.get()
                         .load(photoUrl)
-                        .resize(400, 400)
+                        .resize(800, 800)
                         .into(holder.imageViewArchivo)
                 }
 
@@ -142,7 +142,7 @@ class AdapterChat(c: Context): RecyclerView.Adapter<AdapterChat.ViewHolder>() {
                 // agregarFotoDelCliente(photoUrl, imageViewfotoCliente)
                 Picasso.get()
                     .load(photoUrl)
-                    .resize(400, 400)
+                    .resize(800, 800)
                     .into(holder.imageViewArchivo)
             }
 
@@ -206,10 +206,5 @@ class AdapterChat(c: Context): RecyclerView.Adapter<AdapterChat.ViewHolder>() {
         notifyItemInserted(lista.size)
     }
 
-    private var listener: AdapterView.OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: AdapterView.OnItemClickListener) {
-        this.listener = listener
-    }
 }
 
