@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -25,7 +26,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.kerklytv2.R
+import com.example.kerklytv2.SQLite.MisOficios
+import com.example.kerklytv2.SQLite.usuariosSqlite
 import com.example.kerklytv2.clases.NetworkSpeedChecker
 import com.example.kerklytv2.controlador.SetProgressDialog
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
@@ -38,6 +43,7 @@ import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.ui.home.HomeFragment
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*
+import com.example.kerklyv5.SQLite.DataManager
 import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
@@ -57,6 +63,7 @@ import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.text.DateFormat
@@ -78,13 +85,11 @@ class InterfazKerkly : AppCompatActivity() {
     lateinit var ofi: MutableList<String>
     private lateinit var drawerLayout: DrawerLayout
     lateinit var postList: ArrayList<OficioKerkly>
-
     //Autenticacion con cuenta de google
     var providers: MutableList<AuthUI.IdpConfig?>? = null
     private var mAuth: FirebaseAuth? = null
     private var currentUser: FirebaseUser? = null
     private val MY_REQUEST_CODE = 200
-
     //firebase Realtime data base
     lateinit var photoUrl: String
     lateinit var name: String
@@ -93,6 +98,7 @@ class InterfazKerkly : AppCompatActivity() {
     val setProgressDialog = SetProgressDialog()
     private lateinit var ImageViewPerfil : ImageView
     private lateinit var direccionKerly: String
+    private lateinit var dataManager: DataManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +109,6 @@ class InterfazKerkly : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
-
         NetworkSpeedChecker(this)
         val view = navView.getHeaderView(0)
         txt_correo = view.findViewById(R.id.correo_header)
@@ -148,11 +153,9 @@ class InterfazKerkly : AppCompatActivity() {
            drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+        dataManager = DataManager(this)
     }
 
-    fun <T> join(first: Array<T>, second: Array<T>): Array<T> {
-        return first.plus(second)
-    }
     private fun cerrarSesion() {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
@@ -201,7 +204,7 @@ class InterfazKerkly : AppCompatActivity() {
 
     private fun setFragmentHome() {
         val f = HomeFragment()
-        val fm = supportFragmentManager.beginTransaction().apply {
+     supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
         }
     }
@@ -310,38 +313,43 @@ class InterfazKerkly : AppCompatActivity() {
             .build()
         val oficios = retrofit.create(ObtenerKerklyaOficiosInterface::class.java)
         val call = oficios.getOficios_kerkly(curp)
-
         call?.enqueue(object : Callback<List<OficioKerkly?>?> {
             override fun onResponse(
                 call: Call<List<OficioKerkly?>?>, response: retrofit2.Response<List<OficioKerkly?>?>) {
                  postList = response.body() as ArrayList<OficioKerkly>
-
                  ofi  = mutableListOf()
-                var acumulador = ""
+                val totalItems = postList.size
+                var itemsInserted = 0
+               // var acumulador = ""
+                var oficios: MisOficios
                 for (i in 0 until postList.size){
-                    if(i == (postList.size-1)) {
+                    println("lista a insertar ${i+1},${postList[i].nombreOficio.toString()}")
+                    oficios = MisOficios(i,postList[i].nombreOficio)
+                    dataManager.InsertarOficios(oficios)
+                    itemsInserted++
+                  /* if(i == (postList.size-1)) {
                         acumulador += "${postList[i].nombreOficio}"
                         ofi.add(acumulador)
                     } else {
-                        acumulador += "${postList[i].nombreOficio}, "
+                        acumulador += "${postList[i].nombreOficio},"
+                    }*/
+
+                    // Verifica si se han insertado todos los elementos
+                    if (itemsInserted == totalItems) {
+                      //  dataManager.mostrarOficios(txt_oficios)
                     }
                 }
-                txt_oficios.text = acumulador
+
+                //txt_oficios.text = acumulador
+              //  dataManager.DatosDelUsuario(this@InterfazKerkly)
                 setProgressDialog.dialog!!.dismiss()
-
             }
-
             override fun onFailure(call: Call<List<OficioKerkly?>?>, t: Throwable) {
-                Toast.makeText(
-                    applicationContext,
-                    "Codigo de respuesta de error: $t",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(applicationContext, "Codigo de respuesta de error: $t", Toast.LENGTH_SHORT).show()
                 setProgressDialog.dialog!!.dismiss()
             }
         })
     }
-
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -359,7 +367,7 @@ class InterfazKerkly : AppCompatActivity() {
         }
     }
 
-    private fun getKerkly(foto:String) {
+   /* private fun getKerkly(foto:String) {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -416,7 +424,7 @@ class InterfazKerkly : AppCompatActivity() {
                 setProgressDialog.dialog!!.dismiss()
             }
         })
-    }
+    }*/
 
     private fun cargarImagen(urlImagen: String) {
         val file: Uri
@@ -447,6 +455,7 @@ class InterfazKerkly : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
        // println("entro "+ currentUser!!.email)
+
         if (requestCode == MY_REQUEST_CODE) {
             currentUser = mAuth!!.currentUser
             setProgressDialog.dialog!!.dismiss()
@@ -464,6 +473,7 @@ class InterfazKerkly : AppCompatActivity() {
             val presupuestoGET = retrofit.create(ObtenerKerklyInterface::class.java)
             val call = presupuestoGET.getKerkly(telefonoKerkly)
             call?.enqueue(object: Callback<List<com.example.kerklytv2.modelo.serial.Kerkly?>?> {
+                @SuppressLint("SuspiciousIndentation")
                 override fun onResponse(
                     call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
                     response: retrofit2.Response<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>
@@ -476,26 +486,33 @@ class InterfazKerkly : AppCompatActivity() {
                         setProgressDialog.dialog!!.dismiss()
                     }else{
                         correo = postList[0].correo
-                        val nombre = postList[0].nombre
-                        val ap = postList[0].ap
-                        val am = postList[0].am
-                        curp = postList[0].curp
-                        nombreKerkly = nombre
-                        nombre_completo = "$nombre $ap $am"
-
-                        txt_nombre.text = nombre_completo
-                        txt_correo.text = correo
-                        direccionKerly = postList[0].Pais + " " + postList[0].Ciudad + " " + postList[0].Colonia + " " + postList[0].Calle
-
                         if(currentUser!!.email == correo){
-                           // Toast.makeText(applicationContext,"Todo Bien si es el correo", Toast.LENGTH_SHORT).show()
+                            val nombre = postList[0].nombre
+                            val ap = postList[0].ap
+                            val am = postList[0].am
+                            curp = postList[0].curp
+                            val telefono = telefonoKerkly.toLong()
+                            nombreKerkly = nombre
+                            nombre_completo = "$nombre $ap $am"
+                            direccionKerly = postList[0].Pais + " " + postList[0].Ciudad + " " + postList[0].Colonia + " " + postList[0].Calle
                             photoUrl = currentUser!!.photoUrl.toString()
                             correoKerkly = currentUser!!.email.toString()
                             name = currentUser!!.displayName.toString()
-
-                                cargarImagen(photoUrl)
-                                Log.d("correo", correo)
-
+                            //guardar datos del usaurio en sql
+                            Glide.with(this@InterfazKerkly)
+                                .asBitmap()
+                                .load(photoUrl)
+                                .into(object : SimpleTarget<Bitmap>() {
+                                    override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                                        val outputStream = ByteArrayOutputStream()
+                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                                        val photoByteArray = outputStream.toByteArray()
+                                        val usuarios: usuariosSqlite
+                                        usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
+                                        dataManager.verificarSiElUsarioExiste(this@InterfazKerkly,ImageViewPerfil,txt_nombre,txt_correo, photoByteArray,usuarios,telefono.toString(),nombre.toString(),ap,am,correo)
+                                        setFragmentHome()
+                                    }
+                                })
                             //obtenerToken
                             var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
                             firebaseMessaging.addOnCompleteListener {
@@ -568,7 +585,6 @@ class InterfazKerkly : AppCompatActivity() {
         if (networkInfo != null && networkInfo.isConnected) {
             if (currentUser != null) {
                 setProgressDialog.dialog!!.dismiss()
-
                 val ROOT_URL = Url().URL
                 val interceptor = HttpLoggingInterceptor()
                 interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -595,25 +611,35 @@ class InterfazKerkly : AppCompatActivity() {
                             curp = postList[0].correo
 
                             if (currentUser!!.email.toString() == correo){
+                                dataManager.mostrarOficios(txt_oficios)
                               //  Toast.makeText(this@InterfazKerkly, "si son iguales", Toast.LENGTH_SHORT).show()
                                 photoUrl = currentUser!!.photoUrl.toString()
                                 correoKerkly = currentUser!!.email.toString()
                                 name = currentUser!!.displayName.toString()
                                 val foto = photoUrl.toString()
-                                cargarImagen(foto)
-                                Log.d("correo", correo)
-
                                 val nombre = postList[0].nombre
                                 val ap = postList[0].ap
                                 val am = postList[0].am
                                 curp = postList[0].curp
+                                val telefono = telefonoKerkly.toLong()
                                 nombreKerkly = nombre
                                 nombre_completo = "$nombre $ap $am"
-
-                                txt_nombre.text = nombre_completo
-                                txt_correo.text = correo
                                 direccionKerly = postList[0].Pais + " " + postList[0].Ciudad + " " + postList[0].Colonia + " " + postList[0].Calle
-
+                                //obtenerDatosSql
+                                Glide.with(this@InterfazKerkly)
+                                    .asBitmap()
+                                    .load(photoUrl)
+                                    .into(object : SimpleTarget<Bitmap>() {
+                                        override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                                            val outputStream = ByteArrayOutputStream()
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                                            val photoByteArray = outputStream.toByteArray()
+                                            val usuarios: usuariosSqlite
+                                            usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
+                                            dataManager.verificarSiElUsarioExiste(this@InterfazKerkly,ImageViewPerfil,txt_nombre,txt_correo, photoByteArray,usuarios,telefono.toString(),nombre.toString(),ap,am,correo)
+                                            setFragmentHome()
+                                        }
+                                    })
 
                                 //obtenerToken
                                 var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
@@ -636,8 +662,7 @@ class InterfazKerkly : AppCompatActivity() {
                                     //val u = usuarios(uid, email, name, foto, currentDateTimeString)
                                     databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                                         // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
-                                        // getKerkly(foto)
-                                        getOficiosKerkly()
+
                                         setProgressDialog.dialog!!.dismiss()
                                     }
                                 })
@@ -666,7 +691,9 @@ class InterfazKerkly : AppCompatActivity() {
         }
 
     }
-
+fun showMessage(message: String){
+    Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
+}
     fun metodoSalir() {
         AuthUI.getInstance()
             .signOut(applicationContext)
@@ -678,6 +705,6 @@ class InterfazKerkly : AppCompatActivity() {
                             + e.message, Toast.LENGTH_LONG
                 ).show()
             }
+        dataManager.deleteAllTablas()
     }
-
 }
