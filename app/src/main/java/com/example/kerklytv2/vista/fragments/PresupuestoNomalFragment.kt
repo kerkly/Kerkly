@@ -139,6 +139,7 @@ class PresupuestoNomalFragment : Fragment() {
                        val numerocliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
                        val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
                        val correoCliente = postList[recyclerview.getChildAdapterPosition(it)].Correo
+                       val uidCliente  =  postList[recyclerview.getChildAdapterPosition(it)].uidCliente
 
                        if (ext == "0") {
                            ext = "S/N"
@@ -163,6 +164,7 @@ class PresupuestoNomalFragment : Fragment() {
                        i.putExtra("Curp", Curp)
                        i.putExtra("correoKerly", correoKerly)
                        i.putExtra("direccionkerkly", direccionKerly)
+                       i.putExtra("uidCliente",uidCliente)
                        startActivity(i)
 
                    }

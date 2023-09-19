@@ -58,9 +58,9 @@ class PresupuestoFragment : Fragment() {
     lateinit  var adapterItems: ArrayAdapter<String>
     lateinit var items: String
     lateinit var nombreCompletoKerkly: String
-    lateinit var ofi: MutableList<String>
-    lateinit var postList2: ArrayList<OficioKerkly>
-    private val setProgressDialog = SetProgressDialog()
+//    lateinit var ofi: MutableList<String>
+   // lateinit var postList2: ArrayList<OficioKerkly>
+ //   private val setProgressDialog = SetProgressDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,9 +68,6 @@ class PresupuestoFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
-
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -90,17 +87,16 @@ class PresupuestoFragment : Fragment() {
         nombreCompletoKerkly = arguments?.getString("nombreCompletoKerkly")!!
         //nombrekerkly = arguments?.getString("nombrekerkly").toString()
 
-        postList2 = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
-        setProgressDialog.setProgressDialog(requireContext())
+//        postList2 = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
+        //setProgressDialog.setProgressDialog(requireContext())
         getJSON()
-       ofi = mutableListOf()
+     /*  ofi = mutableListOf()
         for (i in 0 until postList2.size) {
             val oficio = postList2[i].nombreOficio
             ofi.add(oficio)
-        }
-
+        }*/
      //   autoCompleteTxt = view.findViewById(R.id.filtro);
-        adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
+      // adapterItems = ArrayAdapter<String>(context, R.layout.list_item, ofi)
        // autoCompleteTxt.setAdapter(adapterItems)
      /*   autoCompleteTxt.onItemClickListener = OnItemClickListener { parent, view, position, id -> items = parent.getItemAtPosition(position).toString()
            setProgressDialog.setProgressDialog(requireContext())
@@ -143,15 +139,13 @@ class PresupuestoFragment : Fragment() {
         call?.enqueue(object : Callback<List<PresupuestourgentesDatosCliente?>?> {
 
             override fun onResponse(call: Call<List<PresupuestourgentesDatosCliente?>?>, response: Response<List<PresupuestourgentesDatosCliente?>?>) {
-
                 postList = response.body() as ArrayList<PresupuestourgentesDatosCliente>
                 //carsModels = response.body() as ArrayList<presupuestok>
                // Log.d("Lista", postList.toString())
                 MiAdapter = ClaseAdapterR(postList)
-
                 if(postList.size == 0) {
                     recyclerview.visibility = View.GONE
-                    setProgressDialog.dialog!!.dismiss()
+               //     setProgressDialog.dialog!!.dismiss()
                 } else {
                     img.visibility = View.GONE
                     txt.visibility = View.GONE
@@ -172,7 +166,8 @@ class PresupuestoFragment : Fragment() {
                         val correo = postList[recyclerview.getChildAdapterPosition(it)].Correo
                         val numeroCliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
                         val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
-
+                        val uidCliente = postList[recyclerview.getChildAdapterPosition(it)].uidCliente
+                        println("Presupuesto Fragment $uidCliente")
                         if (ext == "0") {
                             ext = "S/N"
                         }
@@ -193,17 +188,13 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("telefonok", telK)
                         i.putExtra("correo", correo)
                         i.putExtra("nombreCompletoKerkly", nombreCompletoKerkly)
+                        i.putExtra("uidCliente",uidCliente)
                         startActivity(i)
-
-
                     }
-
                     recyclerview.adapter = MiAdapter
-                    setProgressDialog.dialog!!.dismiss()
+                  //  setProgressDialog.dialog!!.dismiss()
                 }
-
             }
-
             override fun onFailure(call: Call<List<PresupuestourgentesDatosCliente?>?>, t: Throwable) {
                 Toast.makeText(
                     context,
@@ -211,10 +202,6 @@ class PresupuestoFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show();
             }
-
         })
     }
-
-
-
 }

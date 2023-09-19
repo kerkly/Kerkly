@@ -12,6 +12,7 @@ import com.example.kerklytv2.controlador.SetProgressDialog
 
 import com.example.kerklytv2.controlador.adapterUsuarios
 import com.example.kerklytv2.modelo.usuarios
+import com.example.kerklytv2.url.Instancias
 import com.google.firebase.database.*
 import java.util.*
 
@@ -34,7 +35,6 @@ class ContactosFragment : Fragment() {
     private lateinit var correoK: String
     private lateinit var nombreK: String
 
-
     private lateinit var array: ArrayList<String>
     private lateinit var arrayListDatos: ArrayList<usuarios>
 
@@ -48,6 +48,8 @@ class ContactosFragment : Fragment() {
     private lateinit var telefonoCliente: String
     private lateinit var fotoUrlCliente: String
     private val setProgressDialog = SetProgressDialog()
+    private lateinit var instancias: Instancias
+    private lateinit var uid: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,10 +66,11 @@ class ContactosFragment : Fragment() {
         recyclerView = v.findViewById(R.id.recycler_Usuarios)
 
         b= requireArguments()
-
+        instancias = Instancias()
         telefonokerkly = b.getString("telefonoKerkly").toString()
         nombreK = b.getString("nombreKerkly").toString()
         correoK = b.getString("correoKerkly").toString()
+        uid = b.getString("uid").toString()
 
         arrayListDatos = ArrayList()
         array = ArrayList<String>()
@@ -84,20 +87,16 @@ class ContactosFragment : Fragment() {
             }
         })
 
-        //Obtenemos la lista de contactos
-        var firebaseDatabaseLista: FirebaseDatabase
-        var databaseReferenceLista: DatabaseReference
-        firebaseDatabaseLista = FirebaseDatabase.getInstance()
-        databaseReferenceLista = firebaseDatabaseLista.getReference("UsuariosR")
-            .child(telefonokerkly).child("Lista de Usuarios")
 
+        val databaseReferenceLista  = instancias.referenciaListaDeUsuariosKerkly(uid)
         databaseReferenceLista.addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                println("mis contactos"+snapshot.child("telefono").value)
+                //println("mis contactos"+snapshot.child("telefono").value)
                mostrarUsuarios(snapshot)
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                MiAdapter.notifyDataSetChanged()
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -105,10 +104,11 @@ class ContactosFragment : Fragment() {
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
+                MiAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
+                MiAdapter.notifyDataSetChanged()
             }
 
         })
@@ -117,14 +117,11 @@ class ContactosFragment : Fragment() {
     }
 
     private fun mostrarUsuarios(snapshot: DataSnapshot) {
-        println(" tel: " + snapshot.value)
-        val telefono =snapshot.child("telefono").value
+        val uid =snapshot.child("uid").value
         array = arrayListOf(snapshot.value.toString())
-        firebase_databaseUsu = FirebaseDatabase.getInstance()
-        databaseUsu = firebase_databaseUsu.getReference("UsuariosR")
-            .child(telefono.toString())
-            .child("MisDatos")
-
+      //  firebase_databaseUsu = FirebaseDatabase.getInstance()
+       // databaseUsu = firebase_databaseUsu.getReference("UsuariosR").child(uid.toString()).child("MisDatos")
+        databaseUsu =instancias.referenciaInformacionDelCliente(uid.toString())
         databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val u2 = snapshot.getValue(usuarios::class.java)

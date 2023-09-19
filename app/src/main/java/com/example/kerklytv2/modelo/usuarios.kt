@@ -1,6 +1,7 @@
 package com.example.kerklytv2.modelo
 
-class usuarios(telefono: String, email: String, name: String, foto: String, currentDateTimeString: String, token: String) {
+class usuarios(uid:String, telefono: String, email: String, name: String, foto: String, currentDateTimeString: String, token: String,curp:String) {
+    var uid:String = uid
 
     var telefono: String = telefono
 
@@ -13,6 +14,7 @@ class usuarios(telefono: String, email: String, name: String, foto: String, curr
     var fechaHora: String = currentDateTimeString
 
     var token: String = token
-    constructor() : this(""",""","","","","","")
+    var curp:String = curp
+    constructor() : this("",""",""","","","","","","")
 
 }

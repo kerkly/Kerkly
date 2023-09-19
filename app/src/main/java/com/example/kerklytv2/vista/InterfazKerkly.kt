@@ -1,14 +1,17 @@
 package com.example.kerklytv2.vista
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Base64
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
@@ -16,6 +19,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -28,6 +33,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.kerklytv2.ProgresSQL.conexionPostgreSQL
 import com.example.kerklytv2.R
 import com.example.kerklytv2.SQLite.MisOficios
 import com.example.kerklytv2.SQLite.usuariosSqlite
@@ -41,15 +47,20 @@ import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.ui.home.HomeFragment
+import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*
 import com.example.kerklyv5.SQLite.DataManager
 import com.firebase.ui.auth.AuthUI
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.picasso.Picasso
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
@@ -99,6 +110,15 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var ImageViewPerfil : ImageView
     private lateinit var direccionKerly: String
     private lateinit var dataManager: DataManager
+    private lateinit var instancias: Instancias
+
+    //Ubicacion
+    private val REQUEST_LOCATION_PERMISSION = 1
+    private var latitud: Double = 0.0
+    private var longitud: Double = 0.0
+    private var locationManager: LocationManager? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +126,7 @@ class InterfazKerkly : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         setProgressDialog.setProgressDialog(this)
+        instancias = Instancias()
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
@@ -154,6 +175,50 @@ class InterfazKerkly : AppCompatActivity() {
             true
         }
         dataManager = DataManager(this)
+
+        locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        // Verifica si se concedió el permiso de ubicación
+        val gpsEnabled = locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (!gpsEnabled) { val settingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(settingsIntent)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+        } else {
+            // El permiso no está concedido, solicítalo en tiempo de ejecución
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+
+    }
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // Configurar la callback para recibir actualizaciones de ubicación
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult?.lastLocation?.let {
+                    // Aquí puedes obtener las coordenadas de ubicación en tiempo real
+                    latitud = it.latitude
+                    longitud = it.longitude
+                    ActualizarUbicacionBaseEspacial()
+                    println("latitud $latitud longitud $longitud")
+                }
+            }
+        }
+
+        // Solicitar actualizaciones de ubicación
+        val locationRequest = LocationRequest.create()
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            .setInterval(10000) // Intervalo en milisegundos para recibir actualizaciones (10 segundos)
+            .setFastestInterval(5000) // Intervalo mínimo en milisegundos entre actualizaciones (5 segundos)
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+
+        return
     }
 
     private fun cerrarSesion() {
@@ -227,6 +292,7 @@ class InterfazKerkly : AppCompatActivity() {
         b2!!.putString("telefonoKerkly", telefonoKerkly)
         b2!!.putString("nombreCompletoKerkly", nombre_completo)
         b2!!.putString("correoKerkly", correoKerkly)
+        b2!! .putString("uid",currentUser!!.uid)
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
@@ -242,7 +308,7 @@ class InterfazKerkly : AppCompatActivity() {
         args.putString("numNR", num)
         args.putString("Curp", curp)
        // args.putString("nombrekerkly", nombreKerkly)
-        args.putSerializable("arrayOfcios", postList)
+       // args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
         args.putString("correoKerly", correoKerkly)
         args.putString("direccionkerkly", direccionKerly)
@@ -491,6 +557,7 @@ class InterfazKerkly : AppCompatActivity() {
                             val ap = postList[0].ap
                             val am = postList[0].am
                             curp = postList[0].curp
+                            getLocation()
                             val telefono = telefonoKerkly.toLong()
                             nombreKerkly = nombre
                             nombre_completo = "$nombre $ap $am"
@@ -527,12 +594,11 @@ class InterfazKerkly : AppCompatActivity() {
                                 // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
 
                                 // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
-                                val database = FirebaseDatabase.getInstance()
-                                val databaseReference = database.getReference("UsuariosR").child("$telefonoKerkly")
+
+
                                 val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
-                                //val usuario = usuarios()
-                                //val u = usuarios(uid, email, name, foto, currentDateTimeString)
-                                databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                                val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
+                                databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), token,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                                     // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
                                    // getKerkly(foto)
                                     getOficiosKerkly()
@@ -609,7 +675,7 @@ class InterfazKerkly : AppCompatActivity() {
                         }else{
                             correo = postList[0].correo
                             curp = postList[0].correo
-
+                            getLocation()
                             if (currentUser!!.email.toString() == correo){
                                 dataManager.mostrarOficios(txt_oficios)
                               //  Toast.makeText(this@InterfazKerkly, "si son iguales", Toast.LENGTH_SHORT).show()
@@ -652,17 +718,10 @@ class InterfazKerkly : AppCompatActivity() {
                                         return@OnCompleteListener
                                     }
                                     token = task.result
-                                    // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
-
-                                    // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
-                                    val database = FirebaseDatabase.getInstance()
-                                    val databaseReference = database.getReference("UsuariosR").child("$telefonoKerkly")
                                     val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
-                                    //val usuario = usuarios()
-                                    //val u = usuarios(uid, email, name, foto, currentDateTimeString)
-                                    databaseReference.child("MisDatos").setValue(usuarios(telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                                    val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
+                                    databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                                         // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
-
                                         setProgressDialog.dialog!!.dismiss()
                                     }
                                 })
@@ -691,9 +750,9 @@ class InterfazKerkly : AppCompatActivity() {
         }
 
     }
-fun showMessage(message: String){
-    Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
-}
+    fun showMessage(message: String){
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
+    }
     fun metodoSalir() {
         AuthUI.getInstance()
             .signOut(applicationContext)
@@ -707,4 +766,35 @@ fun showMessage(message: String){
             }
         dataManager.deleteAllTablas()
     }
+
+   fun ActualizarUbicacionBaseEspacial() {
+       val miConexion = conexionPostgreSQL()
+       val conexion = miConexion.obtenerConexion(this)
+       if (conexion != null) {
+           val idSeccion = miConexion.ObtenerSeccionCoordenadas(longitud, latitud)
+           if (idSeccion == 0) {
+               showMessage("no se encuentra dentro de una seccion conocida")
+               fusedLocationClient?.removeLocationUpdates(locationCallback)
+           } else {
+               // val latitud = 17.520514
+               //  val longitud = -99.463207
+               println("mis Datos geometricos $latitud $longitud mis Datos geometricos $idSeccion")
+               showMessage("seccion $idSeccion")
+               val insertar = miConexion.insertOrUpdateSeccionKerkly(
+                   curp,
+                   idSeccion.toInt(),
+                   currentUser!!.uid,
+                   latitud,
+                   longitud
+               )
+               miConexion.cerrarConexion()
+               fusedLocationClient?.removeLocationUpdates(locationCallback)
+
+           }
+       }else {
+           // Maneja el caso en el que la conexión no se pudo establecer
+           showMessage("problemas de conexión  ")
+       }
+   }
+
 }

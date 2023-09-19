@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -163,27 +164,26 @@ class DataManager(context: Context) {
         return datosUsuario as ArrayList<usuariosSqlite>
     }
 
-    private fun cargarImagen(urlImagen: String,context: Context,fotoPerfil: ImageView) {
-        val file: Uri
-        file = Uri.parse(urlImagen)
-       // System.out.println("imagen aqui: "+ file)
+    private fun cargarImagen(urlImagen: String, context: Context, fotoPerfil: ImageView) {
+        val file: Uri = Uri.parse(urlImagen)
+
         Picasso.get().load(urlImagen).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-
+                // Aquí puedes realizar alguna acción con la imagen cargada si es necesario
             }
+
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 val multi = MultiTransformation<Bitmap>(RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.ALL))
                 Glide.with(context).load(file)
                     .apply(RequestOptions.bitmapTransform(multi))
                     .into(fotoPerfil)
-               // setProgressDialog.dialog.dismiss()
-            }
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                System.out.println("Respuesta error 3 "+ e.toString())
-              //  setProgressDialog.dialog.dismiss()
-                //Toast.makeText(this@SolicitarServicio, "si hay foto respuesta 3", Toast.LENGTH_SHORT).show()
             }
 
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                //Log.e("ImageLoadError", "Error loading image: ${e.toString()}")
+                // Aquí puedes manejar el error de carga de la imagen
+            }
         })
     }
+
 }

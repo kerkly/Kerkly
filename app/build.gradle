@@ -120,6 +120,8 @@ dependencies {
     implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1' //para vizualizar pdf
     implementation 'com.google.android.gms:play-services-location:21.0.1' //enviar la ubicación en segundo plano en las versiones recientes de Android
 
+    //postgresql
+    implementation 'org.postgresql:postgresql:42.2.9'
 
 }
 apply plugin: 'com.google.gms.google-services'

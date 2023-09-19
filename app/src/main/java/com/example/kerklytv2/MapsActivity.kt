@@ -36,6 +36,7 @@ import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.trazar_rutas.GPSTracker
 import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
+import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -43,6 +44,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import org.json.JSONArray
 import org.json.JSONException
@@ -78,8 +81,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     lateinit var nombrekerkly: String
     var minutos: Double = 0.0
     var distancia = 0
-    private lateinit var firebase_databaseUsu: FirebaseDatabase
-    private lateinit var databaseUsu: DatabaseReference
     private val llamartopico = llamartopico()
     private  var TipoServicio: String = ""
     private lateinit var folio : String
@@ -92,6 +93,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private var locationPermissionGranted: Boolean = false
    lateinit var urlfoto: String
     lateinit var tokenCliente: String
+    private lateinit var uidCliente:String
+    private var mAuth: FirebaseAuth? = null
+    private var currentUser: FirebaseUser? = null
+    private lateinit var instancias: Instancias
     companion object {
         private const val PERMISSION_REQUEST_CODE = 123
     }
@@ -102,6 +107,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         setContentView(binding.root)
 
         b = intent.extras!!
+        mAuth = FirebaseAuth.getInstance()
+        currentUser = mAuth!!.currentUser
+        instancias = Instancias()
         //recibimos las coordenas
         telefonoCliente = b.getString("telefonoCliente").toString()
         telefonoKerkly = b.getString("telefonok").toString()
@@ -113,11 +121,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         problema = b.getString("problema").toString()
         direccion = b.getString("direccion").toString()
         correoCliente = b.getString("correoCliente").toString()
-        folio = b.getString("Folio").toString()
+        folio = b.getInt("Folio").toString()
          TipoServicio  = b.getString("tipoServicio").toString()
         Curp = b.getString("Curp").toString()
         correoKerly = b.getString("correoKerly").toString()
         direccionKerly = b.getString("direccionkerkly").toString()
+        uidCliente = b.getString("uidCliente").toString()
+        println("uidCliente $uidCliente")
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
@@ -281,7 +291,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         Utils_k.Marcador(mMap, applicationContext, latitud2, longitud2, nombrekerkly)
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
-            obtenerToken(telefonoCliente,telefonoKerkly)
+            obtenerToken(currentUser!!.uid,uidCliente)
         }
     }
     override fun onMapLongClick(p0: LatLng) {
@@ -330,18 +340,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             Utils_k.coordenadas.origenLat = location!!.latitude
             Utils_k.coordenadas.origenLongi = location!!.longitude
             AsignarRuta(
-                Utils_k.coordenadas.origenLat.toString(),
-                Utils_k.coordenadas.origenLongi.toString(),
-                Utils_k.coordenadas.destinoLat.toString(),
-                Utils_k.coordenadas.destinoLng.toString()
+                Utils_k.coordenadas.origenLat,
+                Utils_k.coordenadas.origenLongi,
+                Utils_k.coordenadas.destinoLat,
+                Utils_k.coordenadas.destinoLng
             )
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun AsignarRuta(latInicial: String, lngInicial: String, latFinal: String, lngFinal: String) {
-        val url = "https://maps.googleapis.com/maps/api/directions/json?origin=$latInicial,$lngInicial&destination=$latFinal,$lngFinal&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo&mode=drive"
+    private fun AsignarRuta(latInicial: Double, lngInicial: Double, latFinal: Double, lngFinal: Double) {
+        val url = instancias.directions(latInicial,lngInicial,latFinal,lngFinal)
+       // val url = "https://maps.googleapis.com/maps/api/directions/json?origin=$latInicial,$lngInicial&destination=$latFinal,$lngFinal&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo&mode=drive"
         jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null, { response ->
             var jRoutes: JSONArray? = null
             var jLegs: JSONArray? = null
@@ -399,7 +410,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             Toast.makeText(applicationContext, "No se puede conectar $error", Toast.LENGTH_LONG).show()
         }
         request!!.add(jsonObjectRequest)
-        val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
+        val  url2 = instancias.CalcularDistancia(latInicial,lngInicial,latFinal,lngFinal)
+        //val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
         GeoTask(this).execute(url2)
     }
 
@@ -438,9 +450,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         return poly
     }
 
-
-
-
      fun mostrarDialogoPersonalizado(min: Double, dist: Int) {
         val builder = AlertDialog.Builder(this@MapsActivity)
         val inflater = layoutInflater
@@ -476,6 +485,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("Curp", Curp)
                     i.putExtra("correoKerly", correoKerly)
                     i.putExtra("direccionkerkly", direccionKerly)
+                    i.putExtra("uidCliente",uidCliente)
+                    i.putExtra("uidKerkly",uidCliente)
+                    println("folio---> $folio")
                     startActivity(i)
                     dialog.dismiss()
                 }
@@ -497,6 +509,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("telefonok", telefonoKerkly)
                     i.putExtra("correoCliente", correoCliente)
                     i.putExtra("direccionkerkly", direccionKerly)
+                    i.putExtra("uidCliente",uidCliente)
+                    i.putExtra("uidKerkly",uidCliente)
                     startActivity(i)
                     dialog.dismiss()
                 }
@@ -517,6 +531,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     intent.putExtra("Curp", Curp)
                     intent.putExtra("correoKerly", correoKerly)
                     intent.putExtra("direccionKerly", direccionKerly)
+                    intent.putExtra("uidCliente",uidCliente)
+                    intent.putExtra("uidKerkly",uidCliente)
                     startActivity(intent)
                     dialog.dismiss()
                     finish()
@@ -534,40 +550,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
              }
          })
     }
-    fun verificarDatoNoExistente(numeroCliente: String, numeroKerkly: String) {
-        val database = FirebaseDatabase.getInstance()
-        val reference = database.reference.child("UsuariosR").child(telefonoKerkly).child("Lista de Usuarios")
-        val query = reference.orderByChild("telefono").equalTo(telefonoCliente)
+    fun verificarDatoNoExistente(uidKerkl: String, uidCliente: String) {
+      val reference = instancias.referenciaListaDeUsuariosKerkly(uidKerkl)
+       // val reference = database.reference.child("UsuariosR").child(telefonoKerkly).child("Lista de Usuarios")
+        val query = reference.orderByChild("uid").equalTo(uidCliente)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-              println(dataSnapshot.child("telefono").value)
+              println(dataSnapshot.child("uid").value)
                 if (!dataSnapshot.exists()) {
                     // El dato no existe en la base de datos
                     //println("El dato no se encuentra en la base de datos "+ dataSnapshot.value)
-                    agregarContacto(telefonoCliente, telefonoKerkly)
+                    agregarContacto(uidCliente, uidKerkl)
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // Ocurrió un error al realizar la consulta
                 println("Error al consultar la base de datos: ${databaseError.message}")
+                showMensaje("Error! ${databaseError.message}")
             }
         })
     }
 
-    private fun agregarContacto(numeroCliente: String, numeroKerkly: String) {
+    private fun agregarContacto(uidKerkly: String, uidCliente: String) {
         //Primero agregamos numeros  a la lista de usuarios
-        var firebaseDatabaseLista: FirebaseDatabase
-        var databaseReferenceCliente: DatabaseReference
-        var databaseReferencekerkly: DatabaseReference
 
-        firebaseDatabaseLista = FirebaseDatabase.getInstance()
-        databaseReferenceCliente = firebaseDatabaseLista.getReference("UsuariosR").child(numeroCliente)
-            .child("Lista de Usuarios")
-        databaseReferenceCliente.push().child("telefono").setValue(numeroKerkly)
-
-        databaseReferencekerkly = firebaseDatabaseLista.getReference("UsuariosR").child(numeroKerkly)
-            .child("Lista de Usuarios")
-        databaseReferencekerkly.push().child("telefono").setValue(numeroCliente)
+        var databaseReferenceCliente = instancias.referenciaListaDeUsuariosCliente(uidCliente)
+        var databaseReferencekerkly = instancias.referenciaListaDeUsuariosKerkly(uidKerkly)
+        databaseReferenceCliente.push().child("uid").setValue(uidKerkly)
+        databaseReferencekerkly.push().child("uid").setValue(uidCliente)
 
     }
 
@@ -586,6 +596,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
                     Res = entrada.readLine()
                     if(Res == "1"){
+                        //verificarDatoNoExistente(currentUser!!.uid,uidCliente)
                          llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
                         val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
                         intent.putExtra("nombreCompletoCliente", nombreCliente)
@@ -599,28 +610,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                         startActivity(intent)
                         finish()
                     }else{
-                        Toast.makeText(this@MapsActivity, "El Servicio No se Pudo Acompletar $Res", Toast.LENGTH_SHORT).show()
+                        showMensaje("El Servicio No se Pudo Acompletar $Res")
                     }
                 }catch (e: java.lang.Exception){
                     e.printStackTrace()
-                    Toast.makeText(this@MapsActivity, "error ${e.printStackTrace()}", Toast.LENGTH_SHORT).show()
+                    showMensaje("Error! ${e!!.message}")
                 }
 
             }
             override fun failure(error: RetrofitError?) {
-                Toast.makeText(this@MapsActivity, "error ${error.toString()}", Toast.LENGTH_SHORT).show()
+               showMensaje("Error! ${error!!.message}")
             }
         })
     }
-    private fun obtenerToken(telefonoCliente:String,telefonoKerkly:String){
-        firebase_databaseUsu = FirebaseDatabase.getInstance()
-        databaseUsu = firebase_databaseUsu.getReference("UsuariosR")
-            .child(telefonoCliente.toString()).child("MisDatos")
-        databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {
+    private fun obtenerToken(uidKerkly:String,uidCliente: String){
+       // databaseUsu = firebase_databaseUsu.getReference("UsuariosR").child(telefonoCliente.toString()).child("MisDatos")
+      val reference =  instancias.referenciaInformacionDelCliente(uidCliente)
+        reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val u2 = snapshot.getValue(usuarios::class.java)
-
-                // println(" 576: " + u2!!.correo.trim())
+                println(" 576: $uidCliente" + snapshot.value)
                 //telefonoCliente =  u2!!.telefono.trim()
                 urlfoto =  u2!!.foto.trim()
                 val nombreCliente =  u2!!.nombre.trim()
@@ -629,14 +638,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 // Toast.makeText(this@MapsActivity,"$nombreCliente",Toast.LENGTH_SHORT).show()
                 //enviar Notificacion
                 //   agregarContacto(telefonoCliente, telefonoKerkly)
-                verificarDatoNoExistente(telefonoCliente, telefonoKerkly)
+                verificarDatoNoExistente(uidKerkly, uidCliente)
 
             }
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                showMensaje("Erorr! ${error.message}")
             }
         })
     }
 
+  fun showMensaje(mensaje:String){
+      Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show()
+  }
 
 }

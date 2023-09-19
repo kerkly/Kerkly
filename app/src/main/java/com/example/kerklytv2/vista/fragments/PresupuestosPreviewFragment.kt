@@ -29,7 +29,7 @@ class PresupuestosPreviewFragment : Fragment() {
     private lateinit var boton_urg: MaterialButton
     private lateinit var boton_normal: MaterialButton
     private var b: Bundle? = null
-    lateinit var postList: ArrayList<OficioKerkly>
+   // lateinit var postList: ArrayList<OficioKerkly>
     private lateinit var telefonoKerkly: String
     private lateinit var nombre_completo: String
     private lateinit var nombreKerkly: String
@@ -69,7 +69,7 @@ class PresupuestosPreviewFragment : Fragment() {
             setPresupuestoNormal()
         }
         b = arguments
-        postList = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
+       // postList = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
         telefonoKerkly = arguments?.getString("telefonoKerkly").toString()
         photoUrl = arguments?.getString("urlFotoKerkly").toString()
        // nombreKerkly = arguments?.getString("nombreKerkly").toString()
@@ -88,7 +88,7 @@ class PresupuestosPreviewFragment : Fragment() {
         val f = PresupuestoFragment()
         args.getString("telefonoKerkly", telefonoKerkly)
        // args.getString("nombreKerkly", nombreKerkly)
-        args.putSerializable("arrayOfcios", postList)
+      //  args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
         args.putString("Curp", Curp)
 
