@@ -49,7 +49,7 @@ class ContactosFragment : Fragment() {
     private lateinit var fotoUrlCliente: String
     private val setProgressDialog = SetProgressDialog()
     private lateinit var instancias: Instancias
-    private lateinit var uid: String
+    private lateinit var uidKerkly: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class ContactosFragment : Fragment() {
         telefonokerkly = b.getString("telefonoKerkly").toString()
         nombreK = b.getString("nombreKerkly").toString()
         correoK = b.getString("correoKerkly").toString()
-        uid = b.getString("uid").toString()
+        uidKerkly = b.getString("uidKerkly").toString()
 
         arrayListDatos = ArrayList()
         array = ArrayList<String>()
@@ -88,7 +88,7 @@ class ContactosFragment : Fragment() {
         })
 
 
-        val databaseReferenceLista  = instancias.referenciaListaDeUsuariosKerkly(uid)
+        val databaseReferenceLista  = instancias.referenciaListaDeUsuariosKerkly(uidKerkly)
         databaseReferenceLista.addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 //println("mis contactos"+snapshot.child("telefono").value)
@@ -144,6 +144,7 @@ class ContactosFragment : Fragment() {
                                  telefonoCliente = MiAdapter.lista[position].telefono
                                 val urlfoto = MiAdapter.lista[position].foto
                                 val tokebCliente = MiAdapter.lista[position].token
+                                val uidCliente = MiAdapter.lista[position].uid
 
                                 //Toast.makeText(requireContext(),"$telefono",Toast.LENGTH_SHORT).show()
                                 val intent = Intent(requireContext(), MainActivityChats::class.java)
@@ -153,6 +154,8 @@ class ContactosFragment : Fragment() {
                                 b!!.putString("telefonoKerkly", telefonokerkly)
                                 b!!.putString("urlFotoCliente", urlfoto)
                                 b!!.putString("tokenCliente", tokebCliente)
+                                b!!.putString("uidCliente", uidCliente)
+                                b!!.putString("uidKerkly", uidKerkly)
 
                                 intent.putExtras(b!!)
                                 startActivity(intent)

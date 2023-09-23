@@ -63,12 +63,22 @@ class Instancias() {
         return reference
     }
 
-    fun StorageReference(idKerkly: String,idCliente:String,Nombrearchivo: String): StorageReference {
+    fun StorageReferenceKerkly(idKerkly: String,idCliente:String,Nombrearchivo: String): StorageReference {
         val ref =  storageRef.child(usuario).child(kerkly).child(idKerkly).child(chats).child("$idKerkly"+"_"+"$idCliente").child(Nombrearchivo)
         return ref
     }
     fun EnviarArchivoStorageReference(idCliente: String,idKerkly:String,Nombrearchivo: String): StorageReference {
         val ref =  storageRef.child(usuario).child(cliente).child(idCliente).child(chats).child("$idCliente"+"_"+"$idKerkly").child(Nombrearchivo)
+        return ref
+    }
+
+    fun chatsKerkly (uidKerkly: String, uidCliente:String): DatabaseReference{
+        val ref = database.getReference(usuario).child(kerkly).child(uidKerkly).child(chats).child(uidKerkly+"_"+uidCliente)
+        return ref
+    }
+
+    fun chatsCliente (uidKerkly: String, uidCliente:String): DatabaseReference{
+        val ref = database.getReference(usuario).child(cliente).child(uidCliente).child(chats).child(uidCliente+"_"+uidKerkly)
         return ref
     }
 }

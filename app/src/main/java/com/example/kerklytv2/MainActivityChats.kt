@@ -48,6 +48,7 @@ import com.example.kerklytv2.controlador.AdapterChat
 import com.example.kerklytv2.modelo.Mensaje
 import com.example.kerklytv2.modelo.MensajeCopia
 import com.example.kerklytv2.ui.home.HomeFragment
+import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.vista.InterfazKerkly
 import com.github.barteksc.pdfviewer.PDFView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -76,11 +77,6 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var editText: EditText
     private lateinit var imageViewfotoCliente: ImageView
     private lateinit var adapter: AdapterChat
-    private lateinit var firebaseDatabase: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
-    private lateinit var databaseReferenceCliente: DatabaseReference
-    private lateinit var databaseReferenceMensajeCliente: DatabaseReference
-    private lateinit var databaseReferenceMensajekerkly: DatabaseReference
     private var folio = 0
     private lateinit var b: Bundle
     private lateinit var nombrecliente: String
@@ -90,7 +86,6 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var tokenCliente: String
     private val llamartopico = llamartopico()
 
-    private lateinit var nombreKerkly: String
     private lateinit var nombre_txt: TextView
     private lateinit var telefonoCliente:String
     private lateinit var telefonoKerkly: String
@@ -107,6 +102,9 @@ class MainActivityChats : AppCompatActivity() {
     private var  REQUEST_CODE = 0
     lateinit var directoMaps:String
     private lateinit var buttonGPs: Button
+    private lateinit var instancias: Instancias
+    private lateinit var uidCliente:String
+    private lateinit var uidKerkly:String
     private val locationServiceIntent: Intent by lazy {
         Intent(this, LocationService::class.java)
     }
@@ -147,6 +145,11 @@ class MainActivityChats : AppCompatActivity() {
         fotoCliente = b.getString("urlFotoCliente").toString()
         tokenCliente = b.getString("tokenCliente")!!
         directoMaps = b.getString("directoMaps").toString()
+        uidCliente = b.getString("uidCliente").toString()
+        uidKerkly = b.getString("uidKerkly").toString()
+
+       // showMensaje("cliente $uidCliente kerkly $uidKerkly")
+       // println("cliente $uidCliente kerkly $uidKerkly")
 
         nombre_txt.text = nombrecliente
         val photoUrl = Uri.parse(fotoCliente)
@@ -154,7 +157,7 @@ class MainActivityChats : AppCompatActivity() {
         Picasso.get().load(photoUrl).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 val multi = MultiTransformation<Bitmap>(RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.ALL))
-                println("foto Cliente : $fotoCliente")
+                //println("foto Cliente : $fotoCliente")
                 Glide.with(this@MainActivityChats).load(photoUrl)
                     .apply(RequestOptions.bitmapTransform(multi))
                     .into(imageViewfotoCliente)
@@ -171,10 +174,9 @@ class MainActivityChats : AppCompatActivity() {
                     .into(imageViewfotoCliente)
             }
         })
-
-        firebaseDatabase = FirebaseDatabase.getInstance()
-        databaseReference = firebaseDatabase.getReference("UsuariosR").child(telefonoKerkly.toString()).child("chats")
-            .child("$telefonoKerkly"+"_"+"$telefonoCliente")
+        instancias = Instancias()
+       // databaseReference = firebaseDatabase.getReference("UsuariosR").child(telefonoKerkly.toString()).child("chats").child("$telefonoKerkly"+"_"+"$telefonoCliente")
+       val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
         adapter = AdapterChat(this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -186,12 +188,8 @@ class MainActivityChats : AppCompatActivity() {
             }
         })
 
-        databaseReferenceCliente = firebaseDatabase
-            .getReference("UsuariosR")
-            .child(telefonoCliente)
-            .child("chats")
-            .child("$telefonoCliente"+"_"+"$telefonoKerkly")
-
+        //databaseReferenceCliente = firebaseDatabase.getReference("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly")
+val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
         boton.setOnClickListener {
             if (editText.text.toString() == ""){
                 Toast.makeText(this, "Escribe tu mensaje" , Toast.LENGTH_SHORT).show()
@@ -265,11 +263,11 @@ class MainActivityChats : AppCompatActivity() {
                     }
 
                     override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-                        TODO("Not yet implemented")
+                        showMensaje(e.toString())
                     }
 
                     override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-                        TODO("Not yet implemented")
+
                     }
 
                 })
@@ -344,6 +342,9 @@ class MainActivityChats : AppCompatActivity() {
         buttonGPs.setOnClickListener {
             stopLocationService()
         }
+    }
+    fun showMensaje(mensaje:String){
+        Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show()
     }
     private fun Seguimineto(){
         val options = arrayOf("Si", "No")
@@ -463,7 +464,6 @@ class MainActivityChats : AppCompatActivity() {
 
     private fun showOptionsDialogPDF(position: Int, Nombrearchivo: String, urlPdf: String) {
         val options = arrayOf("Ver PDF", "Descargar PDF")
-
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Opciones")
         builder.setItems(options) { dialog: DialogInterface, which: Int ->
@@ -478,10 +478,11 @@ class MainActivityChats : AppCompatActivity() {
                     PantallaCompletaPdf.visibility = View.VISIBLE
                     progressBar.visibility = View.VISIBLE
                     //descargar pdf
-                    val storage = FirebaseStorage.getInstance()
-                    val storageRef = storage.reference
+                   // val storage = FirebaseStorage.getInstance()
+                 //   val storageRef = storage.reference
                     // Reemplaza "nombre_del_archivo.pdf" con el nombre del archivo PDF que deseas descargar
-                    val pdfRef = storageRef.child("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly").child(Nombrearchivo)
+                    //val pdfRef = storageRef.child("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly").child(Nombrearchivo)
+                    val pdfRef = instancias.StorageReferenceKerkly(uidKerkly, uidCliente, Nombrearchivo)
                     val localFile = File.createTempFile("$Nombrearchivo", "pdf")
                     val ruta = getRuta(Nombrearchivo)
                     val uploadTask = pdfRef.getFile(ruta!!)
@@ -530,10 +531,11 @@ class MainActivityChats : AppCompatActivity() {
                     //imagenCompleta.visibility = View.VISIBLE
                     progressBar.visibility = View.VISIBLE
                     //descargar pdf
-                    val storage = FirebaseStorage.getInstance()
-                    val storageRef = storage.reference
+                   // val storage = FirebaseStorage.getInstance()
+                  //  val storageRef = storage.reference
                     // Reemplaza "nombre_del_archivo.pdf" con el nombre del archivo PDF que deseas descargar
-                    val pdfRef = storageRef.child("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly").child(Nombrearchivo)
+                    //val pdfRef = storageRef.child("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly").child(Nombrearchivo)
+                    val pdfRef = instancias.StorageReferenceKerkly(uidKerkly, uidCliente,Nombrearchivo)
                     val localFile = File.createTempFile("$Nombrearchivo", "pdf")
                     val ruta = getRuta(Nombrearchivo)
                     val uploadTask = pdfRef.getFile(ruta!!)
@@ -714,11 +716,10 @@ class MainActivityChats : AppCompatActivity() {
     private fun EnviarArchivo(uriArchivo: Uri, tipoArchivo: String){
         val nombreArchivo: String = obtenerNombreArchivo(uriArchivo)
         // Obtén una referencia al storage de Firebase
-        val storageRef = FirebaseStorage.getInstance().reference
+        val storageRef = instancias.storageRef
         // Crea un nombre de archivo único para evitar conflictos
-        val filename = nombreArchivo
-        val fileRef = storageRef.child("UsuariosR").child(telefonoKerkly.toString()).child("chats")
-            .child("$telefonoKerkly"+"_"+"$telefonoCliente").child(filename)
+       // val fileRef = storageRef.child("UsuariosR").child(telefonoKerkly.toString()).child("chats").child("$telefonoKerkly"+"_"+"$telefonoCliente").child(filename)
+        val fileRef = instancias.StorageReferenceKerkly(uidKerkly, uidCliente,nombreArchivo)
 
         if (tipoArchivo == "pdf"){
             println("nombre del archivo " + nombreArchivo)
@@ -738,8 +739,11 @@ class MainActivityChats : AppCompatActivity() {
                         // Guarda la URL del archivo en Firebase Realtime Database
                         //val databaseRef = FirebaseDatabase.getInstance().reference
                          val fileUrl = uri.toString()
+                        val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
                         databaseReference.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+                        val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
                         databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+
                             storageRef.child("$tipoArchivo").child(fileUrl)
                         llamartopico.llamartopico(this,tokenCliente, nombreArchivo, nombreCompletoKerkly)
                         Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
@@ -763,7 +767,9 @@ class MainActivityChats : AppCompatActivity() {
                         // Guarda la URL del archivo en Firebase Realtime Database
                         //val databaseRef = FirebaseDatabase.getInstance().reference
                         val fileUrl = uri.toString()
+                        val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
                         databaseReference.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
+                        val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
                         databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
                         storageRef.child("$tipoArchivo").child(fileUrl)
                         llamartopico.llamartopico(this,tokenCliente, nombreArchivo, nombreCompletoKerkly)
@@ -796,17 +802,17 @@ class MainActivityChats : AppCompatActivity() {
 
 
     private fun mensajesVistoCliente(key: String) {
-        firebaseDatabase = FirebaseDatabase.getInstance()
-        databaseReferenceMensajeCliente = firebaseDatabase.getReference("UsuariosR").child(telefonoCliente.toString()).child("chats")
-            .child("$telefonoCliente"+"_"+"$telefonoKerkly").child(key)
+       // firebaseDatabase = FirebaseDatabase.getInstance()
+      //  databaseReferenceMensajeCliente = firebaseDatabase.getReference("UsuariosR").child(telefonoCliente.toString()).child("chats") .child("$telefonoCliente"+"_"+"$telefonoKerkly").child(key)
+        val databaseReferenceMensajeCliente = instancias.chatsCliente(uidKerkly, uidCliente).child(key)
         val map = mapOf("mensajeLeido" to "Visto")
         databaseReferenceMensajeCliente.updateChildren(map)
     }
 
     fun mensajesVistokerkly(id: String){
-        firebaseDatabase = FirebaseDatabase.getInstance()
-        databaseReferenceMensajekerkly = firebaseDatabase.getReference("UsuariosR").child(telefonoKerkly.toString()).child("chats")
-            .child("$telefonoKerkly"+"_"+"$telefonoCliente").child(id)
+       // firebaseDatabase = FirebaseDatabase.getInstance()
+        //databaseReferenceMensajekerkly = firebaseDatabase.getReference("UsuariosR").child(telefonoKerkly.toString()).child("chats").child("$telefonoKerkly"+"_"+"$telefonoCliente").child(id)
+        val databaseReferenceMensajekerkly =  instancias.chatsKerkly(uidKerkly, uidCliente).child(id)
         val map = mapOf("mensajeLeido" to "Visto")
          databaseReferenceMensajekerkly.updateChildren(map)
     }
@@ -868,15 +874,18 @@ class MainActivityChats : AppCompatActivity() {
           //  Toast.makeText(applicationContext, "null el childEventListener", Toast.LENGTH_SHORT).show()
         }else {
          //  Toast.makeText(applicationContext, "childEventListener detnido ", Toast.LENGTH_SHORT).show()
+            val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
+            val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
             databaseReference.removeEventListener(childEventListener!!);
             databaseReferenceCliente.removeEventListener(childEventListener2!!);
-
         }
         }
     }
     override fun onDestroy() {
         super.onDestroy()
         if (childEventListener!= null) {
+            val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
+            val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
             databaseReference.removeEventListener(childEventListener!!);
             databaseReferenceCliente.removeEventListener(childEventListener2!!);
         }

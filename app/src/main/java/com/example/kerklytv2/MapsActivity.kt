@@ -17,6 +17,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationProvider
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -258,7 +259,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 lon = longitud2.toDouble()
 
                 val position = LatLng(lat, lon)
-                TrazarLineas(position)
+                //TrazarLineas(position)
                 constructor.include(position)
                 val limites = constructor.build()
 
@@ -291,7 +292,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         Utils_k.Marcador(mMap, applicationContext, latitud2, longitud2, nombrekerkly)
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
-            obtenerToken(currentUser!!.uid,uidCliente)
+            //if(TipoServicio == "ServicioNR"){
+
+           // }else{
+
+           // }
         }
     }
     override fun onMapLongClick(p0: LatLng) {
@@ -321,12 +326,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         builder.setTitle(title)
         builder.setCancelable(false)
         builder.setPositiveButton("Si") { dialog, which ->
-            TrazarLineas(position)
-            System.out.println(" " +(minutos/60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
+           // TrazarLineas(position)
+            //System.out.println(" " +(minutos/60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
+            val usuarioLatLng = LatLng(latitud, longitud)
+            val marcadorLatLng = LatLng(position.latitude, position.longitude)
+            // Crear una URL con las coordenadas
+            val uri = "http://maps.google.com/maps?saddr=${usuarioLatLng.latitude},${usuarioLatLng.longitude}&daddr=${marcadorLatLng.latitude},${marcadorLatLng.longitude}"
+            // Crear un Intent con la acción para abrir Google Maps
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+            // Establecer la aplicación de Google Maps como el selector de aplicaciones
+            intent.setPackage("com.google.android.apps.maps")
+            // Verificar si Google Maps está instalado en el dispositivo
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            } else {
+                // Manejar el caso en que Google Maps no esté instalado en el dispositivo
+                // Puedes mostrar un mensaje de error o proporcionar una alternativa
+                showMensaje("Verifica Si tienes Google Maps Instalado")
+            }
         }
         builder.setNegativeButton("No") { dialog, which -> dialog.cancel() }
         val alertDialog = builder.create()
         alertDialog.show()
+
+
     }
 
     fun TrazarLineas(latLng: LatLng){
@@ -486,7 +509,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("correoKerly", correoKerly)
                     i.putExtra("direccionkerkly", direccionKerly)
                     i.putExtra("uidCliente",uidCliente)
-                    i.putExtra("uidKerkly",uidCliente)
+                    i.putExtra("uidKerkly",currentUser!!.uid)
                     println("folio---> $folio")
                     startActivity(i)
                     dialog.dismiss()
@@ -494,8 +517,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 if(TipoServicio == "urgente"){
                     dialog.dismiss()
                     AceptarServicio()
+                   // obtenerToken(currentUser!!.uid, uidCliente)
                 }
-                if(TipoServicio == "clienteNoRegistrado"){
+                /*if(TipoServicio == "clienteNoRegistrado"){
                     val i = Intent(context, Presupuesto::class.java)
                     i.putExtra("latitud", latitud2)
                     i.putExtra("longitud", longitud2)
@@ -513,7 +537,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("uidKerkly",uidCliente)
                     startActivity(i)
                     dialog.dismiss()
-                }
+                }*/
 
                 if(TipoServicio == "ServicioNR"){
                     val intent = Intent(this@MapsActivity, Presupuesto::class.java)
@@ -532,14 +556,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     intent.putExtra("correoKerly", correoKerly)
                     intent.putExtra("direccionKerly", direccionKerly)
                     intent.putExtra("uidCliente",uidCliente)
-                    intent.putExtra("uidKerkly",uidCliente)
+                    intent.putExtra("uidKerkly",currentUser!!.uid)
                     startActivity(intent)
                     dialog.dismiss()
                     finish()
                 }
 
             }
-
 
         })
          val btnRechazar: Button = view!!.findViewById(R.id.btnCancel)
@@ -558,9 +581,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             override fun onDataChange(dataSnapshot: DataSnapshot) {
               println(dataSnapshot.child("uid").value)
                 if (!dataSnapshot.exists()) {
-                    // El dato no existe en la base de datos
-                    //println("El dato no se encuentra en la base de datos "+ dataSnapshot.value)
-                    agregarContacto(uidCliente, uidKerkl)
+                   llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
+                    val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
+                    intent.putExtra("nombreCompletoCliente", nombreCliente)
+                    intent.putExtra("correoCliente", correoCliente)
+                    intent.putExtra("telefonoCliente",telefonoCliente)
+                    intent.putExtra("telefonoKerkly", telefonoKerkly)
+                    intent.putExtra("urlFotoCliente", urlfoto)
+                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    intent.putExtra("tokenCliente", tokenCliente)
+                    intent.putExtra("directoMaps","Maps")
+                    intent.putExtra("uidCliente",uidCliente)
+                    intent.putExtra("uidKerkly",currentUser!!.uid)
+                    startActivity(intent)
+                    finish()
+                    agregarContacto(uidKerkl, uidCliente)
+                }else{
+                   // showMensaje("ya existe el contacto")
+                    llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
+                    val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
+                    intent.putExtra("nombreCompletoCliente", nombreCliente)
+                    intent.putExtra("correoCliente", correoCliente)
+                    intent.putExtra("telefonoCliente",telefonoCliente)
+                    intent.putExtra("telefonoKerkly", telefonoKerkly)
+                    intent.putExtra("urlFotoCliente", urlfoto)
+                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    intent.putExtra("tokenCliente", tokenCliente)
+                    intent.putExtra("directoMaps","Maps")
+                    intent.putExtra("uidCliente",uidCliente)
+                    intent.putExtra("uidKerkly",currentUser!!.uid)
+                    startActivity(intent)
+                    finish()
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {
@@ -573,11 +624,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     private fun agregarContacto(uidKerkly: String, uidCliente: String) {
         //Primero agregamos numeros  a la lista de usuarios
-
         var databaseReferenceCliente = instancias.referenciaListaDeUsuariosCliente(uidCliente)
         var databaseReferencekerkly = instancias.referenciaListaDeUsuariosKerkly(uidKerkly)
         databaseReferenceCliente.push().child("uid").setValue(uidKerkly)
         databaseReferencekerkly.push().child("uid").setValue(uidCliente)
+        showMensaje("Agregado los datos ")
 
     }
 
@@ -596,19 +647,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
                     Res = entrada.readLine()
                     if(Res == "1"){
-                        //verificarDatoNoExistente(currentUser!!.uid,uidCliente)
-                         llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
-                        val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
-                        intent.putExtra("nombreCompletoCliente", nombreCliente)
-                        intent.putExtra("correoCliente", correoCliente)
-                        intent.putExtra("telefonoCliente",telefonoCliente)
-                        intent.putExtra("telefonoKerkly", telefonoKerkly)
-                        intent.putExtra("urlFotoCliente", urlfoto)
-                        intent.putExtra("nombreCompletoKerkly", nombrekerkly)
-                        intent.putExtra("tokenCliente", tokenCliente)
-                        intent.putExtra("directoMaps","Maps")
-                        startActivity(intent)
-                        finish()
+                        obtenerToken(currentUser!!.uid,uidCliente)
                     }else{
                         showMensaje("El Servicio No se Pudo Acompletar $Res")
                     }
@@ -623,13 +662,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             }
         })
     }
-    private fun obtenerToken(uidKerkly:String,uidCliente: String){
+    @SuppressLint("SuspiciousIndentation")
+    private fun obtenerToken(uidKerkly:String, uidCliente: String){
        // databaseUsu = firebase_databaseUsu.getReference("UsuariosR").child(telefonoCliente.toString()).child("MisDatos")
       val reference =  instancias.referenciaInformacionDelCliente(uidCliente)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val u2 = snapshot.getValue(usuarios::class.java)
-                println(" 576: $uidCliente" + snapshot.value)
                 //telefonoCliente =  u2!!.telefono.trim()
                 urlfoto =  u2!!.foto.trim()
                 val nombreCliente =  u2!!.nombre.trim()

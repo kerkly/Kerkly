@@ -58,6 +58,7 @@ class conexionPostgreSQL {
                 updateStmt.setDouble(2, longitud)
                 updateStmt.setDouble(3, latitud)
                 updateStmt.setString(4, curp)
+
                 updateStmt.executeUpdate()
             }
         } else {

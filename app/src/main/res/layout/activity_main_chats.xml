@@ -75,6 +75,7 @@
                 android:layout_height="50dp"
                 android:layout_gravity="center"
                 android:text="detener Servicio"
+                android:visibility="gone"
                 android:layout_marginTop="-55dp"
                 android:backgroundTint="@color/colorBoton"
                 />

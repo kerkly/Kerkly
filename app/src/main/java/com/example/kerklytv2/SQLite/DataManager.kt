@@ -63,8 +63,6 @@ class DataManager(context: Context) {
                 //println("el usuario no se encuentra")
 
             }
-            cursor.close()
-            db.close()
         } else {
             // La tabla "Usuario" no existe en la base de datos
           //  println("La tabla \"Usuario\" no existe en la base de datos")
@@ -74,39 +72,38 @@ class DataManager(context: Context) {
         }
 
     }
-     fun InsertarOficios(oficio: MisOficios){
-         val values = ContentValues()
-         val db = databaseHelper.writableDatabase
-         val isUsuarioTableExists = databaseHelper.isTableExists(DatabaseHelper.TABLA_OFICIO)
-         if (isUsuarioTableExists) {
-             println("la tabla ${DatabaseHelper.TABLA_OFICIO} existe")
+    fun InsertarOficios(oficio: MisOficios) {
+        val values = ContentValues()
+        val db = databaseHelper.writableDatabase
+        val isUsuarioTableExists = databaseHelper.isTableExists(DatabaseHelper.TABLA_OFICIO)
 
-             val query = "SELECT * FROM ${DatabaseHelper.TABLA_OFICIO} WHERE ${DatabaseHelper.COLUMN_ID_OFICIO} = ?"
-             val cursor = db.rawQuery(query, arrayOf(arrayOf(oficio.id).toString()))
-             if (cursor.moveToFirst()) {
-                 // Si se encuentra un registro con el mismo id, puedes decidir si quieres actualizarlo o ignorar la inserción
-                 // Por ejemplo, puedes actualizar el registro existente con los nuevos datos
-                 // updateOficio(oficio)
-                 println("si se encuentra")
-             } else {
-                 println("la tabla ${DatabaseHelper.TABLA_OFICIO} no  existe")
-                 values.put(DatabaseHelper.COLUMN_ID_OFICIO, oficio.id.toLong())
-                 values.put(DatabaseHelper.COLUMN_OFICIOS, oficio.nombreOfi)
-                 db.insert(DatabaseHelper.TABLA_OFICIO, null, values)
+        if (isUsuarioTableExists) {
+            println("La tabla ${DatabaseHelper.TABLA_OFICIO} existe")
+            val query = "SELECT * FROM ${DatabaseHelper.TABLA_OFICIO} WHERE ${DatabaseHelper.COLUMN_ID_OFICIO} = ?"
+            val cursor = db.rawQuery(query, arrayOf(oficio.id.toString()))
 
-             }
-             cursor.close()
-             db.close()
-         }else{
-             println("no existe la tabla oficio")
-             databaseHelper.onCreate(databaseHelper.writableDatabase) // Crear la tabla
-             println("la tabla ${DatabaseHelper.TABLA_OFICIO} no  existe")
-             values.put(DatabaseHelper.COLUMN_ID_OFICIO, oficio.id.toLong())
-             values.put(DatabaseHelper.COLUMN_OFICIOS, oficio.nombreOfi)
-             db.insert(DatabaseHelper.TABLA_OFICIO, null, values)
-         }
+            if (cursor.moveToFirst()) {
+                println("El registro ya existe")
+            } else {
+                values.put(DatabaseHelper.COLUMN_ID_OFICIO, oficio.id.toLong())
+                values.put(DatabaseHelper.COLUMN_OFICIOS, oficio.nombreOfi)
+                db.insert(DatabaseHelper.TABLA_OFICIO, null, values)
+            }
+
+            //cursor.close() // Cierra el cursor después de usarlo
+        } else {
+            println("No existe la tabla oficio")
+            databaseHelper.onCreate(db) // Crear la tabla
+            println("La tabla ${DatabaseHelper.TABLA_OFICIO} no existe")
+            values.put(DatabaseHelper.COLUMN_ID_OFICIO, oficio.id.toLong())
+            values.put(DatabaseHelper.COLUMN_OFICIOS, oficio.nombreOfi)
+            db.insert(DatabaseHelper.TABLA_OFICIO, null, values)
+        }
+
+      //  db.close() // Cierra la base de datos al final de la función
         // mostrarOficios(textView)
     }
+
     @SuppressLint("Range")
     fun mostrarOficios(textView: TextView) {
         val db = databaseHelper.readableDatabase
@@ -136,7 +133,7 @@ class DataManager(context: Context) {
         val db = databaseHelper.writableDatabase
         db.insert(DatabaseHelper.TABLE_NAME_USUARIOS, null, values)
         //println("dato insertado $nombreOfi")
-        db.close()
+      //  db.close()
     }
 
     @SuppressLint("Range", "SuspiciousIndentation")
@@ -160,7 +157,7 @@ class DataManager(context: Context) {
             val usuarios = usuariosSqlite(idTelefono, foto, NOMBRE, ApellidoPa, ApellidoMa, correo)
                         datosUsuario.add(usuarios)
         }
-        db.close()
+      //  db.close()
         return datosUsuario as ArrayList<usuariosSqlite>
     }
 

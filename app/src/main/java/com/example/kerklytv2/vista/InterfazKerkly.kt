@@ -292,7 +292,7 @@ class InterfazKerkly : AppCompatActivity() {
         b2!!.putString("telefonoKerkly", telefonoKerkly)
         b2!!.putString("nombreCompletoKerkly", nombre_completo)
         b2!!.putString("correoKerkly", correoKerkly)
-        b2!! .putString("uid",currentUser!!.uid)
+        b2!! .putString("uidKerkly",currentUser!!.uid)
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
@@ -358,7 +358,6 @@ class InterfazKerkly : AppCompatActivity() {
                         e.printStackTrace()
                     }
                    // Log.e("nosee", output)
-
                 }
                 override fun failure(error: RetrofitError) {
                     println("error $error")
@@ -386,27 +385,17 @@ class InterfazKerkly : AppCompatActivity() {
                  ofi  = mutableListOf()
                 val totalItems = postList.size
                 var itemsInserted = 0
-               // var acumulador = ""
+                var acumulador = ""
                 var oficios: MisOficios
                 for (i in 0 until postList.size){
                     println("lista a insertar ${i+1},${postList[i].nombreOficio.toString()}")
                     oficios = MisOficios(i,postList[i].nombreOficio)
-                    dataManager.InsertarOficios(oficios)
-                    itemsInserted++
-                  /* if(i == (postList.size-1)) {
-                        acumulador += "${postList[i].nombreOficio}"
-                        ofi.add(acumulador)
-                    } else {
-                        acumulador += "${postList[i].nombreOficio},"
-                    }*/
-
-                    // Verifica si se han insertado todos los elementos
-                    if (itemsInserted == totalItems) {
-                      //  dataManager.mostrarOficios(txt_oficios)
-                    }
+                 //   dataManager.InsertarOficios(oficios)
+                    itemsInserted
+                    acumulador += postList[i].nombreOficio +","
                 }
 
-                //txt_oficios.text = acumulador
+                txt_oficios.text = acumulador
               //  dataManager.DatosDelUsuario(this@InterfazKerkly)
                 setProgressDialog.dialog!!.dismiss()
             }
@@ -421,7 +410,7 @@ class InterfazKerkly : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             //finish()
-            setFragmentHome()
+          //  setFragmentHome()
            /* val alert: AlertDialog.Builder = AlertDialog.Builder(this)
             alert.setTitle(getString(R.string.cerrar_app))
             alert.setMessage(getString(R.string.mensaje_alertaCerrarApp))
@@ -698,7 +687,7 @@ class InterfazKerkly : AppCompatActivity() {
                                     .into(object : SimpleTarget<Bitmap>() {
                                         override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
                                             val outputStream = ByteArrayOutputStream()
-                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream)
                                             val photoByteArray = outputStream.toByteArray()
                                             val usuarios: usuariosSqlite
                                             usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
@@ -725,6 +714,7 @@ class InterfazKerkly : AppCompatActivity() {
                                         setProgressDialog.dialog!!.dismiss()
                                     }
                                 })
+                                getOficiosKerkly()
                             }else{
                                 //Toast.makeText(this@InterfazKerkly, "este correo ${currentUser!!.email} no pertenece a esta cuenta", Toast.LENGTH_SHORT).show()
                                 cerrarSesion()

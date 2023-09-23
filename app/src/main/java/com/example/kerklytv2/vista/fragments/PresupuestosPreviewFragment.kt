@@ -121,7 +121,6 @@ class PresupuestosPreviewFragment : Fragment() {
         b.putString("correoKerly", correoKerkly)
         val fragment = BlankFragmentServiciosClientesNR()
         b.putString("direccionKerly", direccionKerly)
-        println("----------> interfaz $direccionKerly")
         fragment.arguments = b
         var frag =  requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly, fragment).commit()
