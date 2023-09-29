@@ -133,6 +133,7 @@ class MainActivityChats : AppCompatActivity() {
         PantallaCompletaPdf = findViewById(R.id.pdfView)
         frameLayout = findViewById(R.id.fragemntlayoutChats)
         buttonGPs =  findViewById(R.id.botonDetenerService)
+        //buttonGPs.visibility = View.VISIBLE
        // viewPager = findViewById(R.id.viewPager)
 
         b = intent.extras!!
@@ -164,9 +165,8 @@ class MainActivityChats : AppCompatActivity() {
             }
 
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                TODO("Not yet implemented")
+               showMensaje(e.toString())
             }
-
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 val multi = MultiTransformation<Bitmap>(RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.ALL))
                 Glide.with(this@MainActivityChats).load(photoUrl)
@@ -299,13 +299,13 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val m = snapshot.getValue(MensajeCopia::class.java)
                 if (m!!.tipo_usuario == "cliente"){
-                    println("id ${snapshot.key}")
-                    println("${snapshot.child("tipo_usuario")}")
+                   // println("id ${snapshot.key}")
+                   // println("${snapshot.child("tipo_usuario")}")
 
                     mensajesVistoCliente(snapshot.key!!)
                 }else{
-                    println("no es cliente")
-                    println("id ${snapshot.key}")
+                   // println("no es cliente")
+                   // println("id ${snapshot.key}")
                     println("${snapshot.child("tipo_usuario")}")
                 }
             }
@@ -336,37 +336,42 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
 
         }
         if (directoMaps == "Maps"){
-            Seguimineto()
+           // Seguimineto()
         }
 
         buttonGPs.setOnClickListener {
-            stopLocationService()
+            //stopLocationService()
+            locationServiceIntent.putExtra("uid", "$uidKerkly")
+            locationServiceIntent.putExtra("parametro2", "valor2")
+            startService(locationServiceIntent)
+
         }
     }
     fun showMensaje(mensaje:String){
         Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show()
     }
     private fun Seguimineto(){
+        buttonGPs.visibility =  View.VISIBLE
         val options = arrayOf("Si", "No")
         val builder = AlertDialog.Builder(this)
         builder.setTitle("¿Deseas Compartir la ubicacion en tiempo real con el cliente?")
         builder.setItems(options) { dialog: DialogInterface, which: Int ->
             when (which) {
                 0 -> {
-                    println("DFsd")
                   startService(locationServiceIntent)
-
+                    buttonGPs.text = "Detener"
                     dialog.dismiss()
                 }
                 1 -> {
-                    println("DFsd")
                     dialog.dismiss()
+                    buttonGPs.visibility =  View.GONE
                 }
             }
             dialog.dismiss()
         }
         builder.setNegativeButton("Cancelar") { dialog: DialogInterface, _ ->
             dialog.dismiss()
+            buttonGPs.visibility =  View.GONE
         }
 
         val dialog = builder.create()

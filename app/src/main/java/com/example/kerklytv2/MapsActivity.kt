@@ -516,7 +516,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 }
                 if(TipoServicio == "urgente"){
                     dialog.dismiss()
-                    AceptarServicio()
+                    AceptarServicio(folio)
                    // obtenerToken(currentUser!!.uid, uidCliente)
                 }
                 /*if(TipoServicio == "clienteNoRegistrado"){
@@ -573,72 +573,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
              }
          })
     }
-    fun verificarDatoNoExistente(uidKerkl: String, uidCliente: String) {
-      val reference = instancias.referenciaListaDeUsuariosKerkly(uidKerkl)
-       // val reference = database.reference.child("UsuariosR").child(telefonoKerkly).child("Lista de Usuarios")
-        val query = reference.orderByChild("uid").equalTo(uidCliente)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-              println(dataSnapshot.child("uid").value)
-                if (!dataSnapshot.exists()) {
-                   llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
-                    val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
-                    intent.putExtra("nombreCompletoCliente", nombreCliente)
-                    intent.putExtra("correoCliente", correoCliente)
-                    intent.putExtra("telefonoCliente",telefonoCliente)
-                    intent.putExtra("telefonoKerkly", telefonoKerkly)
-                    intent.putExtra("urlFotoCliente", urlfoto)
-                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
-                    intent.putExtra("tokenCliente", tokenCliente)
-                    intent.putExtra("directoMaps","Maps")
-                    intent.putExtra("uidCliente",uidCliente)
-                    intent.putExtra("uidKerkly",currentUser!!.uid)
-                    startActivity(intent)
-                    finish()
-                    agregarContacto(uidKerkl, uidCliente)
-                }else{
-                   // showMensaje("ya existe el contacto")
-                    llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
-                    val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
-                    intent.putExtra("nombreCompletoCliente", nombreCliente)
-                    intent.putExtra("correoCliente", correoCliente)
-                    intent.putExtra("telefonoCliente",telefonoCliente)
-                    intent.putExtra("telefonoKerkly", telefonoKerkly)
-                    intent.putExtra("urlFotoCliente", urlfoto)
-                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
-                    intent.putExtra("tokenCliente", tokenCliente)
-                    intent.putExtra("directoMaps","Maps")
-                    intent.putExtra("uidCliente",uidCliente)
-                    intent.putExtra("uidKerkly",currentUser!!.uid)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Ocurrió un error al realizar la consulta
-                println("Error al consultar la base de datos: ${databaseError.message}")
-                showMensaje("Error! ${databaseError.message}")
-            }
-        })
-    }
 
-    private fun agregarContacto(uidKerkly: String, uidCliente: String) {
-        //Primero agregamos numeros  a la lista de usuarios
-        var databaseReferenceCliente = instancias.referenciaListaDeUsuariosCliente(uidCliente)
-        var databaseReferencekerkly = instancias.referenciaListaDeUsuariosKerkly(uidKerkly)
-        databaseReferenceCliente.push().child("uid").setValue(uidKerkly)
-        databaseReferencekerkly.push().child("uid").setValue(uidCliente)
-        showMensaje("Agregado los datos ")
 
-    }
 
-    private fun AceptarServicio() {
+    private fun AceptarServicio(folio: String) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
             .build()
         val api: AceptarServicioUrgente = adapter.create(AceptarServicioUrgente::class.java)
-        api.AceptarServicio(folio.toString(), Curp,
+        api.AceptarServicio(folio.toString(), Curp, currentUser!!.uid.toString(),
         object : Callback<Response?>{
             override fun success(t: Response?, response: Response?) {
               var entrada: BufferedReader? = null
@@ -646,10 +590,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 try{
                     entrada = BufferedReader(InputStreamReader(t?.body?.`in`()))
                     Res = entrada.readLine()
+                  //  showMensaje("respuesta $Res")
                     if(Res == "1"){
                         obtenerToken(currentUser!!.uid,uidCliente)
                     }else{
-                        showMensaje("El Servicio No se Pudo Acompletar $Res")
+                      //  showMensaje("El Servicio No se Pudo completar $Res")
                     }
                 }catch (e: java.lang.Exception){
                     e.printStackTrace()
@@ -686,8 +631,67 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         })
     }
 
+    fun verificarDatoNoExistente(uidKerkl: String, uidCliente: String) {
+        val reference = instancias.referenciaListaDeUsuariosKerkly(uidKerkl)
+        // val reference = database.reference.child("UsuariosR").child(telefonoKerkly).child("Lista de Usuarios")
+        val query = reference.orderByChild("uid").equalTo(uidCliente)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                println(dataSnapshot.child("uid").value)
+                if (!dataSnapshot.exists()) {
+                    llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
+                    val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
+                    intent.putExtra("nombreCompletoCliente", nombreCliente)
+                    intent.putExtra("correoCliente", correoCliente)
+                    intent.putExtra("telefonoCliente",telefonoCliente)
+                    intent.putExtra("telefonoKerkly", telefonoKerkly)
+                    intent.putExtra("urlFotoCliente", urlfoto)
+                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    intent.putExtra("tokenCliente", tokenCliente)
+                    intent.putExtra("directoMaps","Maps")
+                    intent.putExtra("uidCliente",uidCliente)
+                    intent.putExtra("uidKerkly",currentUser!!.uid)
+                    startActivity(intent)
+                    finish()
+                    agregarContacto(uidKerkl, uidCliente)
+                }else{
+                    // showMensaje("ya existe el contacto")
+                    llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
+                    val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
+                    intent.putExtra("nombreCompletoCliente", nombreCliente)
+                    intent.putExtra("correoCliente", correoCliente)
+                    intent.putExtra("telefonoCliente",telefonoCliente)
+                    intent.putExtra("telefonoKerkly", telefonoKerkly)
+                    intent.putExtra("urlFotoCliente", urlfoto)
+                    intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+                    intent.putExtra("tokenCliente", tokenCliente)
+                    intent.putExtra("directoMaps","Maps")
+                    intent.putExtra("uidCliente",uidCliente)
+                    intent.putExtra("uidKerkly",currentUser!!.uid)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Ocurrió un error al realizar la consulta
+                println("Error al consultar la base de datos: ${databaseError.message}")
+                showMensaje("Error! ${databaseError.message}")
+            }
+        })
+    }
+
   fun showMensaje(mensaje:String){
       Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show()
   }
+
+    private fun agregarContacto(uidKerkly: String, uidCliente: String) {
+        //Primero agregamos numeros  a la lista de usuarios
+        var databaseReferenceCliente = instancias.referenciaListaDeUsuariosCliente(uidCliente)
+        var databaseReferencekerkly = instancias.referenciaListaDeUsuariosKerkly(uidKerkly)
+        databaseReferenceCliente.push().child("uid").setValue(uidKerkly)
+        databaseReferencekerkly.push().child("uid").setValue(uidCliente)
+      //  showMensaje("Agregado los datos ")
+
+    }
 
 }

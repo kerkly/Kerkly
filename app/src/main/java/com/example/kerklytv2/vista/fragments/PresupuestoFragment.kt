@@ -167,7 +167,6 @@ class PresupuestoFragment : Fragment() {
                         val numeroCliente = postList[recyclerview.getChildAdapterPosition(it)].telefonoCliente
                         val problema = postList[recyclerview.getChildAdapterPosition(it)].problema
                         val uidCliente = postList[recyclerview.getChildAdapterPosition(it)].uidCliente
-                        println("Presupuesto Fragment $uidCliente")
                         if (ext == "0") {
                             ext = "S/N"
                         }
@@ -178,7 +177,7 @@ class PresupuestoFragment : Fragment() {
                        val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
                         i.putExtra("longitud", longitud)
-                        i.putExtra("Folio", folioo.toString())
+                        i.putExtra("Folio", folioo)
                         i.putExtra("nombreCompletoCliente", nombre)
                         i.putExtra("Dirección", direccion)
                         i.putExtra("Problema", problema)

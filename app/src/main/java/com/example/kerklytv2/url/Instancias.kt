@@ -81,4 +81,9 @@ class Instancias() {
         val ref = database.getReference(usuario).child(cliente).child(uidCliente).child(chats).child(uidCliente+"_"+uidKerkly)
         return ref
     }
+
+    fun  enviarUbicacion(uidKerkly: String): DatabaseReference {
+        val ref  = database.getReference(usuario).child(kerkly).child(uidKerkly).child("ubicacion")
+        return ref
+    }
 }

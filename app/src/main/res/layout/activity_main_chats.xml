@@ -36,6 +36,7 @@
             android:orientation="horizontal"
             android:background="@color/fondo1">
 
+
             <ImageView
                 android:src="@drawable/ic_frame_46"
                 android:id="@+id/image_cliente"
@@ -54,6 +55,17 @@
                 android:layout_margin="12dp"
                 android:textSize="20sp"
                 />
+
+            <Button
+                android:id="@+id/botonDetenerService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enviar ubicacion"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:textSize="10dp"
+                android:backgroundTint="#574378"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -69,16 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="15dp" />
-            <Button
-                android:id="@+id/botonDetenerService"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:text="detener Servicio"
-                android:visibility="gone"
-                android:layout_marginTop="-55dp"
-                android:backgroundTint="@color/colorBoton"
-                />
+
 
         </LinearLayout>
 

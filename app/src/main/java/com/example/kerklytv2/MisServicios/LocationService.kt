@@ -24,6 +24,7 @@ class LocationService : Service() {
     private lateinit var locationManager: LocationManager
     var isServiceRunning = false
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var uid: String
 
     override fun onCreate() {
         super.onCreate()
@@ -47,6 +48,14 @@ class LocationService : Service() {
         }
         val foregroundServiceIntent = Intent(this, ForegroundLocationService::class.java)
         startService(foregroundServiceIntent)
+
+        if (intent != null) {
+             uid = intent.getStringExtra("uid").toString()
+            val parametro2 = intent.getStringExtra("parametro2")
+            println("uid " + uid)
+            println("parametro2 "+ parametro2)
+            // Realiza las operaciones necesarias con los parámetros
+        }
         return START_STICKY
     }
 
@@ -60,7 +69,7 @@ class LocationService : Service() {
             val locationData = LocationData(latitude, longitude)
 
             // Envía los datos a Firebase Realtime Database
-            databaseReference.child("ubicacion").setValue(locationData)
+            databaseReference.child("ubicacion").child(uid).setValue(locationData)
             // ...
         }
 
