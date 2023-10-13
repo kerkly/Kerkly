@@ -13,7 +13,6 @@ interface AceptarServicioUrgente {
     fun AceptarServicio (
         @Field("idPresupuesto") idPresupuesto: String,
         @Field("Curp") Curp: String,
-        @Field("uidKerkly") uidKerkly:String,
         callback: Callback<Response?>
     )
 }

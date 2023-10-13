@@ -68,7 +68,7 @@ class PresupuestourgentesDatosCliente {
     @Expose
     var nombreOficios: String? = null
 
-    @SerializedName("uidCliente")
+    @SerializedName("uidcliente")
     @Expose
     var uidCliente: String =""
 

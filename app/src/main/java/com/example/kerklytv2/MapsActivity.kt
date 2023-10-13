@@ -128,7 +128,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         correoKerly = b.getString("correoKerly").toString()
         direccionKerly = b.getString("direccionkerkly").toString()
         uidCliente = b.getString("uidCliente").toString()
-        println("uidCliente $uidCliente")
+       // println("uidClienteMaps ----- > $uidCliente")
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
@@ -516,7 +516,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 }
                 if(TipoServicio == "urgente"){
                     dialog.dismiss()
-                    AceptarServicio(folio)
+                   AceptarServicio(folio)
+                    //obtenerToken(currentUser!!.uid,uidCliente)
                    // obtenerToken(currentUser!!.uid, uidCliente)
                 }
                 /*if(TipoServicio == "clienteNoRegistrado"){
@@ -582,7 +583,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             .setEndpoint(ROOT_URL)
             .build()
         val api: AceptarServicioUrgente = adapter.create(AceptarServicioUrgente::class.java)
-        api.AceptarServicio(folio.toString(), Curp, currentUser!!.uid.toString(),
+        api.AceptarServicio(folio.toString(), Curp,
         object : Callback<Response?>{
             override fun success(t: Response?, response: Response?) {
               var entrada: BufferedReader? = null
@@ -603,7 +604,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
             }
             override fun failure(error: RetrofitError?) {
-               showMensaje("Error! ${error!!.message}")
+               showMensaje("Error 606! ${error!!.message}")
             }
         })
     }
