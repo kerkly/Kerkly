@@ -148,7 +148,7 @@ class InterfazKerkly : AppCompatActivity() {
         b = intent.extras!!
         telefonoKerkly = b.getString("numT").toString()
 
-        sesion(telefonoKerkly)
+       // sesion(telefonoKerkly)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -346,6 +346,7 @@ class InterfazKerkly : AppCompatActivity() {
         api.sesionAbierta(
             telefono,
             id,
+            currentUser!!.uid,
             object : retrofit.Callback<retrofit.client.Response?> {
                 override fun success(t: retrofit.client.Response?, response2: retrofit.client.Response?) {
                     var reader: BufferedReader? = null
@@ -542,6 +543,7 @@ class InterfazKerkly : AppCompatActivity() {
                     }else{
                         correo = postList[0].correo
                         if(currentUser!!.email == correo){
+                            sesion(telefonoKerkly)
                             val nombre = postList[0].nombre
                             val ap = postList[0].ap
                             val am = postList[0].am
@@ -634,7 +636,6 @@ class InterfazKerkly : AppCompatActivity() {
         super.onStart()
 //        metodoSalir()
         currentUser = mAuth!!.currentUser
-        val user = FirebaseAuth.getInstance().currentUser
         val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
         if (networkInfo != null && networkInfo.isConnected) {
@@ -667,6 +668,7 @@ class InterfazKerkly : AppCompatActivity() {
                             getLocation()
                             if (currentUser!!.email.toString() == correo){
                                 dataManager.mostrarOficios(txt_oficios)
+                                sesion(telefonoKerkly)
                               //  Toast.makeText(this@InterfazKerkly, "si son iguales", Toast.LENGTH_SHORT).show()
                                 photoUrl = currentUser!!.photoUrl.toString()
                                 correoKerkly = currentUser!!.email.toString()

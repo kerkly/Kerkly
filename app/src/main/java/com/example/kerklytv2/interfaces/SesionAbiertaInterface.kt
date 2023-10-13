@@ -13,6 +13,7 @@ interface SesionAbiertaInterface {
     fun sesionAbierta(
         @Field("Telefono") Telefono: String?,
         @Field("deviceIDk") deviceIDk: String?,
+        @Field("uidKerkly") uidKerkly: String?,
         callback: Callback<Response?>?
     )
 }
