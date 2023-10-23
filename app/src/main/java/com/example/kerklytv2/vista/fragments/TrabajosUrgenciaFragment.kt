@@ -110,9 +110,9 @@ class TrabajosUrgenciaFragment : Fragment() {
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-
-
+                        val correo = postList[recycler.getChildAdapterPosition(it)].Correo
                         val fecha = postList[recycler.getChildAdapterPosition(it)].fechaP
+                        val uidCliente = postList[recycler.getChildAdapterPosition(it)].uidCliente
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
@@ -124,20 +124,27 @@ class TrabajosUrgenciaFragment : Fragment() {
 
 
                         val b = Bundle()
-                        b.putString("Nombre Cliente NoR", nombre)
+                        b.putString("NombreCliente", nombre)
+                        b.putString("telefonoCliente", numero)
+                        b.putString("uidCliente", uidCliente)
+                        b.putString("correoCliente", correo)
                         b.putString("Problema", problema)
                         b.putString("Dirección", direccion)
                         b.putString("Fecha", fecha)
                         b.putString("Fragment", "0")
                         b.putString("folio", folio)
                         b.putString("Curp", curp)
-                        val f = AgendaFragment()
+                       /* val f = AgendaFragment()
                         b.putBoolean("urgente", true)
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
+                        }*/
+                        val fragment = BlankFragmentSeguimiento()
+                        var f = requireActivity().supportFragmentManager.beginTransaction().apply {
+                            fragment.arguments = b
+                            replace(R.id.nav_host_fragment_content_interfaz_kerkly, fragment).commit()
                         }
-
                     }
 
                     recycler.adapter = MiAdapter

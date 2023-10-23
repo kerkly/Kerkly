@@ -81,4 +81,8 @@ class TrabajoUrgencia {
     @SerializedName("nombreO")
     @Expose
     var nombreOficio: String? = null
+
+    @SerializedName("uidCliente")
+    @Expose
+    var uidCliente: String? = null
 }

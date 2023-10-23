@@ -312,7 +312,7 @@ class InterfazKerkly : AppCompatActivity() {
         args.putString("nombreCompletoKerkly", nombre_completo)
         args.putString("correoKerly", correoKerkly)
         args.putString("direccionkerkly", direccionKerly)
-        println("------> direccion kerkly $direccionKerly ")
+        //println("------> direccion kerkly $direccionKerly ")
         val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {

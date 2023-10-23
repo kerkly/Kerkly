@@ -105,9 +105,7 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var instancias: Instancias
     private lateinit var uidCliente:String
     private lateinit var uidKerkly:String
-    private val locationServiceIntent: Intent by lazy {
-        Intent(this, LocationService::class.java)
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -339,51 +337,14 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
            // Seguimineto()
         }
 
-        buttonGPs.setOnClickListener {
-            //stopLocationService()
-            locationServiceIntent.putExtra("uid", "$uidKerkly")
-            locationServiceIntent.putExtra("parametro2", "valor2")
-            startService(locationServiceIntent)
 
-        }
     }
     fun showMensaje(mensaje:String){
         Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show()
     }
-    private fun Seguimineto(){
-        buttonGPs.visibility =  View.VISIBLE
-        val options = arrayOf("Si", "No")
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("¿Deseas Compartir la ubicacion en tiempo real con el cliente?")
-        builder.setItems(options) { dialog: DialogInterface, which: Int ->
-            when (which) {
-                0 -> {
-                  startService(locationServiceIntent)
-                    buttonGPs.text = "Detener"
-                    dialog.dismiss()
-                }
-                1 -> {
-                    dialog.dismiss()
-                    buttonGPs.visibility =  View.GONE
-                }
-            }
-            dialog.dismiss()
-        }
-        builder.setNegativeButton("Cancelar") { dialog: DialogInterface, _ ->
-            dialog.dismiss()
-            buttonGPs.visibility =  View.GONE
-        }
-
-        val dialog = builder.create()
-        dialog.show()
-    }
 
 
-    private fun stopLocationService() {
-            stopService(locationServiceIntent)
-      //  fusedLocationClient.removeLocationUpdates(locationCallback)
-            buttonGPs.isEnabled = false // Opcional: Deshabilita el botón después de detener el servicio
-    }
+
 
     private fun showOptionsDialog(position: Int, archivo: String, urlImagen: String) {
         val options = arrayOf("Ver imagen", "Descargar imagen")

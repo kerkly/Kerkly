@@ -104,7 +104,7 @@ class AgendaFragment : Fragment() {
         btn_ubicacion = v.findViewById(R.id.btn_ubicacion_agenda)
 
         val aux = arguments?.get("Fragment")
-        edit_cliente.setText(arguments?.getString("Nombre Cliente NoR").toString())
+        edit_cliente.setText(arguments?.getString("NombreCliente").toString())
         edit_direccion.setText(arguments?.getString("Dirección").toString())
         edit_problema.setText(arguments?.getString("Problema").toString())
         idPresupuesto = arguments?.getString("folio")!!
@@ -201,6 +201,9 @@ class AgendaFragment : Fragment() {
                         edit_horaFinal.isEnabled = false
                         edit_fechaFinal.isEnabled = false
                         boton.isEnabled = false
+                        // Dentro del fragment que deseas finalizar
+                        requireFragmentManager().popBackStack();
+
                     }else{
                         Toast.makeText(requireContext(), Respuesta, Toast.LENGTH_SHORT).show()
                     }

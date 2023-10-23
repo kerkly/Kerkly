@@ -120,6 +120,13 @@
     <string name="default_notification_channel_id">Mi_ID_Chanel</string>
 
     <string name="servicioClienteNR">Servicios de clientes No Registrados</string>
+    <string name="txt1_seguimiento">Se ha notificado al cliente que acepto el servicio, informa al cliente sobre el horarios de llegada al servicio a travez del chat</string>
+    <string name="txt1.1_seguimiento">Seguimiento del servicio</string>
+    <string name="btn1_seguimiento">Chat  con el cliente</string>
+    <string name="txt2_seguimiento">¿Puedes realizar el servicio ahora? Comienza el servicio para enviar tu ubicacion en tiempo real al cliente</string>
+    <string name="btn2_seguimiento">Voy en camino</string>
+    <string name="btn3_seguimiento">Finalizar trabajo</string>
+    <string name="txt3_seguimiento">Para finalizar el trabajo, ingrese la fecha y hora de inico y fin del trabajo </string>
 
 
 </resources>
