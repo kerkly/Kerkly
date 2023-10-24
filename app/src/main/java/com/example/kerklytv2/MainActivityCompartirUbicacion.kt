@@ -1,15 +1,17 @@
 package com.example.kerklytv2
 
+import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.example.kerklytv2.MisServicios.LocationService
 
+
 class MainActivityCompartirUbicacion : AppCompatActivity() {
+
     private val locationServiceIntent: Intent by lazy {
         Intent(this, LocationService::class.java)
     }
@@ -20,9 +22,14 @@ class MainActivityCompartirUbicacion : AppCompatActivity() {
         val buttonGPs = findViewById<Button>(R.id.buttonGPs)
         buttonGPs.setOnClickListener {
             //stopLocationService()
-            locationServiceIntent.putExtra("uid", "gf")
-            locationServiceIntent.putExtra("parametro2", "valor2")
-            startService(locationServiceIntent)
+            Seguimiento()
+
+        }
+
+        val botonDetener = findViewById<Button>(R.id.buttonDetenerGPS)
+        botonDetener.setOnClickListener {
+            val locationServiceIntent: Intent = Intent(this, LocationService::class.java)
+            stopService(locationServiceIntent)
 
         }
     }
@@ -34,6 +41,8 @@ class MainActivityCompartirUbicacion : AppCompatActivity() {
         builder.setItems(options) { dialog: DialogInterface, which: Int ->
             when (which) {
                 0 -> {
+                    locationServiceIntent.putExtra("uid", "gf")
+                    locationServiceIntent.putExtra("parametro2", "valor2")
                     startService(locationServiceIntent)
                     dialog.dismiss()
                 }

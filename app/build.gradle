@@ -9,12 +9,12 @@ plugins {
 
 android {
 
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.kerklytv2"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -44,14 +44,14 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.4'
     implementation 'androidx.test:core-ktx:1.5.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.2.0'
     implementation 'com.google.firebase:firebase-messaging:23.1.2'
@@ -62,8 +62,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'com.squareup.retrofit:retrofit:1.9.0'
@@ -73,7 +73,7 @@ dependencies {
 
 
 // JSON Parsing
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
@@ -82,7 +82,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
     implementation files('libs/droidText.0.4.jar')
     implementation 'com.airbnb.android:paris:2.0.0'
-    implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
 
 
     implementation 'com.squareup.picasso:picasso:2.71828'
@@ -99,7 +99,6 @@ dependencies {
 
     implementation files('libs/droidText.0.4.jar')
     implementation 'com.airbnb.android:paris:2.0.0'
-    implementation 'com.google.android.gms:play-services-auth:20.5.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
     //nonspection GradleCompatible,GradleCompatible
@@ -114,7 +113,7 @@ dependencies {
 
     //implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1'  // bibloteca para vizualizar pdf sin descargar
     implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1' // biblioteca que maneje la carga y visualización de archivos PDF. A
-    implementation 'androidx.fragment:fragment:1.4.0'
+    implementation 'androidx.fragment:fragment:1.6.1'
 
 
     implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1' //para vizualizar pdf
@@ -122,6 +121,9 @@ dependencies {
 
     //postgresql
     implementation 'org.postgresql:postgresql:42.2.9'
+
+
+
 
 }
 apply plugin: 'com.google.gms.google-services'

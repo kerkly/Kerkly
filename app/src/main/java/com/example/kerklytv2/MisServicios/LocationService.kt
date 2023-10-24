@@ -40,14 +40,14 @@ class LocationService : Service() {
             // Registra un LocationListener para escuchar las actualizaciones de ubicación
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                0L,
-                0f,
+                1000L,
+                100f,
                 locationListener
             )
             isServiceRunning = true
         }
-        val foregroundServiceIntent = Intent(this, ForegroundLocationService::class.java)
-        startService(foregroundServiceIntent)
+      //  val foregroundServiceIntent = Intent(this, ForegroundLocationService::class.java)
+      //  startService(foregroundServiceIntent)
 
         if (intent != null) {
              uid = intent.getStringExtra("uid").toString()
