@@ -1,6 +1,7 @@
 package com.example.kerklytv2.MisServicios
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,6 +15,8 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.kerklytv2.R
@@ -33,18 +36,39 @@ class LocationService : Service() {
         // Inicializa la instancia de Firebase Realtime Database
         databaseReference = FirebaseDatabase.getInstance().reference
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val gpsEnabled = locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (!gpsEnabled) {
+            val settingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(settingsIntent)
+        }
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                0L,
+                0f,
+                locationListener
+            )
+        }
+
+
         // Verifica los permisos de ubicación en tiempo de ejecución (similar al ejemplo anterior)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Registra un LocationListener para escuchar las actualizaciones de ubicación
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                1000L,
-                100f,
-                locationListener
-            )
+            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 100f, locationListener)
+            locationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
+            locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
             isServiceRunning = true
+            println("si hay permisos")
+        }else{
+            println("no hay permisos")
         }
       //  val foregroundServiceIntent = Intent(this, ForegroundLocationService::class.java)
       //  startService(foregroundServiceIntent)
@@ -58,6 +82,9 @@ class LocationService : Service() {
         }
         return START_STICKY
     }
+
+
+
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
@@ -73,9 +100,12 @@ class LocationService : Service() {
             // ...
         }
 
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+            println("longitud algo por aqui ")
+        }
        // override fun onProviderEnabled(provider: String?) {}
         //override fun onProviderDisabled(provider: String?) {}
+
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -85,7 +115,7 @@ class LocationService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         // Detiene las actualizaciones de ubicación al destruir el servicio
-        locationManager.removeUpdates(locationListener)
+       locationManager.removeUpdates(locationListener)
     }
     data class LocationData(val latitude: Double, val longitude: Double)
 }

@@ -407,6 +407,7 @@ class InterfazKerkly : AppCompatActivity() {
         })
     }
     override fun onBackPressed() {
+        super.onBackPressed()
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
@@ -767,6 +768,7 @@ class InterfazKerkly : AppCompatActivity() {
            if (idSeccion == 0) {
                showMessage("no se encuentra dentro de una seccion conocida")
                fusedLocationClient?.removeLocationUpdates(locationCallback)
+               miConexion.cerrarConexion()
            } else {
                // val latitud = 17.520514
                //  val longitud = -99.463207
@@ -781,6 +783,7 @@ class InterfazKerkly : AppCompatActivity() {
                )
                miConexion.cerrarConexion()
                fusedLocationClient?.removeLocationUpdates(locationCallback)
+
 
            }
        }else {
