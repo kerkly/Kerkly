@@ -96,6 +96,7 @@ class MainActiityControlador {
 
                 override fun failure(error: RetrofitError) {
                     Toast.makeText(contexto, "Tenemos Problemas con el Servidor.... por favor intente mas tarde",Toast.LENGTH_SHORT).show()
+                    println("error ->Pantalla inicio -- ${error.message}")
                     contexto.finish()
                 }
 

@@ -2,6 +2,7 @@ package com.example.kerklytv2.ProgresSQL
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.widget.EditText
@@ -15,10 +16,17 @@ import java.sql.SQLException
 class conexionPostgreSQL {
    private var conexion: Connection? = null
 
+
     @SuppressLint("SuspiciousIndentation")
     fun obtenerConexion(context: Context) {
-        val threadPolicy: ThreadPolicy = ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(threadPolicy)
+        val threadPolicy: ThreadPolicy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            ThreadPolicy.Builder().permitAll().build()
+        } else {
+            TODO("VERSION.SDK_INT < GINGERBREAD")
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            StrictMode.setThreadPolicy(threadPolicy)
+        }
         try {
             Class.forName("org.postgresql.Driver") // Cargar el driver JDBC
             val host = "0.tcp.ngrok.io"

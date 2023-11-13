@@ -77,13 +77,14 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var editText: EditText
     private lateinit var imageViewfotoCliente: ImageView
     private lateinit var adapter: AdapterChat
-    private var folio = 0
+   // private var folio = 0
     private lateinit var b: Bundle
     private lateinit var nombrecliente: String
     private lateinit var fotoCliente:String
 
     private lateinit var nombreCompletoKerkly: String
     private lateinit var tokenCliente: String
+    private lateinit var tokenKerkly:String
     private val llamartopico = llamartopico()
 
     private lateinit var nombre_txt: TextView
@@ -135,7 +136,7 @@ class MainActivityChats : AppCompatActivity() {
        // viewPager = findViewById(R.id.viewPager)
 
         b = intent.extras!!
-        folio = b.getInt("Folio")
+        //folio = b.getInt("Folio")
         nombrecliente = b.getString("nombreCompletoCliente").toString()
         nombreCompletoKerkly = b.getString("nombreCompletoKerkly").toString()
        // nombreKerkly = b.getString("nombreKerkly").toString()
@@ -146,6 +147,7 @@ class MainActivityChats : AppCompatActivity() {
         directoMaps = b.getString("directoMaps").toString()
         uidCliente = b.getString("uidCliente").toString()
         uidKerkly = b.getString("uidKerkly").toString()
+        tokenKerkly =b.getString("tokenKerkly").toString()
 
        // showMensaje("cliente $uidCliente kerkly $uidKerkly")
        // println("cliente $uidCliente kerkly $uidKerkly")
@@ -195,7 +197,8 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
            //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
             databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
-            llamartopico.llamartopico(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly)
+            llamartopico.chats(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
+            nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
             editText.setText("")
             }
         }
@@ -369,13 +372,15 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
                     // Acción para "Descargar imagen"
                       progressBar.visibility = View.VISIBLE
                                         //descargar la imagen
-                                        val storage = FirebaseStorage.getInstance()
-                                        val storageRef = storage.reference
+                                        //val storage = FirebaseStorage.getInstance()
+                                       // val storageRef = storage.reference
                                         // Reemplaza "nombre_del_archivo.jpg" con el nombre del archivo de imagen que deseas descargar
-                                        val imageRef = storageRef.child("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly").child(archivo)
+                                        //val imageRef = storageRef.child("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly").child(archivo)
+
+                                        val imageRef = instancias.StorageReference(uidKerkly,uidCliente,archivo)
                                         val localFile = File.createTempFile("$archivo", "jpg")
                                         val ruta = getRuta(archivo)
-                                        val uploadTask = storageRef.getFile(ruta!!)
+                                        val uploadTask = instancias.storageRef.getFile(ruta!!)
                                         // Registra un Listener para obtener la URL del archivo una vez cargado
                                         uploadTask.addOnProgressListener {taskSnapshot ->
                                             // Calcula el progreso en porcentaje
@@ -711,7 +716,8 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
                         databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
 
                             storageRef.child("$tipoArchivo").child(fileUrl)
-                        llamartopico.llamartopico(this,tokenCliente, nombreArchivo, nombreCompletoKerkly)
+                        llamartopico.chats(this,tokenCliente, nombreArchivo, nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
+                            nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
                         Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
                         progressBar.visibility =View.GONE
                     }
@@ -738,7 +744,8 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
                         val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
                         databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
                         storageRef.child("$tipoArchivo").child(fileUrl)
-                        llamartopico.llamartopico(this,tokenCliente, nombreArchivo, nombreCompletoKerkly)
+                        llamartopico.chats(this,tokenCliente, nombreArchivo, nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
+                            nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
                         Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
                         progressBar.visibility =View.GONE
                     }
@@ -819,6 +826,7 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
         })
     }
     override fun onBackPressed() {
+        super.onBackPressed()
         if (directoMaps == "Maps"){
             val intent = Intent(this, InterfazKerkly::class.java)
             intent.putExtra("numT", telefonoKerkly)

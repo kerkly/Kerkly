@@ -86,4 +86,9 @@ class Instancias() {
         val ref  = database.getReference(usuario).child(kerkly).child(uidKerkly).child("ubicacion")
         return ref
     }
+
+    fun StorageReference(idKerkly: String,idCliente:String,Nombrearchivo: String): StorageReference{
+        val ref =  storageRef.child(usuario).child(kerkly).child(idKerkly).child(chats).child("$idKerkly"+"_"+"$idCliente").child(Nombrearchivo)
+        return ref
+    }
 }

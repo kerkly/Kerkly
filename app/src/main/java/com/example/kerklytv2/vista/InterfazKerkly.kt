@@ -105,7 +105,7 @@ class InterfazKerkly : AppCompatActivity() {
     lateinit var photoUrl: String
     lateinit var name: String
     lateinit var correoKerkly: String
-    private lateinit var token: String
+    private lateinit var tokenKerkly: String
     val setProgressDialog = SetProgressDialog()
     private lateinit var ImageViewPerfil : ImageView
     private lateinit var direccionKerly: String
@@ -290,9 +290,10 @@ class InterfazKerkly : AppCompatActivity() {
         val f = ContactosFragment()
         f.arguments = b2
         b2!!.putString("telefonoKerkly", telefonoKerkly)
-        b2!!.putString("nombreCompletoKerkly", nombre_completo)
+        b2!!.putString("nombreKerkly", nombre_completo)
         b2!!.putString("correoKerkly", correoKerkly)
         b2!! .putString("uidKerkly",currentUser!!.uid)
+        b2!!.putString("tokenKerkly",tokenKerkly)
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
@@ -495,7 +496,6 @@ class InterfazKerkly : AppCompatActivity() {
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 val multi = MultiTransformation<Bitmap>(RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.ALL))
-
                 Glide.with(this@InterfazKerkly).load(file)
                     .apply(RequestOptions.bitmapTransform(multi))
                     .into(ImageViewPerfil)
@@ -582,7 +582,7 @@ class InterfazKerkly : AppCompatActivity() {
                                     Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                                     return@OnCompleteListener
                                 }
-                                token = task.result
+                                tokenKerkly = task.result
                                 // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
 
                                 // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
@@ -590,7 +590,7 @@ class InterfazKerkly : AppCompatActivity() {
 
                                 val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
                                 val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
-                                databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), token,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                                databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), tokenKerkly,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                                     // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
                                    // getKerkly(foto)
                                     getOficiosKerkly()
@@ -709,10 +709,10 @@ class InterfazKerkly : AppCompatActivity() {
                                         Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                                         return@OnCompleteListener
                                     }
-                                    token = task.result
+                                    tokenKerkly = task.result
                                     val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
                                     val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
-                                    databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), token,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                                    databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), foto.toString(), currentDateTimeString.toString(), tokenKerkly,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
                                         // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
                                         setProgressDialog.dialog!!.dismiss()
                                     }
