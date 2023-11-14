@@ -106,6 +106,7 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var instancias: Instancias
     private lateinit var uidCliente:String
     private lateinit var uidKerkly:String
+    private lateinit var Noti: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,9 +149,9 @@ class MainActivityChats : AppCompatActivity() {
         uidCliente = b.getString("uidCliente").toString()
         uidKerkly = b.getString("uidKerkly").toString()
         tokenKerkly =b.getString("tokenKerkly").toString()
-
+        Noti = b.getString("Noti").toString()
        // showMensaje("cliente $uidCliente kerkly $uidKerkly")
-       // println("cliente $uidCliente kerkly $uidKerkly")
+        println("nombrec ${nombrecliente} k $nombreCompletoKerkly telk $telefonoKerkly tel c ${telefonoCliente} cliente $uidCliente kerkly $uidKerkly  noti $Noti")
 
         nombre_txt.text = nombrecliente
         val photoUrl = Uri.parse(fotoCliente)
@@ -827,6 +828,12 @@ val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
     }
     override fun onBackPressed() {
         super.onBackPressed()
+        if (Noti == "Noti"){
+            val intent = Intent(this, InterfazKerkly::class.java)
+            intent.putExtra("numT", telefonoKerkly)
+            startActivity(intent)
+            finish()
+        }
         if (directoMaps == "Maps"){
             val intent = Intent(this, InterfazKerkly::class.java)
             intent.putExtra("numT", telefonoKerkly)
