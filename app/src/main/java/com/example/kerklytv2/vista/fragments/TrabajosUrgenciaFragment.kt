@@ -1,6 +1,7 @@
 package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kerklytv2.MainActivity_Seguimiento
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.AdapterUrgencia
 import com.example.kerklytv2.interfaces.TrabajoUrgenteInterface
@@ -55,8 +57,6 @@ class TrabajosUrgenciaFragment : Fragment() {
         numeroTelefono = arguments?.getString("numNR").toString()
         curp = arguments?.getString("Curp").toString()
 
-
-
         img = v.findViewById(R.id.img_servicio_urgente)
         txt = v.findViewById(R.id.txt_servicio_urgente)
         getJson()
@@ -82,16 +82,12 @@ class TrabajosUrgenciaFragment : Fragment() {
             override fun onResponse(call: Call<List<TrabajoUrgencia?>?>, response: Response<List<TrabajoUrgencia?>?>) {
                 val postList: ArrayList<TrabajoUrgencia> = response.body() as
                         ArrayList<TrabajoUrgencia>
-
                 if(postList.size == 0) {
                     recycler.visibility = View.GONE
-
                 } else {
                     img.visibility = View.GONE
                     txt.visibility = View.GONE
-
                     MiAdapter = AdapterUrgencia(postList)
-
                     MiAdapter.setOnClickListener {
                         val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
                         val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
@@ -118,35 +114,29 @@ class TrabajosUrgenciaFragment : Fragment() {
                         if (ext == "0") {
                             ext = "S/N"
                         }
-
                         val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
                         val nombre = "$n $ap $am"
 
 
-                        val b = Bundle()
-                        b.putString("NombreCliente", nombre)
-                        b.putString("telefonoCliente", numero)
-                        b.putString("uidCliente", uidCliente)
-                        b.putString("correoCliente", correo)
-                        b.putString("Problema", problema)
-                        b.putString("Dirección", direccion)
-                        b.putString("Fecha", fecha)
-                        b.putString("Fragment", "0")
-                        b.putString("folio", folio)
-                        b.putString("Curp", curp)
                        /* val f = AgendaFragment()
                         b.putBoolean("urgente", true)
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
                         }*/
-                        val fragment = BlankFragmentSeguimiento()
-                        var f = requireActivity().supportFragmentManager.beginTransaction().apply {
-                            fragment.arguments = b
-                            replace(R.id.nav_host_fragment_content_interfaz_kerkly, fragment).commit()
-                        }
+                       val intent = Intent(requireContext(),MainActivity_Seguimiento::class.java)
+                        intent.putExtra("NombreCliente", nombre)
+                        intent.putExtra("telefonoCliente", numero)
+                        intent.putExtra("uidCliente", uidCliente)
+                        intent.putExtra("correoCliente", correo)
+                        intent.putExtra("Problema", problema)
+                        intent.putExtra("Dirección", direccion)
+                        intent.putExtra("Fecha", fecha)
+                        intent.putExtra("Fragment", "0")
+                        intent.putExtra("folio", folio)
+                        intent.putExtra("Curp", curp)
+                        startActivity(intent)
                     }
-
                     recycler.adapter = MiAdapter
                 }
 

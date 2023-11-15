@@ -11,6 +11,8 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -119,6 +121,7 @@ class InterfazKerkly : AppCompatActivity() {
     private var locationManager: LocationManager? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    private var handler: Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -205,7 +208,13 @@ class InterfazKerkly : AppCompatActivity() {
                     // Aquí puedes obtener las coordenadas de ubicación en tiempo real
                     latitud = it.latitude
                     longitud = it.longitude
-                    ActualizarUbicacionBaseEspacial()
+                    val handlerThread = HandlerThread("ActualizarBaseEspacial")
+                    handlerThread.start()
+                    handler = Handler(handlerThread.looper)
+                    handler?.post({
+                        ActualizarUbicacionBaseEspacial()
+                    })
+
                     println("latitud $latitud longitud $longitud")
                 }
             }
@@ -769,6 +778,7 @@ class InterfazKerkly : AppCompatActivity() {
                showMessage("no se encuentra dentro de una seccion conocida")
                fusedLocationClient?.removeLocationUpdates(locationCallback)
                miConexion.cerrarConexion()
+               handler?.looper?.quitSafely()
            } else {
                // val latitud = 17.520514
                //  val longitud = -99.463207
@@ -782,8 +792,8 @@ class InterfazKerkly : AppCompatActivity() {
                    longitud
                )
                miConexion.cerrarConexion()
+               handler?.looper?.quitSafely()
                fusedLocationClient?.removeLocationUpdates(locationCallback)
-
 
            }
        }else {

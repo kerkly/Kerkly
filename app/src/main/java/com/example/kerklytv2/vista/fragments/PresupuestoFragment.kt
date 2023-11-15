@@ -119,9 +119,6 @@ class PresupuestoFragment : Fragment() {
         return view
     }
 
-
-
-
     fun  getJSON() {
       //  System.out.println("metodo json $numeroTelefono")
         val ROOT_URL = Url().URL

@@ -68,4 +68,8 @@ class TrabajoNormal {
     @Expose
     var Referencia: String? = null
 
+    @SerializedName("uidCliente")
+    @Expose
+    var uidCliente: String? = null
+
 }

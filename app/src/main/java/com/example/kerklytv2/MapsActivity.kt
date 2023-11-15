@@ -39,6 +39,7 @@ import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
+import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -98,6 +99,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private var mAuth: FirebaseAuth? = null
     private var currentUser: FirebaseUser? = null
     private lateinit var instancias: Instancias
+    private lateinit var Noti:String
     companion object {
         private const val PERMISSION_REQUEST_CODE = 123
     }
@@ -112,22 +114,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         currentUser = mAuth!!.currentUser
         instancias = Instancias()
         //recibimos las coordenas
-        telefonoCliente = b.getString("telefonoCliente").toString()
-        telefonoKerkly = b.getString("telefonok").toString()
 
         latitud2 = b.getString("latitud").toString()
         longitud2 = b.getString("longitud").toString()
-        nombreCliente = b.getString("nombreCompletoCliente").toString()
-        nombrekerkly = b.getString("nombreCompletoKerkly").toString()
-        problema = b.getString("problema").toString()
-        direccion = b.getString("direccion").toString()
-        correoCliente = b.getString("correoCliente").toString()
         folio = b.getInt("Folio").toString()
-         TipoServicio  = b.getString("tipoServicio").toString()
+        nombreCliente = b.getString("nombreCompletoCliente").toString()
+        direccion = b.getString("direccion").toString()
+        problema = b.getString("problema").toString()
+        telefonoCliente = b.getString("telefonoCliente").toString()
+        TipoServicio  = b.getString("tipoServicio").toString()
         Curp = b.getString("Curp").toString()
+        telefonoKerkly = b.getString("telefonok").toString()
+        correoCliente = b.getString("correoCliente").toString()
         correoKerly = b.getString("correoKerly").toString()
+        nombrekerkly = b.getString("nombreCompletoKerkly").toString()
         direccionKerly = b.getString("direccionkerkly").toString()
         uidCliente = b.getString("uidCliente").toString()
+        Noti = b.getString("Noti").toString()
        // println("uidClienteMaps ----- > $uidCliente")
         context = this
         gpsTracker = GPSTracker(applicationContext)
@@ -640,7 +643,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 println(dataSnapshot.child("uid").value)
                 if (!dataSnapshot.exists()) {
-                    llamartopico.llamartopico(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly)
+                    llamartopico.llamarTopicSolicitud(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly,
+                    "urgente",telefonoCliente,nombreCliente,uidCliente)
                     val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
                     intent.putExtra("nombreCompletoCliente", nombreCliente)
                     intent.putExtra("correoCliente", correoCliente)
@@ -695,4 +699,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (Noti == "Noti"){
+            val intent = Intent(this, InterfazKerkly::class.java)
+            intent.putExtra("numT", telefonoKerkly)
+            startActivity(intent)
+            finish()
+        }
+    }
 }

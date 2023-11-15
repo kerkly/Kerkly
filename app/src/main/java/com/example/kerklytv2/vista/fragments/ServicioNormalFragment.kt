@@ -1,6 +1,7 @@
 package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kerklytv2.MainActivity_Seguimiento
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.AdapterNormalTrabajos
 import com.example.kerklytv2.interfaces.TrabajoNormalnterface
@@ -136,20 +138,21 @@ class ServicioNormalFragment : Fragment() {
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                        val idpresupuesto = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
+                        val correoCliente = postList[recycler.getChildAdapterPosition(it)].Correo
+                        val uidCliente = postList[recycler.getChildAdapterPosition(it)].uidCliente
+                        val fecha = postList[recycler.getChildAdapterPosition(it)].fechaP
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
                             ext = "S/N"
                         }
-
                         val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
                         val nombre = "$n $ap $am"
 
-                        Toast.makeText(context, "Teléfono: $colonia",
-                            Toast.LENGTH_SHORT).show()
+                       /* Toast.makeText(context, "Teléfono: $colonia",
+                            Toast.LENGTH_SHORT).show()*/
 
-                        val b = Bundle()
+                      /*  val b = Bundle()
                         b.putString("Nombre Cliente NoR", nombre)
                         b.putString("Problema", problema)
                         b.putString("Dirección", direccion)
@@ -164,14 +167,22 @@ class ServicioNormalFragment : Fragment() {
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
-                        }
-
+                        }*/
+                        val intent = Intent(requireContext(), MainActivity_Seguimiento::class.java)
+                        intent.putExtra("NombreCliente", nombre)
+                        intent.putExtra("telefonoCliente", numero)
+                        intent.putExtra("uidCliente", uidCliente)
+                        intent.putExtra("correoCliente", correoCliente)
+                        intent.putExtra("Problema", problema)
+                        intent.putExtra("Dirección", direccion)
+                        intent.putExtra("Fecha", fecha)
+                        intent.putExtra("Fragment", "0")
+                        intent.putExtra("folio", folio)
+                        intent.putExtra("Curp", curp)
+                        startActivity(intent)
                     }
-
                     recycler.adapter = MiAdapter
                 }
-
-
             }
 
             override fun onFailure(call: Call<List<TrabajoNormal?>?>, t: Throwable) {

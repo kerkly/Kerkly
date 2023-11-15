@@ -144,7 +144,7 @@ class MainActivityChats : AppCompatActivity() {
         telefonoKerkly = b.getString("telefonoKerkly").toString()
         telefonoCliente = b.getString("telefonoCliente").toString()
         fotoCliente = b.getString("urlFotoCliente").toString()
-        tokenCliente = b.getString("tokenCliente")!!
+        tokenCliente = b.getString("tokenCliente").toString()
         directoMaps = b.getString("directoMaps").toString()
         uidCliente = b.getString("uidCliente").toString()
         uidKerkly = b.getString("uidKerkly").toString()

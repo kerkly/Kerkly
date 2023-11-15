@@ -259,8 +259,9 @@ class Presupuesto : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val u2 = snapshot.getValue(usuarios::class.java)
                 token = u2!!.token
-               // System.out.println("el token del kerkly " + token)
-                llamartopico.llamartopico(this@Presupuesto, token, " En un momento se le atendera", "Gracias por su confianza $clientenombre")
+               System.out.println("el token del kerkly " + token)
+                llamartopico.llamarTopicSolicitud(this@Presupuesto, token, " En un momento se le atendera. Num. Folio: $folio", "Gracias por su confianza $clientenombre "
+                    ,"normal",telefonoCliente,clientenombre,uidCliente)
                 val intent = Intent(this@Presupuesto, PantallaInicio::class.java)
                 startActivity(intent)
             }
@@ -325,7 +326,6 @@ class Presupuesto : AppCompatActivity() {
                 }
                 if (TipoServicio == "ServicioNR"){
                  val databaseReference =  instacias.referenciaPresupuestoNR(uidKerkly,folio.toString()).child((i+1).toString()).setValue(t)
-
                 }
 
             }
