@@ -19,14 +19,17 @@
         android:theme="@style/Theme.KerklyTV2">
         <activity
             android:name=".MainActivity_Seguimiento"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".MainActivityCompartirUbicacion"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <service
             android:name=".Notificacion.MyFirebaseInstanceIDServic"
             android:directBootAware="true"
+            android:screenOrientation="portrait"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -45,6 +45,7 @@ class MainActiityControlador {
                         val  intent = Intent(context, InterfazKerkly::class.java)
                         intent.putExtra("numT", kerkly.getTelefono())
                         context.startActivity(intent)
+                        context.finish()
 
                     }else{
                         Toast.makeText(context, "El Usuario o contraseña Son Incorrectos", Toast.LENGTH_SHORT).show()

@@ -190,9 +190,10 @@ class MainActivityChats : AppCompatActivity() {
         })
 
         //databaseReferenceCliente = firebaseDatabase.getReference("UsuariosR").child(telefonoCliente).child("chats").child("$telefonoCliente"+"_"+"$telefonoKerkly")
-val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
+        val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
         boton.setOnClickListener {
-            if (editText.text.toString() == ""){
+            val mensaje = editText.text.toString()
+            if (mensaje == ""){
                 Toast.makeText(this, "Escribe tu mensaje" , Toast.LENGTH_SHORT).show()
             }else{
            //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))

@@ -1,6 +1,7 @@
 package com.example.kerklytv2.vista
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -423,15 +424,16 @@ class InterfazKerkly : AppCompatActivity() {
         } else {
             //finish()
           //  setFragmentHome()
-           /* val alert: AlertDialog.Builder = AlertDialog.Builder(this)
+            val alert: AlertDialog.Builder = AlertDialog.Builder(this)
             alert.setTitle(getString(R.string.cerrar_app))
             alert.setMessage(getString(R.string.mensaje_alertaCerrarApp))
             alert.setCancelable(false)
             alert.setPositiveButton(getString(R.string.confirmar_alertCerrarApp)) {
                     dialogo1, id -> finish() }
             alert.setNegativeButton(getString(R.string.cancelar_alertCerrarApp)) { dialogo1, id -> dialogo1.dismiss() }
-            alert.show()*/
+            alert.show()
         }
+
     }
 
    /* private fun getKerkly(foto:String) {
