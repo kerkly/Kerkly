@@ -34,7 +34,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
             val titulo: String = message.getData().get("titulo")!!
             val detalle: String = message.getData().get("detalle")!!
             val TipoNoti:String = message.getData().get("tipoNoti")!!
-            println("tipo noti $TipoNoti")
+            //println("tipo noti $TipoNoti")
             if (TipoNoti == "llamarTopicEnviarSolicitudUrgente"){
                 val latitud = message.getData().get("latitud").toString()
                 val longitud = message.getData().get("longitud").toString()
@@ -47,7 +47,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
                 val Curp = message.getData().get("Curp").toString()
                 val telefonoKerkly = message.getData().get("telefonok").toString()
                 val correoCliente = message.getData().get("correoCliente").toString()
-                val  correoKerkrly = message.getData().get("correoKerly").toString()
+                val correoKerkrly = message.getData().get("correoKerly").toString()
                 val nombrekerkly = message.getData().get("nombreCompletoKerkly").toString()
                // val direccionKerly = message.getData().get("direccionkerkly").toString()
                 val  uidCliente = message.getData().get("uidCliente").toString()

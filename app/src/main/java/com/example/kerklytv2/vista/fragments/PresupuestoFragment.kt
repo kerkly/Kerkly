@@ -168,14 +168,14 @@ class PresupuestoFragment : Fragment() {
                             ext = "S/N"
                         }
                         direccion = "$calle $colonia $ext $cp $referencia"
-                        nombre = "$n $ap $am"
+                        val Clientenombre = "$n $ap $am"
                         println("Teléfono: $numeroCliente, folio $folioo")
 
                        val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
                         i.putExtra("longitud", longitud)
                         i.putExtra("Folio", folioo)
-                        i.putExtra("nombreCompletoCliente", nombre)
+                        i.putExtra("nombreCompletoCliente", Clientenombre)
                         i.putExtra("Dirección", direccion)
                         i.putExtra("Problema", problema)
                         i.putExtra("telefonoCliente", numeroCliente)
