@@ -183,7 +183,11 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
         nf.putExtra("uidCliente", uidCliente)
         nf.putExtra("uidKerkly", uidKerkly)
         nf.putExtra("Noti", "Noti")
-        println("aqui ------> $uidCliente ke $uidKerkly telefono $telefonoCliente tokenC $tokenCliente")
+
+        println("foto Cliente $fotoCliente")
+
+        //println("recibido uidCliente  $uidCliente uidKerkly $uidKerkly")
+
         nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
 

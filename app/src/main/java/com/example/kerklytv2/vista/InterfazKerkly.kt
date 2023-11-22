@@ -554,7 +554,9 @@ class InterfazKerkly : AppCompatActivity() {
                         setProgressDialog.dialog!!.dismiss()
                     }else{
                         correo = postList[0].correo
-                        if(currentUser!!.email == correo){
+                        val correoActual = currentUser?.email?.toLowerCase()
+                        val correoComparar = correo?.toLowerCase()
+                        if(correoActual == correoComparar){
                             sesion(telefonoKerkly)
                             val nombre = postList[0].nombre
                             val ap = postList[0].ap
@@ -597,8 +599,6 @@ class InterfazKerkly : AppCompatActivity() {
                                 // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
 
                                 // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
-
-
                                 val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
                                 val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
                                 databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), tokenKerkly,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);

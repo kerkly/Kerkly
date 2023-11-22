@@ -74,6 +74,7 @@ class llamartopico {
     fun chats(context: Context, token: String, Mensaje: String, Titulo: String,
               telefonoKerkly:String,telefonoCliente:String, nombreCliente:String, fotoCliente:String,tokenKerkly:String,
               uidCliente: String, uidKerkly:String) {
+       // println("uidCliente $uidCliente uidKerkly $uidKerkly")
         var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
         firebaseMessaging.addOnCompleteListener {
             //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()

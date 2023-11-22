@@ -151,7 +151,8 @@ class MainActivityChats : AppCompatActivity() {
         tokenKerkly =b.getString("tokenKerkly").toString()
         Noti = b.getString("Noti").toString()
        // showMensaje("cliente $uidCliente kerkly $uidKerkly")
-        println("nombrec ${nombrecliente} k $nombreCompletoKerkly telk $telefonoKerkly tel c ${telefonoCliente} cliente $uidCliente kerkly $uidKerkly  noti $Noti")
+        println("recibido uidCliente  $uidCliente uidKerkly $uidKerkly")
+        //println("nombrec ${nombrecliente} k $nombreCompletoKerkly telk $telefonoKerkly tel c ${telefonoCliente} cliente $uidCliente kerkly $uidKerkly  noti $Noti")
 
         nombre_txt.text = nombrecliente
         val photoUrl = Uri.parse(fotoCliente)
@@ -196,12 +197,17 @@ class MainActivityChats : AppCompatActivity() {
             if (mensaje == ""){
                 Toast.makeText(this, "Escribe tu mensaje" , Toast.LENGTH_SHORT).show()
             }else{
+                if(uidKerkly == uidCliente){
+                    showMensaje("error..")
+                    finish()
+                }else{
            //adapter.addMensaje(Mensaje(editText.text.toString(), "00:00"))
             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
             databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
             llamartopico.chats(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
             nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
             editText.setText("")
+            }
             }
         }
 
