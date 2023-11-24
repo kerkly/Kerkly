@@ -36,6 +36,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textnputPassword" />
 
+            <Button
+                android:id="@+id/buttonActualizarAPP"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="132dp"
+                android:backgroundTint="@color/colorBoton"
+                android:forceDarkAllowed="false"
+                android:text="Actualizar App"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.548"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textnputPassword" />
+
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="362dp"
