@@ -6,6 +6,7 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.SQLException
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.location.LocationManager
@@ -14,6 +15,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -201,7 +203,6 @@ class InterfazKerkly : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         // Configurar la callback para recibir actualizaciones de ubicación
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
@@ -215,7 +216,6 @@ class InterfazKerkly : AppCompatActivity() {
                     handler?.post({
                         ActualizarUbicacionBaseEspacial()
                     })
-
                     println("latitud $latitud longitud $longitud")
                 }
             }
@@ -774,34 +774,53 @@ class InterfazKerkly : AppCompatActivity() {
    fun ActualizarUbicacionBaseEspacial() {
        val miConexion = conexionPostgreSQL()
        val conexion = miConexion.obtenerConexion(this)
+       println("conexion---> $conexion")
        if (conexion != null) {
-           val idSeccion = miConexion.ObtenerSeccionCoordenadas(longitud, latitud)
-           if (idSeccion == 0) {
-               showMessage("no se encuentra dentro de una seccion conocida")
-               fusedLocationClient?.removeLocationUpdates(locationCallback)
-               miConexion.cerrarConexion()
-               handler?.looper?.quitSafely()
-           } else {
-               // val latitud = 17.520514
-               //  val longitud = -99.463207
-               println("mis Datos geometricos $latitud $longitud mis Datos geometricos $idSeccion")
-               showMessage("seccion $idSeccion")
-               val insertar = miConexion.insertOrUpdateSeccionKerkly(
-                   curp,
-                   idSeccion.toInt(),
-                   currentUser!!.uid,
-                   latitud,
-                   longitud
-               )
-               miConexion.cerrarConexion()
-               handler?.looper?.quitSafely()
-               fusedLocationClient?.removeLocationUpdates(locationCallback)
+           try {
+               val idSeccion = miConexion.ObtenerSeccionCoordenadas(longitud, latitud)
+               if (idSeccion == 0) {
+                   showMessage("no se encuentra dentro de una sección conocida")
+                   fusedLocationClient?.removeLocationUpdates(locationCallback)
+                   miConexion.cerrarConexion()
+                   val delayMillis = 3000L // Retardo de 3 segundos
+                   Handler(Looper.getMainLooper()).postDelayed({
+                       handler?.looper?.quitSafely()
+                   }, delayMillis)
+               } else {
+                   println("mis Datos geometricos $latitud $longitud mis Datos geometricos $idSeccion")
+                   showMessage("sección $idSeccion")
 
+                   // Resto del código aquí, incluyendo la inserción o actualización en la base de datos.
+
+                   miConexion.cerrarConexion()
+                   val delayMillis = 3000L // Retardo de 3 segundos
+                   Handler(Looper.getMainLooper()).postDelayed({
+                       handler?.looper?.quitSafely()
+                   }, delayMillis)
+                   fusedLocationClient?.removeLocationUpdates(locationCallback)
+               }
+           } catch (e: SQLException) {
+               // Manejar la excepción (lanzar, notificar al usuario, etc.)
+               println("Error al realizar operaciones de base de datos: ${e.message}")
+               e.printStackTrace()
+               val delayMillis = 3000L // Retardo de 3 segundos
+               Handler(Looper.getMainLooper()).postDelayed({
+                   handler?.looper?.quitSafely()
+               }, delayMillis)
+               fusedLocationClient?.removeLocationUpdates(locationCallback)
+               // Otras acciones de manejo de errores según sea necesario
            }
-       }else {
-           // Maneja el caso en el que la conexión no se pudo establecer
-           showMessage("problemas de conexión  ")
+       } else {
+           // Manejar el caso en el que la conexión no se pudo establecer
+           showMessage("problemas con la conexión BD Espacial")
+           val delayMillis = 3000L // Retardo de 3 segundos
+           Handler(Looper.getMainLooper()).postDelayed({
+               handler?.looper?.quitSafely()
+           }, delayMillis)
+           fusedLocationClient?.removeLocationUpdates(locationCallback)
+
        }
+
    }
 
 }
