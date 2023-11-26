@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/ContactosFragment"
-        android:name="com.example.kerklytv2.vista.fragments.ContactosFragment"
+        android:name="com.example.kerklytv2.ui.vista.fragments.ContactosFragment"
         android:label="ContactosFragment"
         tools:layout="@layout/fragment_contactos" />
 
@@ -24,7 +24,7 @@
         tools:layout="@layout/fragment_slideshow" />
     <fragment
         android:id="@+id/trabajosPendientesFragment"
-        android:name="com.example.kerklytv2.vista.fragments.TrabajosPendientesFragment"
+        android:name="com.example.kerklytv2.ui.vista.fragments.TrabajosPendientesFragment"
         android:label="fragment_trabajos_pendientes"
         tools:layout="@layout/fragment_trabajos_pendientes" />
 </navigation>

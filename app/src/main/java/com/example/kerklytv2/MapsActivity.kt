@@ -3,16 +3,10 @@ package com.example.kerklytv2
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.hardware.Sensor
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -33,13 +27,15 @@ import com.android.volley.toolbox.Volley
 import com.example.kerklytv2.Notificacion.llamartopico
 import com.example.kerklytv2.databinding.ActivityMapsBinding
 import com.example.kerklytv2.interfaces.AceptarServicioUrgente
+import com.example.kerklytv2.interfaces.PresupuestoInterface
+import com.example.kerklytv2.modelo.serial.modeloVerificarSolictud
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.trazar_rutas.GPSTracker
 import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.vista.InterfazKerkly
+import com.example.kerklytv2.ui.vista.InterfazKerkly
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -49,6 +45,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -57,6 +55,9 @@ import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -100,6 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private var currentUser: FirebaseUser? = null
     private lateinit var instancias: Instancias
     private lateinit var Noti:String
+    private var solicutdAceptada:Int = 0
     companion object {
         private const val PERMISSION_REQUEST_CODE = 123
     }
@@ -117,7 +119,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
         latitud2 = b.getString("latitud").toString()
         longitud2 = b.getString("longitud").toString()
-        folio = b.getInt("Folio").toString()
+        folio = b.getString("Folio").toString()
         nombreCliente = b.getString("nombreCompletoCliente").toString()
         direccion = b.getString("direccion").toString()
         problema = b.getString("problema").toString()
@@ -131,7 +133,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         direccionKerly = b.getString("direccionkerkly").toString()
         uidCliente = b.getString("uidCliente").toString()
         Noti = b.getString("Noti").toString()
-       // println("uidClienteMaps ----- > $uidCliente")
+        println("uidClienteMaps ----- > $folio")
         context = this
         gpsTracker = GPSTracker(applicationContext)
         location = gpsTracker!!.location
@@ -167,6 +169,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     buttonCancelarServicio.setOnClickListener{
         mostrarDialogRechazar()
     }
+        val res = VerificarSolicitud(folio)
+        showMensaje("Respuesta folio $folio resp $res")
     }
     override fun setDouble(min: String?) {
         val res = min!!.split(",").toTypedArray()
@@ -708,4 +712,58 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             finish()
         }
     }
+
+    private fun VerificarSolicitud(idPresupuesto: String) : Int{
+        val ROOT_URL = Url().URL
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$ROOT_URL/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val presupuestoGET = retrofit.create(PresupuestoInterface::class.java)
+        val call = presupuestoGET.getVerificarSolictudUrgente(idPresupuesto)
+
+        call?.enqueue(object : retrofit2.Callback<List<modeloVerificarSolictud?>?> {
+
+            override fun onResponse(
+                call: Call<List<modeloVerificarSolictud?>?>,
+                response: retrofit2.Response<List<modeloVerificarSolictud?>?>
+            ) {
+                if (response.isSuccessful) {
+                    val postList = response.body()
+
+                    // Verificar si la lista no es nula y contiene elementos
+                    if (postList != null && postList.isNotEmpty()) {
+                        // Iterar sobre la lista para obtener los datos
+                        for (sol: modeloVerificarSolictud? in postList) {
+                            // Aquí puedes trabajar con los datos del presupuesto
+                            val idPresupuesto = sol?.idPresupuesto
+                             solicutdAceptada = sol?.aceptoK!!.toInt()
+                            // ...
+                        }
+                    } else {
+                        // La lista está vacía, manejar según sea necesario
+                      //  showMensaje("La lista de presupuestos está vacía.")
+                    }
+                } else {
+                    // La solicitud no fue exitosa, manejar según sea necesario
+                    showMensaje("Error en la solicitud. Código: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(
+                call: Call<List<modeloVerificarSolictud?>?>,
+                t: Throwable
+            ) {
+                showMensaje("error.. $t")
+            }
+        })
+        return solicutdAceptada
+    }
+
 }

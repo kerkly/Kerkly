@@ -49,7 +49,7 @@ import com.example.kerklytv2.modelo.Mensaje
 import com.example.kerklytv2.modelo.MensajeCopia
 import com.example.kerklytv2.ui.home.HomeFragment
 import com.example.kerklytv2.url.Instancias
-import com.example.kerklytv2.vista.InterfazKerkly
+import com.example.kerklytv2.ui.vista.InterfazKerkly
 import com.github.barteksc.pdfviewer.PDFView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback

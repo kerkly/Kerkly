@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_botonAzul"
-    tools:context=".vista.fragments.PresupuestosPreviewFragment">
+    tools:context=".ui.vista.fragments.PresupuestosPreviewFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

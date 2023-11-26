@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.TrabajoNormal
-import com.example.kerklytv2.vista.fragments.ContactosFragment
+import com.example.kerklytv2.ui.vista.fragments.ContactosFragment
 
 
 class AdapterNormalTrabajos(val datset: ArrayList<TrabajoNormal>, val activity: FragmentActivity):

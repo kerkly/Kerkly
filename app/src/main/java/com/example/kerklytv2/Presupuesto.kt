@@ -24,7 +24,7 @@ import com.example.kerklytv2.modelo.TablaP
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.vista.InterfazKerkly
+import com.example.kerklytv2.ui.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout

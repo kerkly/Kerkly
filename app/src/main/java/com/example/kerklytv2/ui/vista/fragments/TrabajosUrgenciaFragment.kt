@@ -1,6 +1,7 @@
-package com.example.kerklytv2.vista.fragments
+package com.example.kerklytv2.ui.vista.fragments
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,10 +13,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kerklytv2.MainActivity_Seguimiento
 import com.example.kerklytv2.R
-import com.example.kerklytv2.controlador.AdapterHistorialUrg
-import com.example.kerklytv2.interfaces.ObtenerHIstorialUrgenteInterface
-import com.example.kerklytv2.modelo.serial.HistorialUrgencia
+import com.example.kerklytv2.controlador.AdapterUrgencia
+import com.example.kerklytv2.interfaces.TrabajoUrgenteInterface
+import com.example.kerklytv2.modelo.serial.TrabajoUrgencia
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,33 +27,20 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HistorialUrgenteFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HistorialUrgenteFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
+class TrabajosUrgenciaFragment : Fragment() {
 
     private lateinit var context: Activity
     private lateinit var recycler: RecyclerView
-    lateinit var MiAdapter: AdapterHistorialUrg
+    lateinit var MiAdapter: AdapterUrgencia
     private lateinit var numeroTelefono: String
-    private var param2: String? = null
+    private lateinit var curp: String
     private lateinit var img: ImageView
     private lateinit var txt: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -60,17 +49,20 @@ class HistorialUrgenteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val v =  inflater.inflate(R.layout.fragment_historial_urgente, container, false)
+        val v = inflater.inflate(R.layout.fragment_trabajos_urgencia, container, false)
         context = requireActivity()
-        recycler = v.findViewById(R.id.recycler_historialUrgente)
-        img = v.findViewById(R.id.img_historialUrgente)
-        txt = v.findViewById(R.id.txt_historial_Urgente)
+        recycler = v.findViewById(R.id.recycler_trabajos_urgencia_rw)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
         numeroTelefono = arguments?.getString("numNR").toString()
+        curp = arguments?.getString("Curp").toString()
+
+        img = v.findViewById(R.id.img_servicio_urgente)
+        txt = v.findViewById(R.id.txt_servicio_urgente)
         getJson()
         return v
     }
+
 
     fun getJson() {
         val ROOT_URL = Url().URL
@@ -83,85 +75,74 @@ class HistorialUrgenteFragment : Fragment() {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val presupuestoGET = retrofit.create(ObtenerHIstorialUrgenteInterface::class.java)
+        val presupuestoGET = retrofit.create(TrabajoUrgenteInterface::class.java)
         val call = presupuestoGET.getPost(numeroTelefono)
-        call?.enqueue(object : Callback<List<HistorialUrgencia?>?> {
+        call?.enqueue(object : Callback<List<TrabajoUrgencia?>?> {
 
-            override fun onResponse(
-                call: Call<List<HistorialUrgencia?>?>,
-                response: Response<List<HistorialUrgencia?>?>
-            ) {
-
-                val postList: ArrayList<HistorialUrgencia> = response.body() as
-                        ArrayList<HistorialUrgencia>
-
+            override fun onResponse(call: Call<List<TrabajoUrgencia?>?>, response: Response<List<TrabajoUrgencia?>?>) {
+                val postList: ArrayList<TrabajoUrgencia> = response.body() as
+                        ArrayList<TrabajoUrgencia>
                 if(postList.size == 0) {
                     recycler.visibility = View.GONE
                 } else {
                     img.visibility = View.GONE
                     txt.visibility = View.GONE
-
-                    MiAdapter = AdapterHistorialUrg(postList)
-
+                    MiAdapter = AdapterUrgencia(postList)
                     MiAdapter.setOnClickListener {
-                        val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuestoNoRegistrado
+                        val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
                         val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
                         val calle = postList[recycler.getChildAdapterPosition(it)].Calle
                         val cp = postList[recycler.getChildAdapterPosition(it)].Codigo_Postal
                         val referencia = postList[recycler.getChildAdapterPosition(it)].Referencia
                         var ext = postList[recycler.getChildAdapterPosition(it)].No_Exterior
 
-                        val n = postList[recycler.getChildAdapterPosition(it)].nombre_noR
-                        val ap = postList[recycler.getChildAdapterPosition(it)].apellidoP_noR
-                        val am = postList[recycler.getChildAdapterPosition(it)].apellidoM_noR
+                        val n = postList[recycler.getChildAdapterPosition(it)].Nombre
+                        val ap = postList[recycler.getChildAdapterPosition(it)].Apellido_Paterno
+                        val am = postList[recycler.getChildAdapterPosition(it)].Apellido_Materno
 
-                        val numero = postList[recycler.getChildAdapterPosition(it)].telefono_NoR
+                        val numero = postList[recycler.getChildAdapterPosition(it)].telefonoCliente
 
                         val problema = postList[recycler.getChildAdapterPosition(it)].problema
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                        val idContrato = postList[recycler.getChildAdapterPosition(it)].idContraNoRegistrado
-
-                        val fecha = postList[recycler.getChildAdapterPosition(it)].Fecha_Inicio_NoRegistrado
-                        val fechaF = postList[recycler.getChildAdapterPosition(it)].Fecha_Final_NoRegistrado
-
-                        Log.d("fecha", fechaF!!)
+                        val correo = postList[recycler.getChildAdapterPosition(it)].Correo
+                        val fecha = postList[recycler.getChildAdapterPosition(it)].fechaP
+                        val uidCliente = postList[recycler.getChildAdapterPosition(it)].uidCliente
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
                             ext = "S/N"
                         }
-
                         val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
                         val nombre = "$n $ap $am"
 
-                        Toast.makeText(context, "Teléfono: $colonia",
-                            Toast.LENGTH_SHORT).show()
 
-                        val b = Bundle()
-                        b.putString("Nombre Cliente NoR", nombre)
-                        b.putString("Problema", problema)
-                        b.putString("Dirección", direccion)
-                        b.putString("Fecha", fecha)
-                        b.putInt("Contrato", idContrato)
-                        b.putString("Fragment", "1")
-                        b.putString("Fecha final", fechaF)
-
-                        val f = AgendaFragment()
-                        b.putBoolean("Historial", true)
+                       /* val f = AgendaFragment()
+                        b.putBoolean("urgente", true)
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
-                        }
-
+                        }*/
+                       val intent = Intent(requireContext(),MainActivity_Seguimiento::class.java)
+                        intent.putExtra("NombreCliente", nombre)
+                        intent.putExtra("telefonoCliente", numero)
+                        intent.putExtra("uidCliente", uidCliente)
+                        intent.putExtra("correoCliente", correo)
+                        intent.putExtra("Problema", problema)
+                        intent.putExtra("Dirección", direccion)
+                        intent.putExtra("Fecha", fecha)
+                        intent.putExtra("Fragment", "0")
+                        intent.putExtra("folio", folio)
+                        intent.putExtra("Curp", curp)
+                        startActivity(intent)
                     }
-
                     recycler.adapter = MiAdapter
                 }
+
             }
 
-            override fun onFailure(call: Call<List<HistorialUrgencia?>?>, t: Throwable) {
+            override fun onFailure(call: Call<List<TrabajoUrgencia?>?>, t: Throwable) {
                 Toast.makeText(
                     context,
                     "Codigo de respuesta de error: $t",
@@ -171,5 +152,4 @@ class HistorialUrgenteFragment : Fragment() {
 
         })
     }
-
 }

@@ -51,6 +51,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
                 val nombrekerkly = message.getData().get("nombreCompletoKerkly").toString()
                // val direccionKerly = message.getData().get("direccionkerkly").toString()
                 val  uidCliente = message.getData().get("uidCliente").toString()
+                println("noti folio1 --------> $folio")
                 crearNotiSolicitudUrgente(titulo, detalle,latitud,longitud,folio,nombreCliente,direccion,problema,telefonoCliente,TipoServicio
                     ,Curp,telefonoKerkly,correoCliente,correoKerkrly,nombrekerkly,uidCliente)
             }
@@ -218,6 +219,8 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
         // val direccionKerly = message.getData().get("direccionkerkly").toString()
         nf.putExtra("uidCliente",uidCliente)
         nf.putExtra("Noti", "Noti")
+
+        println("noti folio223 --------> $folio")
 
         nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0

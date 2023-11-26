@@ -1,4 +1,4 @@
-package com.example.kerklytv2.vista
+package com.example.kerklytv2.ui.vista
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -52,6 +52,11 @@ import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.ui.home.HomeFragment
+import com.example.kerklytv2.ui.vista.fragments.ContactosFragment
+import com.example.kerklytv2.ui.vista.fragments.HistorialFragment
+import com.example.kerklytv2.ui.vista.fragments.PresupuestoFragment
+import com.example.kerklytv2.ui.vista.fragments.PresupuestosPreviewFragment
+import com.example.kerklytv2.ui.vista.fragments.TrabajosPendientesFragment
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
 import com.example.kerklytv2.vista.fragments.*

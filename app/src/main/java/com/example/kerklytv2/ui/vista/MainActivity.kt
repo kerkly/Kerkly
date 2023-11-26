@@ -1,4 +1,4 @@
-package com.example.kerklytv2.vista
+package com.example.kerklytv2.ui.vista
 
 
 import android.annotation.SuppressLint

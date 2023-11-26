@@ -1,4 +1,4 @@
-package com.example.kerklytv2.vista.fragments
+package com.example.kerklytv2.ui.vista.fragments
 
 import android.Manifest
 import android.app.Activity

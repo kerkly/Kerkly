@@ -1,4 +1,4 @@
-package com.example.kerklytv2.vista.fragments
+package com.example.kerklytv2.ui.vista.fragments
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -22,7 +22,7 @@ import com.example.kerklytv2.interfaces.TerminarContratoInterface
 import com.example.kerklytv2.interfaces.TerminarContratoInterfaceServicioNormal
 import com.example.kerklytv2.modelo.serial.CoordenadasKerkly
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.vista.InterfazKerkly
+import com.example.kerklytv2.ui.vista.InterfazKerkly
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
