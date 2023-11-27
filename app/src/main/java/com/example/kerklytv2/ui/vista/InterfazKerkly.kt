@@ -59,7 +59,6 @@ import com.example.kerklytv2.ui.vista.fragments.PresupuestosPreviewFragment
 import com.example.kerklytv2.ui.vista.fragments.TrabajosPendientesFragment
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.vista.fragments.*
 import com.example.kerklyv5.SQLite.DataManager
 import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -94,7 +93,7 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var kerkly: Kerkly
     private lateinit var b: Bundle
-    private lateinit var id: String
+    private lateinit var idKerkly: String
     private lateinit var telefonoKerkly: String
     private lateinit var nombre_completo: String
     private lateinit var nombreKerkly: String
@@ -154,12 +153,12 @@ class InterfazKerkly : AppCompatActivity() {
             AuthUI.IdpConfig.GoogleBuilder().build())
         mAuth = FirebaseAuth.getInstance()
 
-        id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        idKerkly = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         kerkly = Kerkly()
         b = intent.extras!!
         telefonoKerkly = b.getString("numT").toString()
 
-       // sesion(telefonoKerkly)
+     //   sesion(telefonoKerkly, idKerkly)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -206,20 +205,21 @@ class InterfazKerkly : AppCompatActivity() {
 
     }
     @SuppressLint("MissingPermission")
-    private fun getLocation() {
+    private fun getLocation(uidKerkly: String) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         // Configurar la callback para recibir actualizaciones de ubicación
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult?.lastLocation?.let {
                     // Aquí puedes obtener las coordenadas de ubicación en tiempo real
+
                     latitud = it.latitude
                     longitud = it.longitude
                     val handlerThread = HandlerThread("ActualizarBaseEspacial")
                     handlerThread.start()
                     handler = Handler(handlerThread.looper)
                     handler?.post({
-                        ActualizarUbicacionBaseEspacial()
+                        ActualizarUbicacionBaseEspacial(uidKerkly)
                     })
                     println("latitud $latitud longitud $longitud")
                 }
@@ -353,7 +353,7 @@ class InterfazKerkly : AppCompatActivity() {
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().add(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
     }
-    private fun sesion(telefono: String) {
+    private fun sesion(telefono: String, idKerkly: String) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
             .setEndpoint(ROOT_URL)
@@ -361,7 +361,7 @@ class InterfazKerkly : AppCompatActivity() {
         val api = adapter.create(SesionAbiertaInterface::class.java)
         api.sesionAbierta(
             telefono,
-            id,
+            idKerkly,
             currentUser!!.uid,
             object : retrofit.Callback<retrofit.client.Response?> {
                 override fun success(t: retrofit.client.Response?, response2: retrofit.client.Response?) {
@@ -370,6 +370,116 @@ class InterfazKerkly : AppCompatActivity() {
                     try {
                         reader = BufferedReader(InputStreamReader(t?.body?.`in`()))
                         output = reader.readLine()
+                        println("Respuesta de la sesion $output")
+                        showMessage("Respuesta de la sesion $output")
+                        if (output== "1"){
+                            //Toast.makeText(this, "entro" + currentUser!!.email, Toast.LENGTH_SHORT).show()
+                            val ROOT_URL = Url().URL
+                            val interceptor = HttpLoggingInterceptor()
+                            interceptor.level = HttpLoggingInterceptor.Level.BODY
+                            val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
+                            val retrofit = Retrofit.Builder()
+                                .baseUrl("$ROOT_URL/")
+                                .client(client)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build()
+                            val presupuestoGET = retrofit.create(ObtenerKerklyInterface::class.java)
+                            val call = presupuestoGET.getKerkly(telefonoKerkly)
+                            call?.enqueue(object: Callback<List<com.example.kerklytv2.modelo.serial.Kerkly?>?> {
+                                @SuppressLint("SuspiciousIndentation")
+                                override fun onResponse(
+                                    call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
+                                    response: retrofit2.Response<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>
+                                ) {
+                                    val postList: ArrayList<com.example.kerklytv2.modelo.serial.Kerkly> = response.body() as
+                                            ArrayList<com.example.kerklytv2.modelo.serial.Kerkly>
+
+                                    if (postList.size == 0){
+                                        Toast.makeText(this@InterfazKerkly, "ocurio un error", Toast.LENGTH_SHORT).show()
+                                        setProgressDialog.dialog!!.dismiss()
+                                    }else{
+                                        correo = postList[0].correo
+                                        val correoActual = currentUser?.email?.toLowerCase()
+                                        val correoComparar = correo?.toLowerCase()
+                                        if(correoActual == correoComparar){
+                                            val nombre = postList[0].nombre
+                                            val ap = postList[0].ap
+                                            val am = postList[0].am
+                                            curp = postList[0].curp
+                                            getLocation(currentUser!!.uid.toString())
+                                            val telefono = telefonoKerkly.toLong()
+                                            nombreKerkly = nombre
+                                            nombre_completo = "$nombre $ap $am"
+                                            direccionKerly = postList[0].Pais + " " + postList[0].Ciudad + " " + postList[0].Colonia + " " + postList[0].Calle
+                                            photoUrl = currentUser!!.photoUrl.toString()
+                                            correoKerkly = currentUser!!.email.toString()
+                                            name = currentUser!!.displayName.toString()
+                                            //guardar datos del usaurio en sql
+                                            Glide.with(this@InterfazKerkly)
+                                                .asBitmap()
+                                                .load(photoUrl)
+                                                .into(object : SimpleTarget<Bitmap>() {
+                                                    override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                                                        val outputStream = ByteArrayOutputStream()
+                                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                                                        val photoByteArray = outputStream.toByteArray()
+                                                        val usuarios: usuariosSqlite
+                                                        usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
+                                                        dataManager.verificarSiElUsarioExiste(this@InterfazKerkly,ImageViewPerfil,txt_nombre,txt_correo, photoByteArray,usuarios,telefono.toString(),nombre.toString(),ap,am,correo)
+                                                        setFragmentHome()
+                                                    }
+                                                })
+                                            //obtenerToken
+                                            var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
+                                            firebaseMessaging.addOnCompleteListener {
+                                                //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()
+                                            }
+                                            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                                                if (!task.isSuccessful) {
+                                                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                                                    return@OnCompleteListener
+                                                }
+                                                tokenKerkly = task.result
+                                                // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+
+                                                // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
+                                                val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
+                                                val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
+                                                databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), tokenKerkly,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
+                                                    // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
+                                                    // getKerkly(foto)
+                                                    getOficiosKerkly()
+                                                    setProgressDialog.dialog!!.dismiss()
+                                                }
+                                            })
+
+
+
+                                        }else{
+                                            setProgressDialog.dialog!!.dismiss()
+                                            // Toast.makeText(applicationContext,"no es correo", Toast.LENGTH_SHORT).show()
+                                            cerrarSesion()
+                                            Toast.makeText(this@InterfazKerkly, "Este correo ${currentUser!!.email} no pertenece a esta cuenta", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+
+                                }
+
+                                override fun onFailure(
+                                    call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
+                                    t: Throwable
+                                ) {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Codigo de respuesta de error: $t",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            })
+                        }else{
+                            showMessage("no se actualizo")
+                        }
 
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -441,64 +551,7 @@ class InterfazKerkly : AppCompatActivity() {
 
     }
 
-   /* private fun getKerkly(foto:String) {
-        val ROOT_URL = Url().URL
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("$ROOT_URL/")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val presupuestoGET = retrofit.create(ObtenerKerklyInterface::class.java)
-        val call = presupuestoGET.getKerkly(telefonoKerkly)
-        call?.enqueue(object: Callback<List<com.example.kerklytv2.modelo.serial.Kerkly?>?> {
-            @SuppressLint("SuspiciousIndentation")
-            override fun onResponse(
-                call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
-                response: retrofit2.Response<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>
-            ) {
-                val postList: ArrayList<com.example.kerklytv2.modelo.serial.Kerkly> = response.body() as
-                        ArrayList<com.example.kerklytv2.modelo.serial.Kerkly>
-
-                if (postList.size == 0){
-                    Toast.makeText(this@InterfazKerkly, "ocurio un error", Toast.LENGTH_SHORT).show()
-                    setProgressDialog.dialog!!.dismiss()
-                }else{
-
-                    correo = postList[0].correo
-                    val nombre = postList[0].nombre
-                    val ap = postList[0].ap
-                    val am = postList[0].am
-                    curp = postList[0].curp
-                    nombreKerkly = nombre
-                    nombre_completo = "$nombre $ap $am"
-
-                    txt_nombre.text = nombre_completo
-                    txt_correo.text = correo
-                    direccionKerly = postList[0].Pais.trim() + " " + postList[0].Ciudad.trim() + " " + postList[0].Colonia.trim() + " " + postList[0].Calle.trim()
-                        //cargarImagen(foto)
-                        getOficiosKerkly()
-                        setProgressDialog.dialog!!.dismiss()
-                }
-
-            }
-
-            override fun onFailure(
-                call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
-                t: Throwable
-            ) {
-                Toast.makeText(
-                    applicationContext,
-                    "Codigo de respuesta de error: $t",
-                    Toast.LENGTH_SHORT
-                ).show()
-                setProgressDialog.dialog!!.dismiss()
-            }
-        })
-    }*/
 
     private fun cargarImagen(urlImagen: String) {
         val file: Uri
@@ -531,110 +584,9 @@ class InterfazKerkly : AppCompatActivity() {
 
         if (requestCode == MY_REQUEST_CODE) {
             currentUser = mAuth!!.currentUser
+            sesion(telefonoKerkly, idKerkly)
+
             setProgressDialog.dialog!!.dismiss()
-            //Toast.makeText(this, "entro" + currentUser!!.email, Toast.LENGTH_SHORT).show()
-            val ROOT_URL = Url().URL
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            val client: OkHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
-
-            val retrofit = Retrofit.Builder()
-                .baseUrl("$ROOT_URL/")
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val presupuestoGET = retrofit.create(ObtenerKerklyInterface::class.java)
-            val call = presupuestoGET.getKerkly(telefonoKerkly)
-            call?.enqueue(object: Callback<List<com.example.kerklytv2.modelo.serial.Kerkly?>?> {
-                @SuppressLint("SuspiciousIndentation")
-                override fun onResponse(
-                    call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
-                    response: retrofit2.Response<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>
-                ) {
-                    val postList: ArrayList<com.example.kerklytv2.modelo.serial.Kerkly> = response.body() as
-                            ArrayList<com.example.kerklytv2.modelo.serial.Kerkly>
-
-                    if (postList.size == 0){
-                        Toast.makeText(this@InterfazKerkly, "ocurio un error", Toast.LENGTH_SHORT).show()
-                        setProgressDialog.dialog!!.dismiss()
-                    }else{
-                        correo = postList[0].correo
-                        val correoActual = currentUser?.email?.toLowerCase()
-                        val correoComparar = correo?.toLowerCase()
-                        if(correoActual == correoComparar){
-                            sesion(telefonoKerkly)
-                            val nombre = postList[0].nombre
-                            val ap = postList[0].ap
-                            val am = postList[0].am
-                            curp = postList[0].curp
-                            getLocation()
-                            val telefono = telefonoKerkly.toLong()
-                            nombreKerkly = nombre
-                            nombre_completo = "$nombre $ap $am"
-                            direccionKerly = postList[0].Pais + " " + postList[0].Ciudad + " " + postList[0].Colonia + " " + postList[0].Calle
-                            photoUrl = currentUser!!.photoUrl.toString()
-                            correoKerkly = currentUser!!.email.toString()
-                            name = currentUser!!.displayName.toString()
-                            //guardar datos del usaurio en sql
-                            Glide.with(this@InterfazKerkly)
-                                .asBitmap()
-                                .load(photoUrl)
-                                .into(object : SimpleTarget<Bitmap>() {
-                                    override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
-                                        val outputStream = ByteArrayOutputStream()
-                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                                        val photoByteArray = outputStream.toByteArray()
-                                        val usuarios: usuariosSqlite
-                                        usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
-                                        dataManager.verificarSiElUsarioExiste(this@InterfazKerkly,ImageViewPerfil,txt_nombre,txt_correo, photoByteArray,usuarios,telefono.toString(),nombre.toString(),ap,am,correo)
-                                        setFragmentHome()
-                                    }
-                                })
-                            //obtenerToken
-                            var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
-                            firebaseMessaging.addOnCompleteListener {
-                                //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()
-                            }
-                            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-                                if (!task.isSuccessful) {
-                                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                                    return@OnCompleteListener
-                                }
-                                tokenKerkly = task.result
-                                // Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
-
-                                // Toast.makeText(MainActivity.this, "demtro onStart usauru " +  name, Toast.LENGTH_LONG).show();
-                                val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
-                                val databaseReference = instancias.referenciaInformacionDelUsuarioKerkly(currentUser!!.uid)
-                                databaseReference.setValue(usuarios(currentUser!!.uid,telefonoKerkly, correoKerkly.toString(), name.toString(), photoUrl.toString(), currentDateTimeString.toString(), tokenKerkly,curp)) { error, ref -> //txtprueba.setText(uid + "latitud " + latitud + " longitud " + longitud);
-                                    // Toast.makeText(this@InterfazKerkly, "Bienvenido $token", Toast.LENGTH_SHORT) .show()
-                                   // getKerkly(foto)
-                                    getOficiosKerkly()
-                                    setProgressDialog.dialog!!.dismiss()
-                                }
-                            })
-
-                        }else{
-                            setProgressDialog.dialog!!.dismiss()
-                           // Toast.makeText(applicationContext,"no es correo", Toast.LENGTH_SHORT).show()
-                            cerrarSesion()
-                           Toast.makeText(this@InterfazKerkly, "Este correo ${currentUser!!.email} no pertenece a esta cuenta", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                }
-
-                override fun onFailure(
-                    call: Call<List<com.example.kerklytv2.modelo.serial.Kerkly?>?>,
-                    t: Throwable
-                ) {
-                    Toast.makeText(
-                        applicationContext,
-                        "Codigo de respuesta de error: $t",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            })
         }else{
             setProgressDialog.dialog!!.dismiss()
         }
@@ -657,6 +609,7 @@ class InterfazKerkly : AppCompatActivity() {
         val networkInfo = connectivityManager.activeNetworkInfo
         if (networkInfo != null && networkInfo.isConnected) {
             if (currentUser != null) {
+                println("telefono kerkkly $telefonoKerkly")
                 setProgressDialog.dialog!!.dismiss()
                 val ROOT_URL = Url().URL
                 val interceptor = HttpLoggingInterceptor()
@@ -682,10 +635,10 @@ class InterfazKerkly : AppCompatActivity() {
                         }else{
                             correo = postList[0].correo
                             curp = postList[0].correo
-                            getLocation()
+                            getLocation(currentUser!!.uid.toString())
                             if (currentUser!!.email.toString() == correo){
                                 dataManager.mostrarOficios(txt_oficios)
-                                sesion(telefonoKerkly)
+                                sesion(telefonoKerkly, idKerkly)
                               //  Toast.makeText(this@InterfazKerkly, "si son iguales", Toast.LENGTH_SHORT).show()
                                 photoUrl = currentUser!!.photoUrl.toString()
                                 correoKerkly = currentUser!!.email.toString()
@@ -745,13 +698,9 @@ class InterfazKerkly : AppCompatActivity() {
                         setProgressDialog.dialog!!.dismiss()
                     }
                 })
-
-
-
             }else{
                 muestraOpciones()
             }
-
         } else {
             Toast.makeText(this@InterfazKerkly, "No hay conexion a Internet", Toast.LENGTH_LONG)
                 .show()
@@ -776,7 +725,7 @@ class InterfazKerkly : AppCompatActivity() {
         dataManager.deleteAllTablas()
     }
 
-   fun ActualizarUbicacionBaseEspacial() {
+   fun ActualizarUbicacionBaseEspacial(uidKerkly:String) {
        val miConexion = conexionPostgreSQL()
        val conexion = miConexion.obtenerConexion(this)
        println("conexion---> $conexion")
@@ -794,7 +743,7 @@ class InterfazKerkly : AppCompatActivity() {
                } else {
                    println("mis Datos geometricos $latitud $longitud mis Datos geometricos $idSeccion")
                    showMessage("sección $idSeccion")
-
+                   miConexion.insertOrUpdateSeccionKerkly(curp,idSeccion, uidKerkly, latitud,longitud)
                    // Resto del código aquí, incluyendo la inserción o actualización en la base de datos.
 
                    miConexion.cerrarConexion()
@@ -827,5 +776,7 @@ class InterfazKerkly : AppCompatActivity() {
        }
 
    }
+
+
 
 }

@@ -56,32 +56,43 @@ class conexionPostgreSQL {
         val insertQuery = "INSERT INTO \"KerklyEnMovimiento\" (\"curp\", \"IdPoligono\", \"uidKerkly\", \"ubicacion\") VALUES (?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326))"
 
         var exists: Boolean = false
-        conexion?.prepareStatement(existsQuery)?.use { existsStmt ->
-            existsStmt.setString(1, curp)
-            val existsResult = existsStmt.executeQuery()
-            exists = existsResult.next() && existsResult.getInt(1) > 0
-        }
 
-        if (exists) {
-            conexion?.prepareStatement(updateQuery)?.use { updateStmt ->
-                updateStmt.setInt(1, idpoligono)
-                updateStmt.setDouble(2, longitud)
-                updateStmt.setDouble(3, latitud)
-                updateStmt.setString(4, curp)
+        try {
+            conexion?.prepareStatement(existsQuery)?.use { existsStmt ->
+                existsStmt.setString(1, curp)
+                val existsResult = existsStmt.executeQuery()
+                exists = existsResult.next() && existsResult.getInt(1) > 0
+            }
 
-                updateStmt.executeUpdate()
+            if (exists) {
+                conexion?.prepareStatement(updateQuery)?.use { updateStmt ->
+                    updateStmt.setInt(1, idpoligono)
+                    updateStmt.setDouble(2, longitud)
+                    updateStmt.setDouble(3, latitud)
+                    updateStmt.setString(4, curp)
+
+                    updateStmt.executeUpdate()
+                }
+            } else {
+                conexion?.prepareStatement(insertQuery)?.use { insertStmt ->
+                    insertStmt.setString(1, curp)
+                    insertStmt.setInt(2, idpoligono)
+                    insertStmt.setString(3, uidKerkly)
+                    insertStmt.setDouble(4, longitud)
+                    insertStmt.setDouble(5, latitud)
+
+                    insertStmt.executeUpdate()
+                }
             }
-        } else {
-            conexion?.prepareStatement(insertQuery)?.use { insertStmt ->
-                insertStmt.setString(1, curp)
-                insertStmt.setInt(2, idpoligono)
-                insertStmt.setString(3, uidKerkly)
-                insertStmt.setDouble(4, longitud)
-                insertStmt.setDouble(5, latitud)
-                insertStmt.executeUpdate()
-            }
+        } catch (e: SQLException) {
+            // Manejar la excepción según tus necesidades (puedes imprimir un mensaje, registrarla, etc.)
+            e.printStackTrace()
+        } finally {
+            // Cerrar la conexión aquí si es necesario
+            cerrarConexion()
         }
     }
+
 
 
     fun obtenerSeccionKekrly(editText: EditText, textView: TextView){
