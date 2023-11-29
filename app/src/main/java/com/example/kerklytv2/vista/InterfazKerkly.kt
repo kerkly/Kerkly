@@ -135,6 +135,7 @@ class InterfazKerkly : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         setProgressDialog.setProgressDialog(this)
+        getLocation()
         instancias = Instancias()
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -197,7 +198,7 @@ class InterfazKerkly : AppCompatActivity() {
         }
     }
     @SuppressLint("MissingPermission")
-    private fun getLocation(uidKerkly: String, listaDeOficios:ArrayList<OficioKerkly>) {
+    private fun getLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         // Configurar la callback para recibir actualizaciones de ubicación
         locationCallback = object : LocationCallback() {
@@ -206,13 +207,7 @@ class InterfazKerkly : AppCompatActivity() {
                     // Aquí puedes obtener las coordenadas de ubicación en tiempo real
                     latitud = it.latitude
                     longitud = it.longitude
-                    val handlerThread = HandlerThread("ActualizarBaseEspacial")
-                    handlerThread.start()
-                    handler = Handler(handlerThread.looper)
-                    handler?.post({
-                        ActualizarUbicacionBaseEspacial(uidKerkly, listaDeOficios)
-                    })
-                    println("latitud $latitud longitud $longitud")
+
                 }
             }
         }
@@ -511,7 +506,14 @@ class InterfazKerkly : AppCompatActivity() {
                     acumulador += postList[i].nombreOficio +" "
                 }
 
-                getLocation(currentUser!!.uid.toString(), postList)
+                //getLocation(currentUser!!.uid.toString(), postList)
+                val handlerThread = HandlerThread("ActualizarBaseEspacial")
+                handlerThread.start()
+                handler = Handler(handlerThread.looper)
+                handler?.post({
+                    ActualizarUbicacionBaseEspacial(currentUser!!.uid, postList)
+                })
+                println("latitud $latitud longitud $longitud")
 
                 txt_oficios.text = acumulador
               //  dataManager.DatosDelUsuario(this@InterfazKerkly)

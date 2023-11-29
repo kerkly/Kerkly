@@ -169,12 +169,12 @@ class PresupuestoFragment : Fragment() {
                         }
                         direccion = "$calle $colonia $ext $cp $referencia"
                         val Clientenombre = "$n $ap $am"
-                        println("Teléfono: $numeroCliente, folio $folioo")
+                        println("Teléfono:------> $numeroCliente, folio $folioo")
 
                        val i = Intent(context, MapsActivity::class.java)
                         i.putExtra("latitud", latitud)
                         i.putExtra("longitud", longitud)
-                        i.putExtra("Folio", folioo)
+                        i.putExtra("Folio", folioo.toString())
                         i.putExtra("nombreCompletoCliente", Clientenombre)
                         i.putExtra("Dirección", direccion)
                         i.putExtra("Problema", problema)
@@ -186,6 +186,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("nombreCompletoKerkly", nombreCompletoKerkly)
                         i.putExtra("uidCliente",uidCliente)
                         startActivity(i)
+
                     }
                     recyclerview.adapter = MiAdapter
                   //  setProgressDialog.dialog!!.dismiss()

@@ -849,6 +849,21 @@ class MainActivityChats : AppCompatActivity() {
     }
     override fun onDestroy() {
         super.onDestroy()
+
+
+        if ( imagenCompleta.visibility == View.VISIBLE){
+            imagenCompleta.visibility = View.GONE
+            // Liberar la referencia a la imagen en imageView
+            imagenCompleta?.setImageDrawable(null)
+            //imagenCompleta = null
+
+        }else{
+            if (Noti == "Noti"){
+                val intent = Intent(this, InterfazKerkly::class.java)
+                intent.putExtra("Telefono", telefonoCliente)
+                startActivity(intent)
+                finish()
+            }
         if (childEventListener!= null) {
             val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
             val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
@@ -856,6 +871,7 @@ class MainActivityChats : AppCompatActivity() {
             databaseReferenceCliente.removeEventListener(childEventListener2!!);
         }
        // stopService(locationServiceIntent)
+    }
     }
 }
 

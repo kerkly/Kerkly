@@ -170,7 +170,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         mostrarDialogRechazar()
     }
         val res = VerificarSolicitud(folio)
-        showMensaje("Respuesta folio $folio resp $res")
+
+        if (res == 1){
+            showMensaje("Lo sentimon pero la solicutud ya ha sido aceptada")
+        }
     }
     override fun setDouble(min: String?) {
         val res = min!!.split(",").toTypedArray()

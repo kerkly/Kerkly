@@ -33,8 +33,20 @@ class AdapterChat(c: Context): RecyclerView.Adapter<AdapterChat.ViewHolder>() {
 
      var lista = ArrayList<Mensaje>()
     var context = c
-    lateinit var databaseReference: DatabaseReference
 
+    companion object {
+        const val VIEW_TYPE_TEXTO = 1
+        const val VIEW_TYPE_IMAGEN = 2
+        const val VIEW_TYPE_PDF = 3
+    }
+    override fun getItemViewType(position: Int): Int {
+        val mensaje = lista[position]
+        return when {
+            mensaje.tipoArchivo == "imagen" -> VIEW_TYPE_IMAGEN
+            mensaje.tipoArchivo == "pdf" -> VIEW_TYPE_PDF
+            else -> VIEW_TYPE_TEXTO
+        }
+    }
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txt_mensaje = view.findViewById<TextView>(R.id.txt_mensaje_chat)
         val txt_fecha = view.findViewById<TextView>(R.id.txt_fechaMensaje_chat)
@@ -51,145 +63,112 @@ class AdapterChat(c: Context): RecyclerView.Adapter<AdapterChat.ViewHolder>() {
     }
     @SuppressLint("SuspiciousIndentation")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.txt_mensaje.text = lista[position].mensaje
-        holder.txt_fecha.text = lista[position].hora
-        holder.txtMensajeLeido.text = lista[position].mensajeLeido
+        val mensaje = lista[position]
+        holder.txt_mensaje.text = mensaje.mensaje
+        holder.txt_fecha.text = mensaje.hora
+        holder.txtMensajeLeido.text = mensaje.mensajeLeido
 
-        // println("entro en el adapter Chat 91 ----> ${lista[position].mensaje}")
-        val tipo_usuario = lista[position].tipo_usuario.trim()
+        var tipo_usuario = mensaje.tipo_usuario.trim()
         if (tipo_usuario == "Kerkly") {
-            holder.txtMensajeLeido.visibility =  View.VISIBLE
-            if (lista[position].archivo ==""){
-               println("no hay archivo")
-            }else{
-                if (lista[position].tipoArchivo == "imagen"){
-                    println("hay archivo " + lista[position].archivo.toString())
-                    holder.layoutArchivo.visibility = View.VISIBLE
-                            holder.layoutArchivo.style{
-                                this.layoutGravity(Gravity.END)
-                            }
+            holder.txtMensajeLeido.visibility = View.GONE
 
-                    val photoUrl = Uri.parse(lista[position].archivo)
-                    // agregarFotoDelCliente(photoUrl, imageViewfotoCliente)
-                    Picasso.get()
-                        .load(photoUrl)
-                        .resize(800, 800)
-                        .into(holder.imageViewArchivo)
-                }
-
-                if (lista[position].tipoArchivo == "pdf") {
-                    holder.layoutArchivo.visibility = View.VISIBLE
-                    holder.layoutArchivo.style {
-                        this.layoutGravity(Gravity.END)
-                        holder.imageViewArchivo.setImageResource(R.drawable.icono_pdf)
-                    }
-
-                }
-
+            if (mensaje.archivo == "") {
+                holder.layoutArchivo.visibility = View.GONE
+            } else {
+                holder.layoutArchivo.visibility = View.VISIBLE
+                holder.imageViewArchivo.setImageResource(when (mensaje.tipoArchivo) {
+                    "imagen" -> R.drawable.descargaimagen
+                    "pdf" -> R.drawable.icono_pdf
+                    else -> R.drawable.descargaimagen
+                })
             }
-            holder.layoutMensajeNoLeido.style{
-                    this.layoutGravity(Gravity.END)
-                }
-                holder.layoutMensaje.style {
-                    this.backgroundRes(R.drawable.burbuja_char_der)
-                    this.layoutGravity(Gravity.END)
-                }
-                holder.layoutHora.style{
-                    this.layoutGravity(Gravity.END)
-                }
-                if (position > 0) {
-                    if (tipo_usuario == lista[position].tipo_usuario.trim()) {
-                        holder.layoutMensaje.style {
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutHora.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutMensajeNoLeido.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                    } else {
-                        holder.layoutMensaje.style {
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutHora.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutMensajeNoLeido.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                    }
 
+            holder.layoutArchivo.style {
+                this.layoutGravity(Gravity.START)
+            }
+            holder.layoutMensaje.style {
+                this.backgroundRes(R.drawable.burbuja_chat)
+                this.layoutGravity(Gravity.START)
+            }
+            holder.layoutHora.style {
+                this.layoutGravity(Gravity.START)
+            }
+
+            if (position > 0 && tipo_usuario == lista[position - 1].tipo_usuario.trim()) {
+                holder.layoutMensaje.style {
+                    this.layoutMarginTopDp(5)
                 }
+                holder.layoutHora.style {
+                    this.layoutMarginTopDp(5)
+                }
+                holder.layoutMensajeNoLeido.style {
+                    this.layoutMarginTopDp(5)
+                }
+            } else {
+                holder.layoutMensaje.style {
+                    this.layoutMarginTopDp(5)
+                }
+                holder.layoutHora.style {
+                    this.layoutMarginTopDp(5)
+                }
+                holder.layoutMensajeNoLeido.style {
+                    this.layoutMarginTopDp(5)
+                }
+            }
         }
     if (tipo_usuario == "cliente") {
-        holder.txtMensajeLeido.visibility =  View.GONE
-                holder.layoutMensajeNoLeido.style{
-                    this.layoutGravity(Gravity.START)
-                }
+        holder.txtMensajeLeido.visibility = View.VISIBLE
 
-        if (lista[position].archivo ==""){
-            println("no hay archivo")
-        }else{
-            if (lista[position].tipoArchivo == "imagen"){
-                println("hay archivo " + lista[position].archivo.toString())
-                holder.layoutArchivo.visibility = View.VISIBLE
-                holder.layoutArchivo.style{
-                    this.layoutGravity(Gravity.START)
-                }
+        if (mensaje.archivo == "") {
+            holder.layoutArchivo.visibility = View.GONE
+        } else {
+            holder.layoutArchivo.visibility = View.VISIBLE
+            holder.imageViewArchivo.setImageResource(when (mensaje.tipoArchivo) {
+                "imagen" -> R.drawable.descargaimagen
+                "pdf" -> R.drawable.icono_pdf
+                else -> R.drawable.descargaimagen
+            })
+        }
 
-                val photoUrl = Uri.parse(lista[position].archivo)
-                // agregarFotoDelCliente(photoUrl, imageViewfotoCliente)
-                Picasso.get()
-                    .load(photoUrl)
-                    .resize(800, 800)
-                    .into(holder.imageViewArchivo)
+        holder.layoutArchivo.style {
+            this.layoutGravity(Gravity.END)
+        }
+        holder.layoutMensajeNoLeido.style {
+            this.layoutGravity(Gravity.END)
+        }
+        holder.layoutMensaje.style {
+            this.backgroundRes(R.drawable.burbuja_chat)
+            this.layoutGravity(Gravity.END)
+        }
+        holder.layoutHora.style {
+            this.layoutGravity(Gravity.END)
+        }
+
+        if (position > 0 && tipo_usuario == lista[position - 1].tipo_usuario.trim()) {
+            holder.layoutMensaje.style {
+                this.layoutMarginTopDp(5)
             }
-
-            if (lista[position].tipoArchivo == "pdf") {
-                holder.layoutArchivo.visibility = View.VISIBLE
-                holder.layoutArchivo.style {
-                    this.layoutGravity(Gravity.START)
-                    holder.imageViewArchivo.setImageResource(R.drawable.icono_pdf)
-                }
-
+            holder.layoutHora.style {
+                this.layoutMarginTopDp(5)
             }
-           }
-
-                holder.layoutMensaje.style {
-                    this.backgroundRes(R.drawable.burbuja_chat)
-                    this.layoutGravity(Gravity.START)
-                }
-                holder.layoutHora.style{
-                    this.layoutGravity(Gravity.START)
-                }
-
-                if (position > 0) {
-                    if (tipo_usuario == lista[position-1].tipo_usuario.trim()) {
-                        holder.layoutMensaje.style {
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutHora.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutMensajeNoLeido.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                    } else {
-                        holder.layoutHora.style{
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutMensaje.style {
-                            this.layoutMarginTopDp(5)
-                        }
-                        holder.layoutMensajeNoLeido.style{
-                            this.layoutMarginTopDp(5)
-                        }
-
-                    }
-                }
+            holder.layoutMensajeNoLeido.style {
+                this.layoutMarginTopDp(5)
+            }
+        } else {
+            holder.layoutMensaje.style {
+                this.layoutMarginTopDp(5)
+            }
+            holder.layoutHora.style {
+                this.layoutMarginTopDp(5)
+            }
+            holder.layoutMensajeNoLeido.style {
+                this.layoutMarginTopDp(5)
             }
         }
+
+    }
+
+    }
 
     override fun getItemCount(): Int {
         return lista.size
