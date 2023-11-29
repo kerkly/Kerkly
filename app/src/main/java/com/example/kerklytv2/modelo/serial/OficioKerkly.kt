@@ -9,4 +9,12 @@ class OficioKerkly: Serializable {
     @SerializedName("nombreO")
     @Expose
     val nombreOficio: String = ""
+
+    @SerializedName("idOficio")
+    @Expose
+    val idOficio: Int = 0
+
+    @SerializedName("idoficio_trabajador")
+    @Expose
+    val idoficio_trabajador : Int = 0
 }

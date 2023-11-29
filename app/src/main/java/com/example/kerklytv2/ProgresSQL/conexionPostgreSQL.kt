@@ -8,6 +8,7 @@ import android.os.StrictMode.ThreadPolicy
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.example.kerklytv2.modelo.serial.OficioKerkly
 import org.postgresql.util.PGobject
 import java.sql.Connection
 import java.sql.DriverManager
@@ -50,11 +51,17 @@ class conexionPostgreSQL {
     fun cerrarConexion(){
         conexion!!.close()
     }
-    fun insertOrUpdateSeccionKerkly(curp: String, idpoligono: Int, uidKerkly: String, latitud: Double, longitud: Double) {
+    fun insertOrUpdateSeccionKerkly(curp: String, idpoligono: Int, uidKerkly: String, latitud: Double, longitud: Double, listaDeOficios: ArrayList<OficioKerkly>) {
         val existsQuery = "SELECT COUNT(*) FROM \"KerklyEnMovimiento\" WHERE \"curp\" = ?"
         val updateQuery = "UPDATE \"KerklyEnMovimiento\" SET \"IdPoligono\" = ?, \"ubicacion\" = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE \"curp\" = ?"
         val insertQuery = "INSERT INTO \"KerklyEnMovimiento\" (\"curp\", \"IdPoligono\", \"uidKerkly\", \"ubicacion\") VALUES (?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326))"
 
+        //val insertarOficioKerkly = "INSERT INTO public.\"oficios_kerklyM\" (\"id_oficioK\", \"id_kerklyK\") VALUES (?, ?)"
+
+       /* for (i in 0 until listaDeOficios.size){
+            println("lista a insertar id ${listaDeOficios[i].idOficio}")
+            println("lista a insertar  nombre ${listaDeOficios[i].nombreOficio}")
+        }*/
         var exists: Boolean = false
 
         try {
@@ -64,7 +71,7 @@ class conexionPostgreSQL {
                 exists = existsResult.next() && existsResult.getInt(1) > 0
             }
 
-            if (exists) {
+          if (exists) {
                 conexion?.prepareStatement(updateQuery)?.use { updateStmt ->
                     updateStmt.setInt(1, idpoligono)
                     updateStmt.setDouble(2, longitud)
@@ -74,16 +81,38 @@ class conexionPostgreSQL {
                     updateStmt.executeUpdate()
                 }
             } else {
-                conexion?.prepareStatement(insertQuery)?.use { insertStmt ->
+               conexion?.prepareStatement(insertQuery)?.use { insertStmt ->
                     insertStmt.setString(1, curp)
                     insertStmt.setInt(2, idpoligono)
                     insertStmt.setString(3, uidKerkly)
                     insertStmt.setDouble(4, longitud)
                     insertStmt.setDouble(5, latitud)
-
                     insertStmt.executeUpdate()
                 }
-            }
+
+                for (i in 0 until listaDeOficios.size) {
+                    println("lista a insertar idoficio_trabajador ${listaDeOficios[i].idoficio_trabajador}")
+                    println("lista a insertar id ${listaDeOficios[i].idOficio}")
+                    println("lista a insertar nombre ${listaDeOficios[i].nombreOficio}")
+
+                   val insertarOficioKerkly = "INSERT INTO public.\"oficios_kerklyM\" (\"idoficio_trabajador\", \"id_oficioK\", \"id_kerklyK\") VALUES (?, ?, ?)"
+
+                    try {
+                        conexion?.prepareStatement(insertarOficioKerkly)?.use { insertStmt ->
+                            // Establece los valores para los parámetros
+                            val idTrabajador: Int = listaDeOficios[i].idoficio_trabajador
+                            insertStmt.setInt(1, idTrabajador)
+                            insertStmt.setInt(2, listaDeOficios[i].idOficio)
+                            insertStmt.setString(3, curp)
+
+                            // Ejecuta la consulta de inserción
+                            insertStmt.executeUpdate()
+                        }
+                    } catch (e: SQLException) {
+                        e.printStackTrace()
+                    }
+                }
+           }
         } catch (e: SQLException) {
             // Manejar la excepción según tus necesidades (puedes imprimir un mensaje, registrarla, etc.)
             e.printStackTrace()

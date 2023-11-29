@@ -158,9 +158,6 @@ class InterfazKerkly : AppCompatActivity() {
         b = intent.extras!!
         telefonoKerkly = b.getString("numT").toString()
 
-     //   sesion(telefonoKerkly, idKerkly)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home,
@@ -180,12 +177,10 @@ class InterfazKerkly : AppCompatActivity() {
                 R.id.historialFragment -> setFragmentHistorial() // historial
                 R.id.cerrar_sesion_nav -> cerrarSesion() // cerrar sesion
             }
-
            drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
         dataManager = DataManager(this)
-
         locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         // Verifica si se concedió el permiso de ubicación
         val gpsEnabled = locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -193,7 +188,6 @@ class InterfazKerkly : AppCompatActivity() {
             startActivity(settingsIntent)
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
         } else {
             // El permiso no está concedido, solicítalo en tiempo de ejecución
             ActivityCompat.requestPermissions(
@@ -202,24 +196,22 @@ class InterfazKerkly : AppCompatActivity() {
                 REQUEST_LOCATION_PERMISSION
             )
         }
-
     }
     @SuppressLint("MissingPermission")
-    private fun getLocation(uidKerkly: String) {
+    private fun getLocation(uidKerkly: String, listaDeOficios:ArrayList<OficioKerkly>) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         // Configurar la callback para recibir actualizaciones de ubicación
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult?.lastLocation?.let {
                     // Aquí puedes obtener las coordenadas de ubicación en tiempo real
-
                     latitud = it.latitude
                     longitud = it.longitude
                     val handlerThread = HandlerThread("ActualizarBaseEspacial")
                     handlerThread.start()
                     handler = Handler(handlerThread.looper)
                     handler?.post({
-                        ActualizarUbicacionBaseEspacial(uidKerkly)
+                        ActualizarUbicacionBaseEspacial(uidKerkly, listaDeOficios)
                     })
                     println("latitud $latitud longitud $longitud")
                 }
@@ -371,7 +363,7 @@ class InterfazKerkly : AppCompatActivity() {
                         reader = BufferedReader(InputStreamReader(t?.body?.`in`()))
                         output = reader.readLine()
                         println("Respuesta de la sesion $output")
-                        showMessage("Respuesta de la sesion $output")
+                       // showMessage("Respuesta de la sesion $output")
                         if (output== "1"){
                             //Toast.makeText(this, "entro" + currentUser!!.email, Toast.LENGTH_SHORT).show()
                             val ROOT_URL = Url().URL
@@ -407,7 +399,6 @@ class InterfazKerkly : AppCompatActivity() {
                                             val ap = postList[0].ap
                                             val am = postList[0].am
                                             curp = postList[0].curp
-                                            getLocation(currentUser!!.uid.toString())
                                             val telefono = telefonoKerkly.toLong()
                                             nombreKerkly = nombre
                                             nombre_completo = "$nombre $ap $am"
@@ -453,9 +444,6 @@ class InterfazKerkly : AppCompatActivity() {
                                                     setProgressDialog.dialog!!.dismiss()
                                                 }
                                             })
-
-
-
                                         }else{
                                             setProgressDialog.dialog!!.dismiss()
                                             // Toast.makeText(applicationContext,"no es correo", Toast.LENGTH_SHORT).show()
@@ -463,7 +451,6 @@ class InterfazKerkly : AppCompatActivity() {
                                             Toast.makeText(this@InterfazKerkly, "Este correo ${currentUser!!.email} no pertenece a esta cuenta", Toast.LENGTH_LONG).show()
                                         }
                                     }
-
                                 }
 
                                 override fun onFailure(
@@ -513,14 +500,18 @@ class InterfazKerkly : AppCompatActivity() {
                 val totalItems = postList.size
                 var itemsInserted = 0
                 var acumulador = ""
-                var oficios: MisOficios
+              //  var oficios: MisOficios
+
                 for (i in 0 until postList.size){
                     println("lista a insertar ${i+1},${postList[i].nombreOficio.toString()}")
-                    oficios = MisOficios(i,postList[i].nombreOficio)
+                  var Nombreoficios =  postList[i].nombreOficio
+                    var idOficio =  postList[i].idOficio
                  //   dataManager.InsertarOficios(oficios)
                     itemsInserted
-                    acumulador += postList[i].nombreOficio +","
+                    acumulador += postList[i].nombreOficio +" "
                 }
+
+                getLocation(currentUser!!.uid.toString(), postList)
 
                 txt_oficios.text = acumulador
               //  dataManager.DatosDelUsuario(this@InterfazKerkly)
@@ -635,7 +626,6 @@ class InterfazKerkly : AppCompatActivity() {
                         }else{
                             correo = postList[0].correo
                             curp = postList[0].correo
-                            getLocation(currentUser!!.uid.toString())
                             if (currentUser!!.email.toString() == correo){
                                 dataManager.mostrarOficios(txt_oficios)
                                 sesion(telefonoKerkly, idKerkly)
@@ -725,7 +715,7 @@ class InterfazKerkly : AppCompatActivity() {
         dataManager.deleteAllTablas()
     }
 
-   fun ActualizarUbicacionBaseEspacial(uidKerkly:String) {
+   fun ActualizarUbicacionBaseEspacial(uidKerkly:String, listaDeOficios: ArrayList<OficioKerkly>) {
        val miConexion = conexionPostgreSQL()
        val conexion = miConexion.obtenerConexion(this)
        println("conexion---> $conexion")
@@ -743,7 +733,7 @@ class InterfazKerkly : AppCompatActivity() {
                } else {
                    println("mis Datos geometricos $latitud $longitud mis Datos geometricos $idSeccion")
                    showMessage("sección $idSeccion")
-                   miConexion.insertOrUpdateSeccionKerkly(curp,idSeccion, uidKerkly, latitud,longitud)
+                   miConexion.insertOrUpdateSeccionKerkly(curp,idSeccion, uidKerkly, latitud,longitud, listaDeOficios)
                    // Resto del código aquí, incluyendo la inserción o actualización en la base de datos.
 
                    miConexion.cerrarConexion()
