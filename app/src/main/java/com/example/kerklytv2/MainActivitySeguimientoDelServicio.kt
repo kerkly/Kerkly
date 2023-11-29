@@ -10,8 +10,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.example.kerklytv2.ui.vista.fragments.BlankFragmentChat
-import com.example.kerklytv2.ui.vista.fragments.MapsFragment
+import com.example.kerklytv2.vista.fragments.BlankFragmentChat
+import com.example.kerklytv2.vista.fragments.MapsFragment
 
 
 

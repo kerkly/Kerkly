@@ -72,7 +72,7 @@ class llamartopico {
         }
     }
     fun chats(context: Context, token: String, Mensaje: String, Titulo: String,
-              telefonoKerkly:String,telefonoCliente:String, nombreCliente:String, fotoCliente:String,tokenKerkly:String,
+              telefonoKerkly:String,telefonoCliente:String, nombreCliente:String, fotoKerkly:String,fotoCliente:String,tokenKerkly:String,
               uidCliente: String, uidKerkly:String) {
        // println("uidCliente $uidCliente uidKerkly $uidKerkly")
         var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
@@ -93,7 +93,8 @@ class llamartopico {
             notificacion.put("nombreCompletoCliente", nombreCliente)
             notificacion.put("telefonok", telefonoKerkly)
             notificacion.put("telefonoCliente", telefonoCliente)
-            notificacion.put("urlFotoKerkly", fotoCliente)
+            notificacion.put("urlFotoKerkly", fotoKerkly)
+            notificacion.put("urlFotoCliente", fotoCliente)
             notificacion.put("tokenKerkly", tokenKerkly)
             notificacion.put("tokenCliente", token)
             notificacion.put("uidCliente", uidCliente)

@@ -1,6 +1,7 @@
-package com.example.kerklytv2.ui.vista.fragments
+package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,10 +13,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kerklytv2.MainActivity_Seguimiento
 import com.example.kerklytv2.R
-import com.example.kerklytv2.controlador.AdapterHistorialNorm
-import com.example.kerklytv2.interfaces.ObtenerHistorialInterface
-import com.example.kerklytv2.modelo.serial.HistorialNormal
+import com.example.kerklytv2.controlador.AdapterNormalTrabajos
+import com.example.kerklytv2.interfaces.TrabajoNormalnterface
+import com.example.kerklytv2.modelo.serial.TrabajoNormal
 import com.example.kerklytv2.url.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,20 +34,26 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [HistorialNormalFragment.newInstance] factory method to
+ * Use the [ServicioNormalFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HistorialNormalFragment : Fragment() {
+class ServicioNormalFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var context: Activity
     private lateinit var recycler: RecyclerView
-    lateinit var MiAdapter: AdapterHistorialNorm
+    lateinit var MiAdapter: AdapterNormalTrabajos
     private lateinit var numeroTelefono: String
+    private lateinit var b: Bundle
+   // private lateinit var img: ImageView
+    private var folio = 0
+    private lateinit var curp: String
     private lateinit var img: ImageView
     private lateinit var txt: TextView
+    lateinit var nombrekerkly:String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,16 +68,25 @@ class HistorialNormalFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val v =  inflater.inflate(R.layout.fragment_historial_normal, container, false)
+        val v =  inflater.inflate(R.layout.fragment_servicio_normal, container, false)
         context = requireActivity()
-        recycler = v.findViewById(R.id.recycler_historialNormal)
-        img = v.findViewById(R.id.img_historialNormal)
-        txt = v.findViewById(R.id.txt_historial_normal)
+        recycler = v.findViewById(R.id.recycler_trabajoNormal)
+      //  img = v.findViewById(R.id.chat_img)
+        img = v.findViewById(R.id.img_servicio_normal)
+        txt = v.findViewById(R.id.txt_servicio_normal)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
-        numeroTelefono = arguments?.getString("numNR").toString()
-
+        b = requireArguments()
+        numeroTelefono = b.getString("numNR").toString()
+        curp = arguments?.getString("Curp").toString()
+        nombrekerkly = arguments?.getString("nombrekerkly").toString()
         getJson()
+
+      /*  img.setOnClickListener {
+            Toast.makeText(activity,
+                           "Mi folio es $folio",
+                            Toast.LENGTH_SHORT).show()
+        }*/
         return v
     }
 
@@ -84,17 +101,17 @@ class HistorialNormalFragment : Fragment() {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val presupuestoGET = retrofit.create(ObtenerHistorialInterface::class.java)
+        val presupuestoGET = retrofit.create(TrabajoNormalnterface::class.java)
         val call = presupuestoGET.getPost(numeroTelefono)
-        call?.enqueue(object : Callback<List<HistorialNormal?>?> {
+        call?.enqueue(object : Callback<List<TrabajoNormal?>?> {
 
             override fun onResponse(
-                call: Call<List<HistorialNormal?>?>,
-                response: Response<List<HistorialNormal?>?>
+                call: Call<List<TrabajoNormal?>?>,
+                response: Response<List<TrabajoNormal?>?>
             ) {
 
-                val postList: ArrayList<HistorialNormal> = response.body() as
-                        ArrayList<HistorialNormal>
+                val postList: ArrayList<TrabajoNormal> = response.body() as
+                        ArrayList<TrabajoNormal>
 
                 if (postList.size == 0) {
                     recycler.visibility = View.GONE
@@ -102,10 +119,9 @@ class HistorialNormalFragment : Fragment() {
                     img.visibility = View.GONE
                     txt.visibility = View.GONE
 
-                    MiAdapter = AdapterHistorialNorm(postList)
-
+                    MiAdapter = AdapterNormalTrabajos(postList, requireActivity())
                     MiAdapter.setOnClickListener {
-                        val folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
+                        folio = postList[recycler.getChildAdapterPosition(it)].idPresupuesto
                         val colonia = postList[recycler.getChildAdapterPosition(it)].Colonia
                         val calle = postList[recycler.getChildAdapterPosition(it)].Calle
                         val cp = postList[recycler.getChildAdapterPosition(it)].Codigo_Postal
@@ -122,50 +138,54 @@ class HistorialNormalFragment : Fragment() {
                         val ciudad = postList[recycler.getChildAdapterPosition(it)].Ciudad
                         val estado = postList[recycler.getChildAdapterPosition(it)].Estado
                         val pais = postList[recycler.getChildAdapterPosition(it)].Pais
-                        val idContrato = postList[recycler.getChildAdapterPosition(it)].idContrato
-
-                        val fecha = postList[recycler.getChildAdapterPosition(it)].Fecha_Inicio
-                        val fechaF = postList[recycler.getChildAdapterPosition(it)].Fecha_Final
-
-                        Log.d("fecha", fechaF!!)
+                        val correoCliente = postList[recycler.getChildAdapterPosition(it)].Correo
+                        val uidCliente = postList[recycler.getChildAdapterPosition(it)].uidCliente
+                        val fecha = postList[recycler.getChildAdapterPosition(it)].fechaP
 
                         Log.d("Problema", problema!!)
                         if (ext == "0") {
                             ext = "S/N"
                         }
-
                         val direccion = "$calle $colonia $ext $cp $referencia \n$ciudad, $estado, $pais"
                         val nombre = "$n $ap $am"
 
-                        Toast.makeText(context, "Teléfono: $colonia",
-                            Toast.LENGTH_SHORT).show()
+                       /* Toast.makeText(context, "Teléfono: $colonia",
+                            Toast.LENGTH_SHORT).show()*/
 
-                        val b = Bundle()
+                      /*  val b = Bundle()
                         b.putString("Nombre Cliente NoR", nombre)
                         b.putString("Problema", problema)
                         b.putString("Dirección", direccion)
-                        b.putString("Fecha", fecha)
-                        b.putInt("Contrato", idContrato)
-                        b.putString("Fragment", "1")
-                        b.putString("Fecha final", fechaF)
+                        b.putString("Fragment", "0")
+                        b.putString("Curp", curp)
+                        b.putString("idPresupuestoNoRegistrado", idpresupuesto.toString())
 
                         val f = AgendaFragment()
-                        b.putBoolean("Historial", true)
+
+                        b.putBoolean("Historial", false)
+                        b.putString("folio", folio.toString())
                         f.arguments = b
                         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
-                        }
-
+                        }*/
+                        val intent = Intent(requireContext(), MainActivity_Seguimiento::class.java)
+                        intent.putExtra("NombreCliente", nombre)
+                        intent.putExtra("telefonoCliente", numero)
+                        intent.putExtra("uidCliente", uidCliente)
+                        intent.putExtra("correoCliente", correoCliente)
+                        intent.putExtra("Problema", problema)
+                        intent.putExtra("Dirección", direccion)
+                        intent.putExtra("Fecha", fecha)
+                        intent.putExtra("Fragment", "0")
+                        intent.putExtra("folio", folio)
+                        intent.putExtra("Curp", curp)
+                        startActivity(intent)
                     }
-
                     recycler.adapter = MiAdapter
                 }
-
-
-
             }
 
-            override fun onFailure(call: Call<List<HistorialNormal?>?>, t: Throwable) {
+            override fun onFailure(call: Call<List<TrabajoNormal?>?>, t: Throwable) {
                 Toast.makeText(
                     context,
                     "Codigo de respuesta de error: $t",
@@ -175,5 +195,6 @@ class HistorialNormalFragment : Fragment() {
 
         })
     }
+
 
 }

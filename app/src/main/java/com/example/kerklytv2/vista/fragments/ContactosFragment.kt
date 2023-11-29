@@ -1,4 +1,4 @@
-package com.example.kerklytv2.ui.vista.fragments
+package com.example.kerklytv2.vista.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -51,6 +51,7 @@ class ContactosFragment : Fragment() {
     private lateinit var instancias: Instancias
     private lateinit var uidKerkly: String
     private lateinit var tokenKerkly:String
+    private lateinit var fotoKerkly:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +74,7 @@ class ContactosFragment : Fragment() {
         correoK = b.getString("correoKerkly").toString()
         uidKerkly = b.getString("uidKerkly").toString()
         tokenKerkly = b.getString("tokenKerkly").toString()
+        fotoKerkly =  b.getString("fotoKerkly").toString()
 
         arrayListDatos = ArrayList()
         array = ArrayList<String>()
@@ -156,6 +158,7 @@ class ContactosFragment : Fragment() {
                                 b!!.putString("telefonoCliente",telefonoCliente)
                                 b!!.putString("telefonoKerkly", telefonokerkly)
                                 b!!.putString("urlFotoCliente", urlfoto)
+                                b!!.putString("fotoKerkly", fotoKerkly)
                                 b!!.putString("tokenCliente", tokebCliente)
                                 b!!.putString("uidCliente", uidCliente)
                                 b!!.putString("uidKerkly", uidKerkly)

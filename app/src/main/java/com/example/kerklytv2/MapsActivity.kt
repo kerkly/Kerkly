@@ -35,7 +35,7 @@ import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.ui.vista.InterfazKerkly
+import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback

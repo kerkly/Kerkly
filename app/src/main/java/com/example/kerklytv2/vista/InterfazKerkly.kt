@@ -1,4 +1,4 @@
-package com.example.kerklytv2.ui.vista
+package com.example.kerklytv2.vista
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -40,7 +40,6 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.kerklytv2.ProgresSQL.conexionPostgreSQL
 import com.example.kerklytv2.R
-import com.example.kerklytv2.SQLite.MisOficios
 import com.example.kerklytv2.SQLite.usuariosSqlite
 import com.example.kerklytv2.clases.NetworkSpeedChecker
 import com.example.kerklytv2.controlador.SetProgressDialog
@@ -52,11 +51,11 @@ import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.ui.home.HomeFragment
-import com.example.kerklytv2.ui.vista.fragments.ContactosFragment
-import com.example.kerklytv2.ui.vista.fragments.HistorialFragment
-import com.example.kerklytv2.ui.vista.fragments.PresupuestoFragment
-import com.example.kerklytv2.ui.vista.fragments.PresupuestosPreviewFragment
-import com.example.kerklytv2.ui.vista.fragments.TrabajosPendientesFragment
+import com.example.kerklytv2.vista.fragments.ContactosFragment
+import com.example.kerklytv2.vista.fragments.HistorialFragment
+import com.example.kerklytv2.vista.fragments.PresupuestoFragment
+import com.example.kerklytv2.vista.fragments.PresupuestosPreviewFragment
+import com.example.kerklytv2.vista.fragments.TrabajosPendientesFragment
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
 import com.example.kerklyv5.SQLite.DataManager
@@ -301,6 +300,7 @@ class InterfazKerkly : AppCompatActivity() {
         b2!!.putString("correoKerkly", correoKerkly)
         b2!! .putString("uidKerkly",currentUser!!.uid)
         b2!!.putString("tokenKerkly",tokenKerkly)
+        b2!!.putString("fotoKerkly",currentUser!!.photoUrl.toString())
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
@@ -723,13 +723,13 @@ class InterfazKerkly : AppCompatActivity() {
            try {
                val idSeccion = miConexion.ObtenerSeccionCoordenadas(longitud, latitud)
                if (idSeccion == 0) {
-                   showMessage("no se encuentra dentro de una sección conocida")
+                  // showMessage("no se encuentra dentro de una sección conocida")
                    fusedLocationClient?.removeLocationUpdates(locationCallback)
                    miConexion.cerrarConexion()
                    val delayMillis = 3000L // Retardo de 3 segundos
-                   Handler(Looper.getMainLooper()).postDelayed({
+                   //Handler(Looper.getMainLooper()).postDelayed({
                        handler?.looper?.quitSafely()
-                   }, delayMillis)
+                 //  }, delayMillis)
                } else {
                    println("mis Datos geometricos $latitud $longitud mis Datos geometricos $idSeccion")
                    showMessage("sección $idSeccion")

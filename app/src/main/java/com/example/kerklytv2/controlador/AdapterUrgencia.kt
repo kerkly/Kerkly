@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.TrabajoUrgencia
-import com.example.kerklytv2.ui.vista.fragments.ContactosFragment
+import com.example.kerklytv2.vista.fragments.ContactosFragment
 
 class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
                     RecyclerView.Adapter<AdapterUrgencia.ViewHolder>(), View.OnClickListener {

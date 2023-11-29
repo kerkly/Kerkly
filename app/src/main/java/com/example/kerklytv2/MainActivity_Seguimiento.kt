@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import com.example.kerklytv2.modelo.usuarios
 import com.example.kerklytv2.url.Instancias
-import com.example.kerklytv2.ui.vista.fragments.AgendaFragment
+import com.example.kerklytv2.vista.fragments.AgendaFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot

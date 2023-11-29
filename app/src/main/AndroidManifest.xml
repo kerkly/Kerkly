@@ -104,13 +104,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.KerklyTV2.NoActionBar" />
         <activity
-            android:name=".ui.vista.InterfazKerkly"
+            android:name=".vista.InterfazKerkly"
             android:exported="true"
             android:label="@string/title_activity_interfaz_kerkly"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.KerklyTV2.NoActionBar" />
         <activity
-            android:name=".ui.vista.MainActivity"
+            android:name=".vista.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.KerklyTV2.NoActionBar" />

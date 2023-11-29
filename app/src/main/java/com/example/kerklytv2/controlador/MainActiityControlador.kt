@@ -7,8 +7,8 @@ import com.example.kerklytv2.interfaces.LoginInterface
 import com.example.kerklytv2.interfaces.VerificarSesionInterface
 import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.ui.vista.InterfazKerkly
-import com.example.kerklytv2.ui.vista.MainActivity
+import com.example.kerklytv2.vista.InterfazKerkly
+import com.example.kerklytv2.vista.MainActivity
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError

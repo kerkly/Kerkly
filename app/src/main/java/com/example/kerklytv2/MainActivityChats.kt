@@ -1,8 +1,6 @@
 package com.example.kerklytv2
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,57 +11,34 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import android.provider.Settings
-import android.util.Log
 import android.view.GestureDetector
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.adapter.FragmentViewHolder
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.request.RequestOptions
-import com.example.kerklytv2.MisServicios.LocationService
 import com.example.kerklytv2.Notificacion.llamartopico
 import com.example.kerklytv2.controlador.AdapterChat
 import com.example.kerklytv2.modelo.Mensaje
 import com.example.kerklytv2.modelo.MensajeCopia
-import com.example.kerklytv2.ui.home.HomeFragment
 import com.example.kerklytv2.url.Instancias
-import com.example.kerklytv2.ui.vista.InterfazKerkly
+import com.example.kerklytv2.vista.InterfazKerkly
 import com.github.barteksc.pdfviewer.PDFView
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -107,6 +82,7 @@ class MainActivityChats : AppCompatActivity() {
     private lateinit var uidCliente:String
     private lateinit var uidKerkly:String
     private lateinit var Noti: String
+    private lateinit var fotoKerkly:String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,6 +109,7 @@ class MainActivityChats : AppCompatActivity() {
         PantallaCompletaPdf = findViewById(R.id.pdfView)
         frameLayout = findViewById(R.id.fragemntlayoutChats)
         buttonGPs =  findViewById(R.id.botonDetenerService)
+
         //buttonGPs.visibility = View.VISIBLE
        // viewPager = findViewById(R.id.viewPager)
 
@@ -150,6 +127,8 @@ class MainActivityChats : AppCompatActivity() {
         uidKerkly = b.getString("uidKerkly").toString()
         tokenKerkly =b.getString("tokenKerkly").toString()
         Noti = b.getString("Noti").toString()
+
+        fotoKerkly = b.getString("fotoKerkly").toString()
        // showMensaje("cliente $uidCliente kerkly $uidKerkly")
         println("recibido uidCliente  $uidCliente uidKerkly $uidKerkly")
         //println("nombrec ${nombrecliente} k $nombreCompletoKerkly telk $telefonoKerkly tel c ${telefonoCliente} cliente $uidCliente kerkly $uidKerkly  noti $Noti")
@@ -205,7 +184,7 @@ class MainActivityChats : AppCompatActivity() {
             databaseReference.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
             databaseReferenceCliente.push().setValue(Mensaje(editText.text.toString(), getTime(),"","",""))
             llamartopico.chats(this,tokenCliente, editText.text.toString(), nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
-            nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
+            nombrecliente,fotoKerkly,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
             editText.setText("")
             }
             }
@@ -341,7 +320,7 @@ class MainActivityChats : AppCompatActivity() {
         progressBar= findViewById(R.id.progressBar)
         botonArchivos = findViewById(R.id.imageButtonEnviarArchivo)
         botonArchivos.setOnClickListener {
-            seleccionarArchivoPDF();
+            seleccionarArchivo();
 
         }
         if (directoMaps == "Maps"){
@@ -633,7 +612,7 @@ class MainActivityChats : AppCompatActivity() {
         return ruta
     }
 
-    private fun seleccionarArchivoPDF() {
+    private fun seleccionarArchivo() {
         val options = arrayOf("Enviar Imagen", "Enviar PDF")
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Opciones")
@@ -725,13 +704,12 @@ class MainActivityChats : AppCompatActivity() {
 
                             storageRef.child("$tipoArchivo").child(fileUrl)
                         llamartopico.chats(this,tokenCliente, nombreArchivo, nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
-                            nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
+                            nombrecliente,fotoKerkly,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
                         Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
                         progressBar.visibility =View.GONE
                     }
             }
         }else{
-            // Carga el archivo PDF en Firebase Storage
             val uploadTask = fileRef.putFile(uriArchivo)
             // Registra un Listener para obtener la URL del archivo una vez cargado
             uploadTask.addOnProgressListener {taskSnapshot ->
@@ -753,7 +731,7 @@ class MainActivityChats : AppCompatActivity() {
                         databaseReferenceCliente.push().setValue(Mensaje(nombreArchivo, getTime(),"",fileUrl,tipoArchivo))
                         storageRef.child("$tipoArchivo").child(fileUrl)
                         llamartopico.chats(this,tokenCliente, nombreArchivo, nombreCompletoKerkly,telefonoKerkly,telefonoCliente,
-                            nombrecliente,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
+                            nombrecliente,fotoKerkly,fotoCliente, tokenKerkly, uidCliente,uidKerkly)
                         Toast.makeText(applicationContext, "archivo enviado", Toast.LENGTH_SHORT).show()
                         progressBar.visibility =View.GONE
                     }
