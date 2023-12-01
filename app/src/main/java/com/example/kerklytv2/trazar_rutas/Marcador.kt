@@ -15,7 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URL
 
-class Marcador(var nMap: GoogleMap, var context: Context, var latitud: String, var longitud: String, var nombre: String) {
+class Marcador(var nMap: GoogleMap, var context: Context, var latitud: Double, var longitud: Double, var nombre: String) {
 
     fun CrearMarcador(location: Location, nombre: String) {
         val punto = LatLng(location.latitude, location.longitude)

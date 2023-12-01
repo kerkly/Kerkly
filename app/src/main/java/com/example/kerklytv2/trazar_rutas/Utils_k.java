@@ -13,7 +13,7 @@ public class Utils_k {
     public static Coordenadas coordenadas = new Coordenadas();
     public static List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String, String>>>();
 
-    public static void Marcador(GoogleMap nMap, Context context, String latitud, String longitud , String nombre){
+    public static void Marcador(GoogleMap nMap, Context context, Double latitud, Double longitud , String nombre){
         new Marcador(nMap, context, latitud, longitud, nombre).ObetenerCoordenadasBaseDeDatos();
     }
 }

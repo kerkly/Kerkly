@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.kerklytv2.MainActivityChats
 import com.example.kerklytv2.MapsActivity
-import com.example.kerklytv2.PantallaInicio
 import com.example.kerklytv2.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -51,8 +50,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
                 val nombrekerkly = message.getData().get("nombreCompletoKerkly").toString()
                // val direccionKerly = message.getData().get("direccionkerkly").toString()
                 val  uidCliente = message.getData().get("uidCliente").toString()
-                println("noti folio1 --------> $folio")
-                crearNotiSolicitudUrgente(titulo, detalle,latitud,longitud,folio,nombreCliente,direccion,problema,telefonoCliente,TipoServicio
+                crearNotiSolicitud(titulo, detalle,latitud,longitud,folio,nombreCliente,direccion,problema,telefonoCliente,TipoServicio
                     ,Curp,telefonoKerkly,correoCliente,correoKerkrly,nombrekerkly,uidCliente)
             }
             if (TipoNoti == "chats"){
@@ -83,8 +81,10 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
                 val  correoKerkrly = message.getData().get("correoKerly").toString()
                 val nombrekerkly = message.getData().get("nombreCompletoKerkly").toString()
                 // val direccionKerly = message.getData().get("direccionkerkly").toString()
+
+                println("notificaion ------> $latitud, $longitud")
                 val  uidCliente = message.getData().get("uidCliente").toString()
-                crearNotiSolicitudUrgente(titulo, detalle,latitud,longitud,folio,nombreCliente,direccion,problema,telefonoCliente,TipoServicio
+                crearNotiSolicitud(titulo, detalle,latitud,longitud,folio,nombreCliente,direccion,problema,telefonoCliente,TipoServicio
                     ,Curp,telefonoKerkly,correoCliente,correoKerkrly,nombrekerkly,uidCliente)
             }
 
@@ -94,18 +94,18 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
         }
     }
 
-    private fun crearNotiSolicitudUrgente(titulo:String, detalle:String,latitud:String,longitud:String,
-                                          folio:String,nombreCliente:String,direccion:String,problema:String
-                                          ,telefonoCliente:String,TipoServicio:String,telefonoKerkly: String
-                                          ,Curp:String,correoCliente:String,correoKerkrly:String
-                                          ,nombrekerkly:String,uidCliente:String) {
-        val id = "solicitudUrgente"
-        //val id2 = id.hashCode()
+    private fun crearNotiSolicitud(titulo:String, detalle:String, latitud:String, longitud:String,
+                                   folio:String, nombreCliente:String, direccion:String, problema:String
+                                   , telefonoCliente:String, TipoServicio:String, telefonoKerkly: String
+                                   , Curp:String, correoCliente:String, correoKerkrly:String
+                                   , nombrekerkly:String, uidCliente:String) {
+        val id = "solicitud$folio"
+        val id2 = id.hashCode()
         val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val builder = NotificationCompat.Builder(this, id)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nc = NotificationChannel(id, "nuevaSolicitud", NotificationManager.IMPORTANCE_HIGH)
+            val nc = NotificationChannel(id, "nuevaSolicitud$folio", NotificationManager.IMPORTANCE_HIGH)
             nc.setShowBadge(true)
             assert(nm != null)
             nm!!.createNotificationChannel(nc)
@@ -118,7 +118,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
                 .setContentText(detalle)
                 .setContentIntent(clicknotiSolicitudUrgenteYNormal(latitud,longitud,folio,nombreCliente,direccion,problema,telefonoCliente,TipoServicio
                     ,Curp,telefonoKerkly,correoCliente,correoKerkrly,nombrekerkly,uidCliente))
-                .setContentInfo("nuevo")
+                .setContentInfo("nuevo$folio")
                val random = Random()
             val idNotity = random.nextInt(1000)
             assert(nm != null)
@@ -187,12 +187,13 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
 
         println("foto Cliente $fotoCliente")
 
-        //println("recibido uidCliente  $uidCliente uidKerkly $uidKerkly")
 
-        nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        // nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
-
-        return PendingIntent.getActivity(applicationContext, 0, nf, flags)
+        val uniqueId = uidCliente.hashCode() // Puedes cambiar esto según tus necesidades
+        return PendingIntent.getActivity(applicationContext, uniqueId, nf, flags)
 
     }
 
@@ -220,12 +221,17 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
         nf.putExtra("uidCliente",uidCliente)
         nf.putExtra("Noti", "Noti")
 
-        println("noti folio223 --------> $folio")
+        println("noti folio1 --------> $folio")
+        println("notificaion ------> $latitud, $longitud")
 
-        nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+       // nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        val uniqueId = folio.hashCode() // Puedes cambiar esto según tus necesidades
+        return PendingIntent.getActivity(applicationContext, uniqueId, nf, flags)
 
-        return PendingIntent.getActivity(applicationContext, 0, nf, flags)
+      //  return PendingIntent.getActivity(applicationContext, 0, nf, flags)
     }
 
     override fun onDestroy() {

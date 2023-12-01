@@ -265,7 +265,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
                         }
                         Utils_k.routes.add(path)
                         //Toast.makeText(this, "hola", Toast.LENGTH_LONG).show()
-                        Utils_k.Marcador(mMap, requireContext(), latitud2, longitud2, nombreCliente)
+                        Utils_k.Marcador(mMap, requireContext(), latitud2.toDouble(), longitud2.toDouble(), nombreCliente)
                         var points: java.util.ArrayList<LatLng?>? = null
                         var lineOptions: PolylineOptions? = null
 
@@ -435,7 +435,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickLis
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         //los marcadores
-        Utils_k.Marcador(mMap, requireContext(), latitud2, longitud2, nombrekerkly)
+        Utils_k.Marcador(mMap, requireContext(), latitud2.toDouble(), longitud2.toDouble(), nombrekerkly)
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
     }

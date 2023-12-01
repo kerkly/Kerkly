@@ -50,7 +50,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
@@ -60,6 +59,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.*
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
@@ -78,8 +78,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private lateinit var telefonoCliente: String
     private lateinit var telefonoKerkly: String
     private lateinit var b: Bundle
-    lateinit var latitudFinal: String
-    lateinit var longitudFinal: String
+     var latitudFinal:Double = 0.0
+    var longitudFinal: Double = 0.0
     lateinit var nombreCliente: String
     lateinit var nombrekerkly: String
     var minutos: Double = 0.0
@@ -110,6 +110,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Registro de la Activity en EventBus
+
 
         b = intent.extras!!
         mAuth = FirebaseAuth.getInstance()
@@ -117,9 +119,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         instancias = Instancias()
         //recibimos las coordenas
 
-        latitudFinal = b.getString("latitud").toString()
-        longitudFinal = b.getString("longitud").toString()
+        val latitudStr = b.getString("latitud")
+        val longitudStr = b.getString("longitud")
         folio = b.getString("Folio").toString()
+        if (!latitudStr.isNullOrEmpty() && !longitudStr.isNullOrEmpty()) {
+            latitudFinal = latitudStr.toDouble()
+            longitudFinal = longitudStr.toDouble()
+            Log.d("maps --->", "folio $folio latitud recibida $latitudFinal, $longitudFinal")
+        } else {
+            Log.e("maps --->", "folio $folio Error: latitud o longitud nulas o vacías")
+        }
         nombreCliente = b.getString("nombreCompletoCliente").toString()
         direccion = b.getString("direccion").toString()
         problema = b.getString("problema").toString()
@@ -384,91 +393,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     }
 
-    fun TrazarLineas(latLng: LatLng){
-        Utils_k.coordenadas.destinoLat = latLng.latitude
-        Utils_k.coordenadas.destinoLng = latLng.longitude
-        try {
-            while (location == null) {
-                location = gpsTracker!!.location
-            }
-            location = gpsTracker!!.location
-            Utils_k.coordenadas.origenLat = location!!.latitude
-            Utils_k.coordenadas.origenLongi = location!!.longitude
-            AsignarRuta(
-                Utils_k.coordenadas.origenLat,
-                Utils_k.coordenadas.origenLongi,
-                Utils_k.coordenadas.destinoLat,
-                Utils_k.coordenadas.destinoLng
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun AsignarRuta(latInicial: Double, lngInicial: Double, latFinal: Double, lngFinal: Double) {
-        val url = instancias.directions(latInicial,lngInicial,latFinal,lngFinal)
-       // val url = "https://maps.googleapis.com/maps/api/directions/json?origin=$latInicial,$lngInicial&destination=$latFinal,$lngFinal&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo&mode=drive"
-        jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null, { response ->
-            var jRoutes: JSONArray? = null
-            var jLegs: JSONArray? = null
-            var jSteps: JSONArray? = null
-            try {
-                jRoutes = response.getJSONArray("routes")
-                for (i in 0 until jRoutes.length()) {
-                    jLegs = (jRoutes[i] as JSONObject).getJSONArray("legs")
-                    val path: MutableList<HashMap<String, String>> = java.util.ArrayList()
-                    for (j in 0 until jLegs.length()) {
-                        jSteps = (jLegs[j] as JSONObject).getJSONArray("steps")
-                        for (k in 0 until jSteps.length()) {
-                            var polyline = ""
-                            polyline = ((jSteps[k] as JSONObject)["polyline"] as JSONObject)["points"] as String
-                            val list = decodePoly(polyline)
-                            for (l in list.indices) {
-                                val hm = HashMap<String, String>()
-                                hm["lat"] = java.lang.Double.toString(list[l].latitude)
-                                hm["lng"] = java.lang.Double.toString(list[l].longitude)
-                                path.add(hm)
-                            }
-                        }
-                        Utils_k.routes.add(path)
-                        //Toast.makeText(this, "hola", Toast.LENGTH_LONG).show()
-                        Utils_k.Marcador(mMap, applicationContext, latitudFinal, longitudFinal, nombreCliente)
-                        var points: java.util.ArrayList<LatLng?>? = null
-                        var lineOptions: PolylineOptions? = null
-
-                        for (i in 0 until Utils_k.routes.size) {
-                            points = java.util.ArrayList()
-                            lineOptions = PolylineOptions()
-                            // Obteniendo el detalle de la ruta
-                            val path: List<HashMap<String, String>> = Utils_k.routes.get(i)
-                            for (j in path.indices) {
-                                val point = path[j]
-                                val lat = Objects.requireNonNull(point["lat"])!!.toDouble()
-                                val lng = Objects.requireNonNull(point["lng"])!!.toDouble()
-                                val position = LatLng(lat, lng)
-                                points.add(position)
-                            }
-                            lineOptions.addAll(points)
-                            lineOptions.width(9f)
-                            //Definimos el color de la Polilíneas
-                            lineOptions.color(Color.BLUE)
-                        }
-                        assert(lineOptions != null)
-                        mMap.addPolyline(lineOptions!!)
-                    }
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            } catch (e: java.lang.Exception) {
-            }
-        }) { error ->
-            Toast.makeText(applicationContext, "No se puede conectar $error", Toast.LENGTH_LONG).show()
-        }
-        request!!.add(jsonObjectRequest)
-        val  url2 = instancias.CalcularDistancia(latInicial,lngInicial,latFinal,lngFinal)
-        //val url2 = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$latInicial,$lngInicial&destinations=$latFinal,$lngFinal&mode=driving&language=fr-FR&avoid=tolls&key=AIzaSyD9i-yAGqAoYnIcm8KcMeZ0nsHyiQxl_mo"
-        GeoTask(this).execute(url2)
-    }
 
     private fun decodePoly(encoded: String): List<LatLng> {
         val poly: MutableList<LatLng> = ArrayList()
@@ -528,8 +452,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     val i = Intent(context, Presupuesto::class.java)
                     i.putExtra("telefonoCliente", telefonoCliente)
                     i.putExtra("telefonok", telefonoKerkly)
-                    i.putExtra("latitud", latitudFinal)
-                    i.putExtra("longitud", longitudFinal)
+                    i.putExtra("latitud", latitudFinal.toString())
+                    i.putExtra("longitud", longitudFinal.toString())
                     i.putExtra("nombreCompletoCliente", nombreCliente)
                     i.putExtra("nombreCompletoKerkly", nombrekerkly)
                     i.putExtra("problema", problema)
@@ -552,26 +476,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     //obtenerToken(currentUser!!.uid,uidCliente)
                    // obtenerToken(currentUser!!.uid, uidCliente)
                 }
-                /*if(TipoServicio == "clienteNoRegistrado"){
-                    val i = Intent(context, Presupuesto::class.java)
-                    i.putExtra("latitud", latitud2)
-                    i.putExtra("longitud", longitud2)
-                    i.putExtra("Folio", folio)
-                    i.putExtra("clientenombre", nombreCliente)
-                    i.putExtra("Dirección", direccion)
-                    i.putExtra("problemacliente", problema)
-                    i.putExtra("nombreCompletoKerkly", nombrekerkly)
-                    i.putExtra("numerocliente", telefonoCliente)
-                    i.putExtra("tipoServicio", "clienteNoRegistrado")
-                    i.putExtra("telefonok", telefonoKerkly)
-                    i.putExtra("correoCliente", correoCliente)
-                    i.putExtra("direccionkerkly", direccionKerly)
-                    i.putExtra("uidCliente",uidCliente)
-                    i.putExtra("uidKerkly",uidCliente)
-                    startActivity(i)
-                    dialog.dismiss()
-                }*/
-
                 if(TipoServicio == "ServicioNR"){
                     val intent = Intent(this@MapsActivity, Presupuesto::class.java)
                     intent.putExtra("telefonoCliente", telefonoCliente)
@@ -707,11 +611,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     override fun onBackPressed() {
         super.onBackPressed()
         if (Noti == "Noti"){
-            val intent = Intent(this, InterfazKerkly::class.java)
+            val intent = Intent(this, PantallaInicio::class.java)
             intent.putExtra("numT", telefonoKerkly)
             startActivity(intent)
             finish()
         }
+        finish()
     }
 
     private fun VerificarSolicitud(idPresupuesto: String) : Int{
@@ -766,5 +671,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         })
         return solicutdAceptada
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Desregistro de la Activity en EventBus al destruirse
+       // EventBus.getDefault().unregister(this)
+        showMensaje("actitvy destruida")
+        latitudFinal = 0.0
+        longitudFinal =0.0
+    }
+
 
 }

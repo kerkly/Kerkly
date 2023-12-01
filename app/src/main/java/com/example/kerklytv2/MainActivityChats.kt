@@ -814,7 +814,7 @@ class MainActivityChats : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         if (Noti == "Noti"){
-            val intent = Intent(this, InterfazKerkly::class.java)
+            val intent = Intent(this, PantallaInicio::class.java)
             intent.putExtra("numT", telefonoKerkly)
             startActivity(intent)
             finish()
@@ -858,12 +858,12 @@ class MainActivityChats : AppCompatActivity() {
             //imagenCompleta = null
 
         }else{
-            if (Noti == "Noti"){
-                val intent = Intent(this, InterfazKerkly::class.java)
+          /*  if (Noti == "Noti"){
+                val intent = Intent(this, PantallaInicio::class.java)
                 intent.putExtra("Telefono", telefonoCliente)
                 startActivity(intent)
                 finish()
-            }
+            }*/
         if (childEventListener!= null) {
             val databaseReference = instancias.chatsKerkly(uidKerkly, uidCliente)
             val databaseReferenceCliente = instancias.chatsCliente(uidKerkly, uidCliente)
