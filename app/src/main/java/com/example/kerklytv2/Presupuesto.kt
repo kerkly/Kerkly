@@ -260,7 +260,7 @@ class Presupuesto : AppCompatActivity() {
                 val u2 = snapshot.getValue(usuarios::class.java)
                 token = u2!!.token
                System.out.println("el token del kerkly " + token)
-                llamartopico.llamarTopicSolicitud(this@Presupuesto, token, " En un momento se le atendera. Num. Folio: $folio", "Gracias por su confianza $clientenombre "
+                llamartopico.llamarTopicSolicitud(this@Presupuesto, token, " ${R.string.txt_mensaje_Notificacion_normal1} $folio", " ${R.string.txt_mensaje_Notificacion_normal1_2} $clientenombre "
                     ,"normal",telefonoCliente,clientenombre,uidCliente)
                 val intent = Intent(this@Presupuesto, PantallaInicio::class.java)
                 startActivity(intent)
@@ -295,15 +295,11 @@ class Presupuesto : AppCompatActivity() {
                     }catch (e: Exception){
                         e.printStackTrace()
                     }
-
-
                 }
-
                 override fun failure(error: RetrofitError?) {
                     //Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show()
                     showMensaje("Error! ${error!!.message}")
                 }
-
             }
         )
     }

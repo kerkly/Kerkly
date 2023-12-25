@@ -9,9 +9,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:visibility="gone"
+        android:layout_height="100dp"
+        android:visibility="visible"
         android:orientation="vertical">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -20,7 +30,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Distancia:"
+                android:text="Cliente:"
                 android:textSize="18dp"
                 android:textStyle="bold"
                 android:layout_marginTop="10dp"
@@ -51,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18dp"
                 android:layout_marginLeft="20dp"
-                android:text="Tiempo:"
+                android:text="Problematica:"
                 android:layout_marginTop="10dp"
                 android:textStyle="bold"
                 android:textColor="#0F6C39"
@@ -68,8 +78,8 @@
                 />
 
         </LinearLayout>
-
-
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
     <TextView
         android:id="@+id/text_dialog"

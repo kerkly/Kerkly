@@ -160,7 +160,7 @@ class PresupuestoNomalFragment : Fragment() {
                        i.putExtra("problema", problema)
                        i.putExtra("direccion", direccion)
                        i.putExtra("correoCliente", correoCliente)
-                       i.putExtra("Folio", folio)
+                       i.putExtra("Folio", folio.toString())
                        i.putExtra("Curp", Curp)
                        i.putExtra("correoKerly", correoKerly)
                        i.putExtra("direccionkerkly", direccionKerly)

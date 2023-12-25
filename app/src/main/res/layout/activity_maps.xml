@@ -36,10 +36,23 @@
             android:gravity="center"
             android:layout_margin="10dp"
             tools:ignore="SpeakableTextPresentCheck" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonMasInfo"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_mas_info"
+            android:layout_gravity="center"
+            android:background="@drawable/fondo_boton"
+            android:textColor="@color/black"
+            app:backgroundTint="#78B1BF"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:visibility="gone"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonCancelarServicio"
-            android:layout_width="260dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/CancelarServicio"
             android:layout_gravity="center"

@@ -24,8 +24,8 @@ class conexionPostgreSQL {
         }
         try {
             Class.forName("org.postgresql.Driver") // Cargar el driver JDBC
-            val host = "6.tcp.ngrok.io"
-            val port = "16646"
+            val host = "2.tcp.ngrok.io"
+            val port = "18163"
             val databaseName = "Kerkly"
             val username = "luis_admin"
             val password = "Lu0599@"
@@ -53,17 +53,12 @@ class conexionPostgreSQL {
     }
     fun insertOrUpdateSeccionKerkly(curp: String, idpoligono: Int, uidKerkly: String, latitud: Double, longitud: Double, listaDeOficios: ArrayList<OficioKerkly>) {
         val existsQuery = "SELECT COUNT(*) FROM \"KerklyEnMovimiento\" WHERE \"curp\" = ?"
-        val updateQuery = "UPDATE \"KerklyEnMovimiento\" SET \"IdPoligono\" = ?, \"ubicacion\" = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE \"curp\" = ?"
-        val insertQuery = "INSERT INTO \"KerklyEnMovimiento\" (\"curp\", \"IdPoligono\", \"uidKerkly\", \"ubicacion\") VALUES (?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326))"
+        val updateQuery = "UPDATE \"KerklyEnMovimiento\" SET \"IdPoligono\" = ?, \"ubicacion\" = ST_SetSRID(ST_MakePoint(?, ?), 4326), \"on\" = ? WHERE \"curp\" = ?"
+        val insertQuery = "INSERT INTO \"KerklyEnMovimiento\" (\"curp\", \"IdPoligono\", \"uidKerkly\", \"ubicacion\", \"on\") VALUES (?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326), ?)"
 
-        //val insertarOficioKerkly = "INSERT INTO public.\"oficios_kerklyM\" (\"id_oficioK\", \"id_kerklyK\") VALUES (?, ?)"
+        val insertarOficioKerkly = "INSERT INTO public.\"oficios_kerklyM\" (\"idoficio_trabajador\", \"id_oficioK\", \"id_kerklyK\") VALUES (?, ?, ?)"
 
-       /* for (i in 0 until listaDeOficios.size){
-            println("lista a insertar id ${listaDeOficios[i].idOficio}")
-            println("lista a insertar  nombre ${listaDeOficios[i].nombreOficio}")
-        }*/
         var exists: Boolean = false
-
         try {
             conexion?.prepareStatement(existsQuery)?.use { existsStmt ->
                 existsStmt.setString(1, curp)
@@ -71,58 +66,68 @@ class conexionPostgreSQL {
                 exists = existsResult.next() && existsResult.getInt(1) > 0
             }
 
-          if (exists) {
+            conexion?.autoCommit = false // Desactivar el modo de autoconfirmación para manejar transacciones
+
+            if (exists) {
                 conexion?.prepareStatement(updateQuery)?.use { updateStmt ->
                     updateStmt.setInt(1, idpoligono)
                     updateStmt.setDouble(2, longitud)
                     updateStmt.setDouble(3, latitud)
-                    updateStmt.setString(4, curp)
-
+                    updateStmt.setBoolean(4, true)
+                    updateStmt.setString(5, curp)
                     updateStmt.executeUpdate()
                 }
             } else {
-               conexion?.prepareStatement(insertQuery)?.use { insertStmt ->
+                conexion?.prepareStatement(insertQuery)?.use { insertStmt ->
                     insertStmt.setString(1, curp)
                     insertStmt.setInt(2, idpoligono)
                     insertStmt.setString(3, uidKerkly)
                     insertStmt.setDouble(4, longitud)
                     insertStmt.setDouble(5, latitud)
+                    insertStmt.setBoolean(6, true)
                     insertStmt.executeUpdate()
                 }
 
                 for (i in 0 until listaDeOficios.size) {
-                    println("lista a insertar idoficio_trabajador ${listaDeOficios[i].idoficio_trabajador}")
-                    println("lista a insertar id ${listaDeOficios[i].idOficio}")
-                    println("lista a insertar nombre ${listaDeOficios[i].nombreOficio}")
-
-                   val insertarOficioKerkly = "INSERT INTO public.\"oficios_kerklyM\" (\"idoficio_trabajador\", \"id_oficioK\", \"id_kerklyK\") VALUES (?, ?, ?)"
-
                     try {
                         conexion?.prepareStatement(insertarOficioKerkly)?.use { insertStmt ->
-                            // Establece los valores para los parámetros
                             val idTrabajador: Int = listaDeOficios[i].idoficio_trabajador
                             insertStmt.setInt(1, idTrabajador)
                             insertStmt.setInt(2, listaDeOficios[i].idOficio)
                             insertStmt.setString(3, curp)
-
-                            // Ejecuta la consulta de inserción
                             insertStmt.executeUpdate()
                         }
                     } catch (e: SQLException) {
                         e.printStackTrace()
+                        conexion?.rollback() // Revertir la transacción si ocurre una excepción
                     }
                 }
-           }
+            }
+            conexion?.commit() // Confirmar la transacción si todo ha ido bien
         } catch (e: SQLException) {
-            // Manejar la excepción según tus necesidades (puedes imprimir un mensaje, registrarla, etc.)
             e.printStackTrace()
+            try {
+                conexion?.rollback() // Revertir la transacción en caso de excepción
+            } catch (rollbackException: SQLException) {
+                rollbackException.printStackTrace()
+            }
         } finally {
-            // Cerrar la conexión aquí si es necesario
+            // Cerrar recursos en el bloque finally
             cerrarConexion()
         }
     }
 
 
+    fun offKerkly(curp:String){
+      val offKerkly = "UPDATE public.\"KerklyEnMovimiento\" SET \"on\" = ? WHERE \"curp\" = ?"
+      conexion?.prepareStatement(offKerkly)?.use { off_k ->
+              off_k.setBoolean(1, false)
+              off_k.setString(2, curp)
+              off_k.executeUpdate()
+          }
+
+
+  }
 
     fun obtenerSeccionKekrly(editText: EditText, textView: TextView){
         val curp = editText.text.toString()

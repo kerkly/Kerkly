@@ -6,13 +6,13 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationProvider
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.util.Log
 import android.view.*
@@ -20,7 +20,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.android.volley.Request
+import androidx.core.view.isVisible
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -35,7 +35,6 @@ import com.example.kerklytv2.trazar_rutas.GeoTask
 import com.example.kerklytv2.trazar_rutas.Utils_k
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
-import com.example.kerklytv2.vista.InterfazKerkly
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -47,9 +46,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit.Callback
 import retrofit.RestAdapter
 import retrofit.RetrofitError
@@ -102,6 +98,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private lateinit var instancias: Instancias
     private lateinit var Noti:String
     private var solicutdAceptada:Int = 0
+    private var handler: Handler? = null
+    private lateinit var btnMasIfo: MaterialButton
     companion object {
         private const val PERMISSION_REQUEST_CODE = 123
     }
@@ -111,8 +109,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         // Registro de la Activity en EventBus
-
-
         b = intent.extras!!
         mAuth = FirebaseAuth.getInstance()
         currentUser = mAuth!!.currentUser
@@ -134,6 +130,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         problema = b.getString("problema").toString()
         telefonoCliente = b.getString("telefonoCliente").toString()
         TipoServicio  = b.getString("tipoServicio").toString()
+
         Curp = b.getString("Curp").toString()
         telefonoKerkly = b.getString("telefonok").toString()
         correoCliente = b.getString("correoCliente").toString()
@@ -141,8 +138,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         nombrekerkly = b.getString("nombreCompletoKerkly").toString()
         direccionKerly = b.getString("direccionkerkly").toString()
         uidCliente = b.getString("uidCliente").toString()
+        obtenerToken(currentUser!!.uid, uidCliente)
         Noti = b.getString("Noti").toString()
-        println("uidClienteMaps ----- > $folio")
+        println("uidClienteMaps ----- > $folio  p $problema")
         context = this
 
         gpsTracker = GPSTracker(applicationContext)
@@ -174,6 +172,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         // startActivity(i)
         mostrarDialogoPersonalizado(minutos, distancia)
     }
+        btnMasIfo = findViewById(R.id.buttonMasInfo)
+        if (TipoServicio == "normal"){
+            buttonAceptarServicio.text = "Presupuestar"
+            btnMasIfo.isVisible = true
+        }
+
+        btnMasIfo.setOnClickListener {
+            val intent = Intent(this@MapsActivity, MainActivityChats::class.java)
+            intent.putExtra("nombreCompletoCliente", nombreCliente)
+            intent.putExtra("correoCliente", correoCliente)
+            intent.putExtra("telefonoCliente",telefonoCliente)
+            intent.putExtra("telefonoKerkly", telefonoKerkly)
+            intent.putExtra("urlFotoCliente", urlfoto)
+            intent.putExtra("nombreCompletoKerkly", nombrekerkly)
+            intent.putExtra("tokenCliente", tokenCliente)
+            intent.putExtra("directoMaps","Maps")
+            intent.putExtra("uidCliente",uidCliente)
+            intent.putExtra("uidKerkly",currentUser!!.uid)
+            startActivityForResult(intent,10)
+        }
     val buttonCancelarServicio : MaterialButton
     buttonCancelarServicio = findViewById(R.id.buttonCancelarServicio)
     buttonCancelarServicio.setOnClickListener{
@@ -182,7 +200,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
         val res = VerificarSolicitud(folio)
         if (res == 1){
-            showMensaje("Lo sentimon pero la solicutud ya ha sido aceptada")
+            showMensaje("Lo sentimos pero la solicutud ya ha sido aceptada")
             buttonAceptarServicio.isEnabled = false
             //buttonCancelarServicio.isEnabled = false
             buttonCancelarServicio.text ="Regresar"
@@ -243,7 +261,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 Toast.makeText(applicationContext, "Cancelado", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
-
         })
     }
 
@@ -313,7 +330,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         //los marcadores
-        Utils_k.Marcador(mMap, applicationContext, latitudFinal, longitudFinal, nombrekerkly)
+        Utils_k.Marcador(mMap, applicationContext, latitudFinal, longitudFinal, problema,nombreCliente,folio)
         mMap.setOnMapLongClickListener(this)
         mMap.setOnMarkerClickListener(this)
             //if(TipoServicio == "ServicioNR"){
@@ -384,7 +401,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
             intent.putExtra("directoMaps","Maps")
             intent.putExtra("uidCliente",uidCliente)
             intent.putExtra("uidKerkly",currentUser!!.uid)
-            startActivity(intent)
+            startActivityForResult(intent,10)
             finish()
         }
         val alertDialog = builder.create()
@@ -439,10 +456,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         dialog.show()
          val textView_result1: TextView = view!!.findViewById(R.id.textView_result1)
          val textView_result2: TextView = view.findViewById(R.id.textView_result2)
-         textView_result1.setText(" " +(minutos / 60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
-          textView_result2.setText("$distancia kilometros")
+         //textView_result1.setText(" " +(minutos / 60).toInt() + " hr " + (minutos % 60).toInt() + " mins")
+        //  textView_result2.setText("$distancia kilometros")
 
-
+         textView_result1.setText("$nombreCliente")
+         textView_result2.setText(" folio $folio, $problema")
        val btnAceptar: Button = view!!.findViewById(R.id.btnAceptar)
         btnAceptar.setOnClickListener(object : android.view.View.OnClickListener{
 
@@ -511,8 +529,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
          })
     }
 
-
-
     private fun AceptarServicio(folio: String) {
         val ROOT_URL = Url().URL
         val adapter = RestAdapter.Builder()
@@ -529,7 +545,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     Res = entrada.readLine()
                   //  showMensaje("respuesta $Res")
                     if(Res == "1"){
-                        obtenerToken(currentUser!!.uid,uidCliente)
+                        //obtenerToken(currentUser!!.uid,uidCliente)
+                        verificarDatoNoExistente(currentUser!!.uid, uidCliente)
+                        llamartopico.llamarTopicSolicitud(this@MapsActivity, tokenCliente, "${R.string.txt_mensaje_Notificacion_1}", nombrekerkly,
+                            "urgente",telefonoCliente,nombreCliente,uidCliente)
+
                     }else{
                       //  showMensaje("El Servicio No se Pudo completar $Res")
                     }
@@ -559,10 +579,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                 // Toast.makeText(this@MapsActivity,"$nombreCliente",Toast.LENGTH_SHORT).show()
                 //enviar Notificacion
                 //   agregarContacto(telefonoCliente, telefonoKerkly)
-                verificarDatoNoExistente(uidKerkly, uidCliente)
-                llamartopico.llamarTopicSolicitud(this@MapsActivity, tokenCliente, "Su Solicitud a Sido Aceptada, Por favor espere un momento...", nombrekerkly,
-                    "urgente",telefonoCliente,nombreCliente,uidCliente)
-
             }
             override fun onCancelled(error: DatabaseError) {
                 showMensaje("Erorr! ${error.message}")
@@ -674,10 +690,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
 
     override fun onDestroy() {
         super.onDestroy()
-
         // Desregistro de la Activity en EventBus al destruirse
        // EventBus.getDefault().unregister(this)
-        showMensaje("actitvy destruida")
+        // showMensaje("actitvy destruida")
         latitudFinal = 0.0
         longitudFinal =0.0
     }

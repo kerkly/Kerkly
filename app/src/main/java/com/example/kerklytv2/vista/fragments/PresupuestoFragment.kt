@@ -177,7 +177,7 @@ class PresupuestoFragment : Fragment() {
                         i.putExtra("Folio", folioo.toString())
                         i.putExtra("nombreCompletoCliente", Clientenombre)
                         i.putExtra("Dirección", direccion)
-                        i.putExtra("Problema", problema)
+                        i.putExtra("problema", problema)
                         i.putExtra("telefonoCliente", numeroCliente)
                         i.putExtra("tipoServicio", "urgente")
                         i.putExtra("Curp", curp)

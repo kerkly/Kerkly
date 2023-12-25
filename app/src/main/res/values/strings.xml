@@ -128,5 +128,9 @@
     <string name="btn3_seguimiento">Finalizar trabajo</string>
     <string name="txt3_seguimiento">Para finalizar el trabajo, ingrese la fecha y hora de inico y fin del trabajo </string>
 
+    <string name="btn_mas_info">Mas Informacion </string>
+    <string name="txt_mensaje_Notificacion_1">Su solicitud ha sido Aceptada, Por favor espere un momento... </string>
+    <string name="txt_mensaje_Notificacion_normal1">En un momento se le atendera. Num. Folio:</string>
+    <string name="txt_mensaje_Notificacion_normal1.2">Gracias por su confianza</string>
 
 </resources>

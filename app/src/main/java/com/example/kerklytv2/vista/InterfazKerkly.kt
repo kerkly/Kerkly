@@ -244,9 +244,26 @@ class InterfazKerkly : AppCompatActivity() {
                     if (output == "1") {
                         metodoSalir()
                         Toast.makeText(applicationContext, "Sesión cerrada", Toast.LENGTH_SHORT).show()
-                        val i = Intent(applicationContext, MainActivity::class.java)
-                        startActivity(i)
+                        val miConexion = conexionPostgreSQL()
+                        val conexion = miConexion.obtenerConexion(applicationContext)
+                        if (conexion != null) {
+                            try {
+                                val i = Intent(applicationContext, MainActivity::class.java)
+                                startActivity(i)
+                                miConexion.offKerkly(curp)
+                            } catch (e: SQLException) {
+                                // Manejar la excepción (lanzar, notificar al usuario, etc.)
+                                println("Error al realizar operaciones de base de datos: ${e.message}")
+                              // Otras acciones de manejo de errores según sea necesario
+                            }
+                        } else {
+                            // Manejar el caso en el que la conexión no se pudo establecer
+                            showMessage("problemas con la conexión BD Espacial")
+                        }
+
                     }
+
+
                 }
                 override fun failure(error: RetrofitError?) {
                     Toast.makeText(
@@ -290,15 +307,32 @@ class InterfazKerkly : AppCompatActivity() {
         val b2 = Bundle()
         val f = ContactosFragment()
         f.arguments = b2
-        b2!!.putString("telefonoKerkly", telefonoKerkly)
-        b2!!.putString("nombreKerkly", nombre_completo)
-        b2!!.putString("correoKerkly", correoKerkly)
-        b2!! .putString("uidKerkly",currentUser!!.uid)
-        b2!!.putString("tokenKerkly",tokenKerkly)
-        b2!!.putString("fotoKerkly",currentUser!!.photoUrl.toString())
-        var fm = supportFragmentManager.beginTransaction().apply {
-            replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
+        if (telefonoKerkly.isNotEmpty() &&
+            nombreKerkly.isNotEmpty() &&
+            correoKerkly.isNotEmpty() &&
+            currentUser!!.uid.isNotEmpty() &&
+            tokenKerkly.isNotEmpty() &&
+            currentUser!!.photoUrl.toString().isNotEmpty()
+        ) {
+            b2.putString("telefonoKerkly", telefonoKerkly)
+            b2.putString("nombreKerkly", nombreKerkly)
+            b2.putString("correoKerkly", correoKerkly)
+            b2.putString("uidKerkly",  currentUser!!.uid)
+            b2.putString("tokenKerkly", tokenKerkly)
+            b2.putString("fotoKerkly", currentUser!!.photoUrl.toString())
+
+            val f = ContactosFragment()
+            f.arguments = b2
+
+            val fm = supportFragmentManager.beginTransaction().apply {
+                replace(R.id.nav_host_fragment_content_interfaz_kerkly, f)
+                commit()
+            }
+        } else {
+            // Manejar el caso en el que algún dato esté vacío
+            Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     private fun setFragmentPresupuesto() {
@@ -678,7 +712,7 @@ class InterfazKerkly : AppCompatActivity() {
                                         setProgressDialog.dialog!!.dismiss()
                                     }
                                 })
-                                getOficiosKerkly()
+
                             }else{
                                 //Toast.makeText(this@InterfazKerkly, "este correo ${currentUser!!.email} no pertenece a esta cuenta", Toast.LENGTH_SHORT).show()
                                 cerrarSesion()
@@ -718,6 +752,8 @@ class InterfazKerkly : AppCompatActivity() {
     }
 
    fun ActualizarUbicacionBaseEspacial(uidKerkly:String, listaDeOficios: ArrayList<OficioKerkly>) {
+      // val latitud= 17.536558
+      // val longitud = -99.495811
        val miConexion = conexionPostgreSQL()
        val conexion = miConexion.obtenerConexion(this)
        println("conexion---> $conexion")
@@ -726,6 +762,7 @@ class InterfazKerkly : AppCompatActivity() {
                val idSeccion = miConexion.ObtenerSeccionCoordenadas(longitud, latitud)
                if (idSeccion == 0) {
                   // showMessage("no se encuentra dentro de una sección conocida")
+                   miConexion.offKerkly(curp)
                    fusedLocationClient?.removeLocationUpdates(locationCallback)
                    miConexion.cerrarConexion()
                    val delayMillis = 3000L // Retardo de 3 segundos
@@ -737,7 +774,6 @@ class InterfazKerkly : AppCompatActivity() {
                    showMessage("sección $idSeccion")
                    miConexion.insertOrUpdateSeccionKerkly(curp,idSeccion, uidKerkly, latitud,longitud, listaDeOficios)
                    // Resto del código aquí, incluyendo la inserción o actualización en la base de datos.
-
                    miConexion.cerrarConexion()
                    val delayMillis = 3000L // Retardo de 3 segundos
                    Handler(Looper.getMainLooper()).postDelayed({
@@ -764,11 +800,6 @@ class InterfazKerkly : AppCompatActivity() {
                handler?.looper?.quitSafely()
            }, delayMillis)
            fusedLocationClient?.removeLocationUpdates(locationCallback)
-
        }
-
    }
-
-
-
 }

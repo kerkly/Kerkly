@@ -18,35 +18,33 @@ class PantallaInicio : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pantalla_inicio)
-        var context = this
-        NetworkSpeedChecker(this)
-        controlador = MainActiityControlador()
-        id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-        controlador.verificarSesion(id, this)
 
+        // Inicializar las variables
+        id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        controlador = MainActiityControlador()
+
+        // Acceder a las vistas mediante View Binding
         ivLogo = findViewById(R.id.img_logo_inicio)
-        //Instanciamos un objeto
+
+        // Instanciamos un objeto de animación
         animation = AnimationUtils.loadAnimation(this, R.anim.animation)
 
-        //Establecemos la animacion al image view
+        // Establecemos la animación al ImageView
         ivLogo.startAnimation(animation)
 
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
-                //Este metodo es llamado cuando la animacion inicia
-                //Aqui podriamos realizar algunas comprobaciones iniciales
+                // Este método es llamado cuando la animación inicia
             }
 
-
             override fun onAnimationEnd(animation: Animation) {
-                controlador.verificarSesion(id, context)
-                /*val i = Intent(applicationContext, MainActivity::class.java)
-                startActivity(i)
-                finish()*/
+                // Este método es llamado cuando la animación termina
+                controlador.verificarSesion(id, this@PantallaInicio)
+                // Considera manejar el resultado de verificarSesion aquí
             }
 
             override fun onAnimationRepeat(animation: Animation) {
-                //Este metodo es llamado en cada repeticion
+                // Este método es llamado en cada repetición
             }
         })
     }
