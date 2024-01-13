@@ -1,10 +1,7 @@
 package com.example.kerklytv2.vista.fragments
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -13,7 +10,6 @@ import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.MapsActivity
-import com.example.kerklytv2.Presupuesto
 import com.example.kerklytv2.R
 import com.example.kerklytv2.controlador.AdapterPresupuesto
 import com.example.kerklytv2.controlador.SetProgressDialog
@@ -85,11 +81,11 @@ class PresupuestoNomalFragment : Fragment() {
 
         //Toast.makeText(context, "Teléfono: $telefonokerkly", Toast.LENGTH_SHORT).show()
         setProgressDialog.setProgressDialog(requireContext())
-        getJSON()
+       // getJSON()
         return v
     }
 
-    fun getJSON() {
+   /* fun getJSON() {
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -184,6 +180,6 @@ class PresupuestoNomalFragment : Fragment() {
 
         })
         setProgressDialog.dialog!!.dismiss()
-    }
+    }*/
 
 }

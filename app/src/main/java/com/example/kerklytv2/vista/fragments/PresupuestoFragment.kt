@@ -89,7 +89,7 @@ class PresupuestoFragment : Fragment() {
 
 //        postList2 = arguments?.getSerializable("arrayOfcios") as ArrayList<OficioKerkly>
         //setProgressDialog.setProgressDialog(requireContext())
-        getJSON()
+        //getJSON()
      /*  ofi = mutableListOf()
         for (i in 0 until postList2.size) {
             val oficio = postList2[i].nombreOficio
@@ -119,7 +119,7 @@ class PresupuestoFragment : Fragment() {
         return view
     }
 
-    fun  getJSON() {
+    /*fun  getJSON() {
       //  System.out.println("metodo json $numeroTelefono")
         val ROOT_URL = Url().URL
         val interceptor = HttpLoggingInterceptor()
@@ -200,5 +200,5 @@ class PresupuestoFragment : Fragment() {
                 ).show();
             }
         })
-    }
+    }*/
 }

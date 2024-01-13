@@ -532,10 +532,12 @@ class InterfazKerkly : AppCompatActivity() {
               //  var oficios: MisOficios
 
                 for (i in 0 until postList.size){
-                    println("lista a insertar ${i+1},${postList[i].nombreOficio.toString()}")
+
                   var Nombreoficios =  postList[i].nombreOficio
                     var idOficio =  postList[i].idOficio
+                    var idTra =  postList[i].idoficio_trabajador
                  //   dataManager.InsertarOficios(oficios)
+                    println("lista a insertar ${i+1},${Nombreoficios} idoficio $idOficio idTra $idTra")
                     itemsInserted
                     acumulador += postList[i].nombreOficio +" "
                 }
@@ -564,22 +566,30 @@ class InterfazKerkly : AppCompatActivity() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            //finish()
-          //  setFragmentHome()
-            val alert: AlertDialog.Builder = AlertDialog.Builder(this)
-            alert.setTitle(getString(R.string.cerrar_app))
-            alert.setMessage(getString(R.string.mensaje_alertaCerrarApp))
-            alert.setCancelable(false)
-            alert.setPositiveButton(getString(R.string.confirmar_alertCerrarApp)) {
-                    dialogo1, id -> finish() }
-            alert.setNegativeButton(getString(R.string.cancelar_alertCerrarApp)) { dialogo1, id -> dialogo1.dismiss() }
-            alert.show()
+            // setFragmentHome(telefono)
+            showExitConfirmationDialog()
         }
-
+        // finish()
     }
 
+    private fun showExitConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Salir de la aplicación")
+        builder.setMessage("¿Está seguro de que desea salir?")
 
+        builder.setPositiveButton("Sí") { _, _ ->
+            // Si el usuario selecciona "Sí", cierra la aplicación
+            finish()
+        }
 
+        builder.setNegativeButton("No") { dialog, _ ->
+            // Si el usuario selecciona "No", cierra el diálogo
+            dialog.dismiss()
+        }
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
     private fun cargarImagen(urlImagen: String) {
         val file: Uri
         file = Uri.parse(urlImagen)
@@ -752,8 +762,8 @@ class InterfazKerkly : AppCompatActivity() {
     }
 
    fun ActualizarUbicacionBaseEspacial(uidKerkly:String, listaDeOficios: ArrayList<OficioKerkly>) {
-      // val latitud= 17.536558
-      // val longitud = -99.495811
+      /*val latitud= 17.536558
+       val longitud = -99.495811*/
        val miConexion = conexionPostgreSQL()
        val conexion = miConexion.obtenerConexion(this)
        println("conexion---> $conexion")
@@ -762,7 +772,7 @@ class InterfazKerkly : AppCompatActivity() {
                val idSeccion = miConexion.ObtenerSeccionCoordenadas(longitud, latitud)
                if (idSeccion == 0) {
                   // showMessage("no se encuentra dentro de una sección conocida")
-                   miConexion.offKerkly(curp)
+                //  miConexion.offKerkly(curp)
                    fusedLocationClient?.removeLocationUpdates(locationCallback)
                    miConexion.cerrarConexion()
                    val delayMillis = 3000L // Retardo de 3 segundos

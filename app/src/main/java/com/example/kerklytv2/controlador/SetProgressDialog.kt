@@ -45,7 +45,7 @@ class SetProgressDialog {
         ll.addView(progressBar)
         ll.addView(tvText)
         val builder = AlertDialog.Builder(context)
-        builder.setCancelable(false)
+        builder.setCancelable(true)
         builder.setView(ll)
         dialog = builder.create()
         (dialog as AlertDialog?)!!.show()

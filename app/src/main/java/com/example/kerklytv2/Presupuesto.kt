@@ -88,6 +88,9 @@ class Presupuesto : AppCompatActivity() {
     var lista: MutableList<MutableList<String>>? = null
     private lateinit var uidCliente: String
     private lateinit var uidKerkly:String
+    private lateinit var fechaSolicitud:String
+    private lateinit var nombreOficio:String
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,7 +115,8 @@ class Presupuesto : AppCompatActivity() {
         direccionKerly = b.getString("direccionkerkly").toString()
         uidCliente = b.getString("uidCliente").toString()
         uidKerkly = b.getString("uidKerkly").toString()
-
+        fechaSolicitud = b.getString("fechaSolicitud").toString()
+        nombreOficio = b.getString("nombreOficio").toString()
         //val database = Firebase.database
         //val myRef = database.getReference("message")
 
@@ -198,8 +202,6 @@ class Presupuesto : AppCompatActivity() {
                                     "priblema: $problemacliente total: $total"
                         )
                         mandarPagoTotalPresupuestoNR()
-
-
                     }
                 }
             }
@@ -240,7 +242,7 @@ class Presupuesto : AppCompatActivity() {
                     }
                     if (entrada.toString() == "pago enviado"){
                         //mandar notificacion
-                        obtenerToken(uidKerkly,uidCliente)
+                        obtenerToken(uidKerkly,uidCliente,total.toString())
                         //  llamartopico.llamartopico(this@Presupuesto, "","","")
                         showMensaje("Se creo tu archivo pdf")
                     }else{
@@ -253,15 +255,17 @@ class Presupuesto : AppCompatActivity() {
             }
         )
     }
-    fun obtenerToken(uidKekrly: String, uidCliente: String){
+    fun obtenerToken(uidKekrly: String, uidCliente: String,pagoTotal:String){
         databaseUsu = instacias.referenciaInformacionDelCliente(uidCliente)
         databaseUsu.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val u2 = snapshot.getValue(usuarios::class.java)
                 token = u2!!.token
                System.out.println("el token del kerkly " + token)
-                llamartopico.llamarTopicSolicitud(this@Presupuesto, token, " ${R.string.txt_mensaje_Notificacion_normal1} $folio", " ${R.string.txt_mensaje_Notificacion_normal1_2} $clientenombre "
-                    ,"normal",telefonoCliente,clientenombre,uidCliente)
+                llamartopico.llamarTopicAceptarSolicitudNormal(this@Presupuesto, folio, token,
+                    " ${R.string.txt_mensaje_Notificacion_normal1} $folio", " ${R.string.txt_mensaje_Notificacion_normal1_2} $clientenombre "
+                    ,"normal",telefonoCliente,clientenombre,uidCliente,fechaSolicitud
+                    ,problemacliente,pagoTotal.toString(),nombreOficio,telefonoK,nombrekerkly,direccionKerly,correoKerly,uidKerkly)
                 val intent = Intent(this@Presupuesto, PantallaInicio::class.java)
                 startActivity(intent)
             }
@@ -303,8 +307,6 @@ class Presupuesto : AppCompatActivity() {
             }
         )
     }
-
-
     fun dbFirebase(){
         val lista = tablaDinamica.getData()
         val num = lista.size
@@ -323,15 +325,12 @@ class Presupuesto : AppCompatActivity() {
                 if (TipoServicio == "ServicioNR"){
                  val databaseReference =  instacias.referenciaPresupuestoNR(uidKerkly,folio.toString()).child((i+1).toString()).setValue(t)
                 }
-
             }
         }
-
         // mandarPago()
     }
 
     private fun inicializarTabla() {
-
         val lista: ArrayList<ArrayList<String>> = ArrayList()
         tablaDinamica.addData(lista)
 

@@ -100,6 +100,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     private var solicutdAceptada:Int = 0
     private var handler: Handler? = null
     private lateinit var btnMasIfo: MaterialButton
+    private lateinit var fechaSolicitud:String
+    private lateinit var nombreOficio:String
     companion object {
         private const val PERMISSION_REQUEST_CODE = 123
     }
@@ -109,12 +111,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         // Registro de la Activity en EventBus
-        b = intent.extras!!
+        if (intent != null && intent.extras != null) {
+            b = intent.extras!!
+        }
+
         mAuth = FirebaseAuth.getInstance()
         currentUser = mAuth!!.currentUser
         instancias = Instancias()
         //recibimos las coordenas
-
         val latitudStr = b.getString("latitud")
         val longitudStr = b.getString("longitud")
         folio = b.getString("Folio").toString()
@@ -134,10 +138,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         Curp = b.getString("Curp").toString()
         telefonoKerkly = b.getString("telefonok").toString()
         correoCliente = b.getString("correoCliente").toString()
-        correoKerly = b.getString("correoKerly").toString()
+        correoKerly = b.getString("correoKerkly").toString()
         nombrekerkly = b.getString("nombreCompletoKerkly").toString()
         direccionKerly = b.getString("direccionkerkly").toString()
         uidCliente = b.getString("uidCliente").toString()
+        fechaSolicitud = b.getString("fechaSolicitud").toString()
+        nombreOficio = b.getString("nombreOficio").toString()
         obtenerToken(currentUser!!.uid, uidCliente)
         Noti = b.getString("Noti").toString()
         println("uidClienteMaps ----- > $folio  p $problema")
@@ -174,6 +180,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
     }
         btnMasIfo = findViewById(R.id.buttonMasInfo)
         if (TipoServicio == "normal"){
+
             buttonAceptarServicio.text = "Presupuestar"
             btnMasIfo.isVisible = true
         }
@@ -484,6 +491,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     i.putExtra("direccionkerkly", direccionKerly)
                     i.putExtra("uidCliente",uidCliente)
                     i.putExtra("uidKerkly",currentUser!!.uid)
+                    i.putExtra("fechaSolicitud",fechaSolicitud)
+                    i.putExtra("nombreOficio",nombreOficio)
                     println("folio---> $folio")
                     startActivity(i)
                     dialog.dismiss()
@@ -547,8 +556,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
                     if(Res == "1"){
                         //obtenerToken(currentUser!!.uid,uidCliente)
                         verificarDatoNoExistente(currentUser!!.uid, uidCliente)
-                        llamartopico.llamarTopicSolicitud(this@MapsActivity, tokenCliente, "${R.string.txt_mensaje_Notificacion_1}", nombrekerkly,
-                            "urgente",telefonoCliente,nombreCliente,uidCliente)
+                       llamartopico.llamarTopicAceptarSolicitudUrgente(this@MapsActivity, folio, tokenCliente,
+                           "Su solicitud ha sido Aceptada, Por favor espere un momento... ","Mensaje de $nombrekerkly","urgente",telefonoCliente, nombreCliente
+                            ,uidCliente,fechaSolicitud,problema, "0.0",nombreOficio,
+                           telefonoKerkly,nombrekerkly,direccionKerly,currentUser!!.email.toString(),
+                           currentUser!!.uid.toString())
 
                     }else{
                       //  showMensaje("El Servicio No se Pudo completar $Res")
@@ -621,7 +633,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapLon
         databaseReferenceCliente.push().child("uid").setValue(uidKerkly)
         databaseReferencekerkly.push().child("uid").setValue(uidCliente)
       //  showMensaje("Agregado los datos ")
-
     }
 
     override fun onBackPressed() {

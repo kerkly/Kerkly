@@ -24,9 +24,9 @@ class conexionPostgreSQL {
         }
         try {
             Class.forName("org.postgresql.Driver") // Cargar el driver JDBC
-            val host = "2.tcp.ngrok.io"
-            val port = "18163"
-            val databaseName = "Kerkly"
+            val host = "2.tcp.us-cal-1.ngrok.io"
+            val port = "13088"
+            val databaseName = "kerkly"
             val username = "luis_admin"
             val password = "Lu0599@"
             val url = "jdbc:postgresql://$host:$port/$databaseName"
@@ -90,15 +90,18 @@ class conexionPostgreSQL {
 
                 for (i in 0 until listaDeOficios.size) {
                     try {
+
                         conexion?.prepareStatement(insertarOficioKerkly)?.use { insertStmt ->
                             val idTrabajador: Int = listaDeOficios[i].idoficio_trabajador
                             insertStmt.setInt(1, idTrabajador)
                             insertStmt.setInt(2, listaDeOficios[i].idOficio)
                             insertStmt.setString(3, curp)
                             insertStmt.executeUpdate()
+                            println("insertado "+ listaDeOficios[i].idOficio + listaDeOficios[i].idoficio_trabajador)
                         }
                     } catch (e: SQLException) {
                         e.printStackTrace()
+                        println("error postgres ${e.message}")
                         conexion?.rollback() // Revertir la transacción si ocurre una excepción
                     }
                 }

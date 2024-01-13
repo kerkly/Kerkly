@@ -1,5 +1,6 @@
 package com.example.kerklytv2.vista.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import com.example.kerklytv2.MainActivityMostrarSolicitud
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.OficioKerkly
 //import com.example.kerklytv2.modelo.serial.OficioKerkly
@@ -35,8 +37,6 @@ class PresupuestosPreviewFragment : Fragment() {
     private lateinit var btonClienteNR: MaterialButton
     private lateinit var direccionKerly: String
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -44,14 +44,12 @@ class PresupuestosPreviewFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val v =  inflater.inflate(R.layout.fragment_presupuestos_preview, container, false)
-
         boton_normal = v.findViewById(R.id.boton_normalPresupuesto)
         boton_urg = v.findViewById(R.id.boton_urgenciaPresupuesto)
         btonClienteNR = v.findViewById(R.id.boton_serviciosClientesNR)
@@ -80,32 +78,47 @@ class PresupuestosPreviewFragment : Fragment() {
 
     private fun setPresupuestoUrgente() {
         val args = Bundle()
-        val f = PresupuestoFragment()
+       /* val f = PresupuestoFragment()
         args.getString("telefonoKerkly", telefonoKerkly)
-       // args.getString("nombreKerkly", nombreKerkly)
       //  args.putSerializable("arrayOfcios", postList)
         args.putString("nombreCompletoKerkly", nombre_completo)
         args.putString("Curp", Curp)
-
+        args.putString("correoKerkly", correoKerkly)
+        args.putString("TipoDeSolicitud","normmal")
         f.arguments = args
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
-        }
+        }*/
+        val intent = Intent(requireContext(),MainActivityMostrarSolicitud::class.java)
+        intent.putExtra("telefonoKerkly", telefonoKerkly)
+        intent.putExtra("nombreCompletoKerkly", nombre_completo)
+        intent.putExtra("Curp", Curp)
+        intent.putExtra("correoKerkly", correoKerkly)
+        intent.putExtra("TipoDeSolicitud","urgente")
+        startActivity(intent)
     }
     private fun setPresupuestoNormal() {
-        val b = Bundle()
-        b.putString("telefonok", telefonoKerkly)
+        /*val b = Bundle()
+        b.putString("telefonoKerkly", telefonoKerkly)
         b.putString("nombreCompletoKerkly", nombre_completo)
         b.putString("Curp", Curp)
-        b.putString("correoKerly", correoKerkly)
+        b.putString("correoKerkly", correoKerkly)
         b.putString("direccionkerkly", direccionKerly)
-
+        b.putString("TipoDeSolicitud","normal")
         val f = PresupuestoNomalFragment()
         f.arguments = b
         var fm = requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
-        }
+        }*/
+
+        val intent = Intent(requireContext(),MainActivityMostrarSolicitud::class.java)
+        intent.putExtra("telefonoKerkly", telefonoKerkly)
+        intent.putExtra("nombreCompletoKerkly", nombre_completo)
+        intent.putExtra("Curp", Curp)
+        intent.putExtra("correoKerkly", correoKerkly)
+        intent.putExtra("TipoDeSolicitud","normal")
+        startActivity(intent)
     }
 
     private fun setServiciosClienteNR(){
