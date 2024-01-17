@@ -93,7 +93,7 @@ class llamartopico {
         var firebaseMessaging = FirebaseMessaging.getInstance().subscribeToTopic("EnviarNoti")
         firebaseMessaging.addOnCompleteListener {
             //Toast.makeText(this@MainActivityChats, "Registrado:", Toast.LENGTH_SHORT).show()
-        println("suscrito ")
+       // println("suscrito ")
         }
 
         val myrequest = Volley.newRequestQueue(context)
@@ -115,6 +115,20 @@ class llamartopico {
             notificacion.put("tokenCliente", token)
             notificacion.put("uidCliente", uidCliente)
             notificacion.put("uidKerkly", uidKerkly)
+
+            // Imprimir cada valor
+            println("titulo: $Titulo")
+            println("detalle: $Mensaje")
+            println("nombreCompletoK: $Titulo")
+            println("nombreCompletoCliente: $nombreCliente")
+            println("telefonok: $telefonoKerkly")
+            println("telefonoCliente: $telefonoCliente")
+            println("urlFotoKerkly: $fotoKerkly")
+            println("urlFotoCliente: $fotoCliente")
+            println("tokenKerkly: $tokenKerkly")
+            println("tokenCliente: $token")
+            println("uidCliente: $uidCliente")
+            println("uidKerkly: $uidKerkly")
 
             //  notificacion.put("foto", url_foto)
             json.put("data", notificacion)

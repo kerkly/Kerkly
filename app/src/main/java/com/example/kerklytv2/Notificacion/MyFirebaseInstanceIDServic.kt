@@ -66,6 +66,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
                 val uidKerkly: String = message.getData().get("uidKerkly")!!
                 CrearNotificacion(titulo, detalle, nombreCliente,nombreKerkly,telefonoKerkly,telefonoCliente
                     ,fotoCliente,tokenCliente,uidCliente,uidKerkly)
+                println("chats noti llego 1")
             }
 
             if (TipoNoti == "llamarTopicEnviarSolicitudNormal"){
@@ -245,13 +246,13 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
     private fun CrearNotificacion(titulo: String, detalle: String, nombreCliente: String,
                                   nombreKerkly: String,telefonoKerkly:String,telefonoCliente:String, fotoCliente:String, tokenCliente:String,
                                   uidCliente: String, uidKerkly:String) {
-        val id = "mensajeKerkly"
+        val id = "mensajeCliente"
         val id2 = id.hashCode()
         val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val builder = NotificationCompat.Builder(this, id)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nc = NotificationChannel(id, "nuevoKerkly", NotificationManager.IMPORTANCE_HIGH)
+            val nc = NotificationChannel(id, "nuevoCliente", NotificationManager.IMPORTANCE_HIGH)
             nc.setShowBadge(true)
             assert(nm != null)
             nm!!.createNotificationChannel(nc)
@@ -297,7 +298,7 @@ class MyFirebaseInstanceIDServic : FirebaseMessagingService() {
         nf.putExtra("uidKerkly", uidKerkly)
         nf.putExtra("Noti", "Noti")
 
-        println("foto Cliente $fotoCliente")
+        println("chats noti llego 2")
 
 
         // nf.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

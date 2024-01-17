@@ -3,7 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'com.google.gms.google-services'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-   //id 'kotlin-android-extensions'
+    id 'org.jetbrains.kotlin.android'
+    //id 'kotlin-android-extensions'
 
 }
 
@@ -57,6 +58,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:23.1.2'
     implementation 'com.google.firebase:firebase-database:20.2.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.3.0'
+    implementation 'androidx.core:core-ktx:+'
     testImplementation 'junit:junit:'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
