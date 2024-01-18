@@ -29,6 +29,8 @@ class PantallaInicio : AppCompatActivity() {
         // Instanciamos un objeto de animación
         animation = AnimationUtils.loadAnimation(this, R.anim.animation)
 
+        //duracion de la animaciom
+        animation.duration = 100
         // Establecemos la animación al ImageView
         ivLogo.startAnimation(animation)
 

@@ -23,7 +23,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -43,6 +42,7 @@ import com.example.kerklytv2.R
 import com.example.kerklytv2.SQLite.usuariosSqlite
 import com.example.kerklytv2.clases.NetworkSpeedChecker
 import com.example.kerklytv2.controlador.SetProgressDialog
+import com.example.kerklytv2.databinding.ActivityInterfazKerklyBinding
 import com.example.kerklytv2.interfaces.CerrarSesionInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyInterface
 import com.example.kerklytv2.interfaces.ObtenerKerklyaOficiosInterface
@@ -50,12 +50,8 @@ import com.example.kerklytv2.interfaces.SesionAbiertaInterface
 import com.example.kerklytv2.modelo.Kerkly
 import com.example.kerklytv2.modelo.serial.OficioKerkly
 import com.example.kerklytv2.modelo.usuarios
-import com.example.kerklytv2.ui.home.HomeFragment
-import com.example.kerklytv2.vista.fragments.ContactosFragment
 import com.example.kerklytv2.vista.fragments.HistorialFragment
 import com.example.kerklytv2.vista.fragments.PresupuestoFragment
-import com.example.kerklytv2.vista.fragments.PresupuestosPreviewFragment
-import com.example.kerklytv2.vista.fragments.TrabajosPendientesFragment
 import com.example.kerklytv2.url.Instancias
 import com.example.kerklytv2.url.Url
 import com.example.kerklyv5.SQLite.DataManager
@@ -90,6 +86,8 @@ import java.util.*
 
 class InterfazKerkly : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var binding: ActivityInterfazKerklyBinding
     private lateinit var kerkly: Kerkly
     private lateinit var b: Bundle
     private lateinit var idKerkly: String
@@ -102,7 +100,7 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var txt_correo: TextView
     private lateinit var txt_oficios: TextView
     lateinit var ofi: MutableList<String>
-    private lateinit var drawerLayout: DrawerLayout
+
     lateinit var postList: ArrayList<OficioKerkly>
     //Autenticacion con cuenta de google
     var providers: MutableList<AuthUI.IdpConfig?>? = null
@@ -129,19 +127,65 @@ class InterfazKerkly : AppCompatActivity() {
     private lateinit var locationCallback: LocationCallback
     private var handler: Handler? = null
 
+    //controlar los procesos
+    private var procesosEjecutados = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_interfaz_kerkly)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+      //  setContentView(R.layout.activity_interfaz_kerkly)
+       // val toolbar: Toolbar = findViewById(R.id.toolbar)
+      //  setSupportActionBar(toolbar)
+
+        binding = ActivityInterfazKerklyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.appBarInterfazKerkly.toolbar)
+        drawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
+        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
+        val view = navView.getHeaderView(0)
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_home,
+                R.id.nav_gallery,
+                R.id.nav_slideshow
+            ), drawerLayout
+        )
+
+        setupActionBarWithNavController(navController,appBarConfiguration)
+        navView.setupWithNavController(navController)
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when(menuItem.itemId){
+                R.id.nav_home -> {
+                    // Hacer algo cuando se selecciona Home
+                   // navegarAHome()
+                    true
+                }
+                R.id.nav_gallery -> {
+                    // Llamar al método navegarAGallery() cuando se selecciona Gallery
+                    navegarAGallery()
+                    true
+                }
+                R.id.nav_slideshow -> {
+                    // Hacer algo cuando se selecciona Slideshow
+                    navegarASlideshow()
+                    true
+                }
+                R.id.cerrar_sesion_nav -> {
+                    cerrarSesion()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
         setProgressDialog.setProgressDialog(this)
         getLocation()
         instancias = Instancias()
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
+
         NetworkSpeedChecker(this)
-        val view = navView.getHeaderView(0)
+
         txt_correo = view.findViewById(R.id.correo_header)
         txt_nombre = view.findViewById(R.id.nombre_header)
         txt_oficios = view.findViewById(R.id.oficios_header)
@@ -158,15 +202,8 @@ class InterfazKerkly : AppCompatActivity() {
         b = intent.extras!!
         telefonoKerkly = b.getString("numT").toString()
 
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home,
-                R.id.ContactosFragment,
-                R.id.nav_slideshow,
-                R.id.presupuestoFragment,
-            ), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+
+     /*   setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -179,7 +216,7 @@ class InterfazKerkly : AppCompatActivity() {
             }
            drawerLayout.closeDrawer(GravityCompat.START)
             true
-        }
+        }*/
         dataManager = DataManager(this)
         locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         // Verifica si se concedió el permiso de ubicación
@@ -197,6 +234,48 @@ class InterfazKerkly : AppCompatActivity() {
             )
         }
     }
+
+    private fun navegarASlideshow() {
+          val bundle = Bundle()
+         bundle.putString("telefonoKerkly", telefonoKerkly)
+        bundle.putString("Curp", curp)
+        bundle.putString("nombrekerkly", nombre_completo)
+        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
+        navController.navigate(R.id.nav_slideshow, bundle)
+        // Cierra el DrawerLayout después de la navegación
+        drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    private fun navegarAGallery() {
+        val bundle = Bundle()
+        bundle.putString("telefonoKerkly",telefonoKerkly)
+        bundle.putString("urlFotoKerkly",currentUser!!.photoUrl.toString())
+        bundle.putString("nombreCompletoKerkly",currentUser!!.displayName.toString())
+        bundle.putString("tokenKerkly",tokenKerkly)
+        bundle.putString("correoKerkly",currentUser!!.email.toString())
+        bundle.putString("direccionkerkly",direccionKerly)
+        bundle.putString("uidKerkly",currentUser!!.uid.toString())
+        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
+        navController.navigate(R.id.nav_gallery, bundle)
+        // Cierra el DrawerLayout después de la navegación
+        drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    private fun navegarAHome() {
+        val bundle = Bundle()
+        bundle.putString("telefonoKerkly",telefonoKerkly)
+        bundle.putString("urlFotoKerkly",currentUser!!.photoUrl.toString())
+        bundle.putString("nombreCompletoKerkly",currentUser!!.displayName.toString())
+        bundle.putString("Curp",curp)
+        bundle.putString("correoKerkly",currentUser!!.email.toString())
+        bundle.putString("direccionkerkly",direccionKerly)
+
+        val navController = findNavController(R.id.nav_host_fragment_content_interfaz_kerkly)
+        navController.navigate(R.id.nav_home, bundle)
+        // Cierra el DrawerLayout después de la navegación
+        drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -285,13 +364,13 @@ class InterfazKerkly : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun setFragmentHome() {
+  /*  private fun setFragmentHome() {
         val f = HomeFragment()
      supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly, f).commit()
         }
-    }
-    private fun setFragmenTrabajos() {
+    }*/
+  /*  private fun setFragmenTrabajos() {
         val args = Bundle()
         val num = b.getString("numT")
         args.putString("numNR", telefonoKerkly)
@@ -302,8 +381,8 @@ class InterfazKerkly : AppCompatActivity() {
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
         }
-    }
-    private fun setFragmentcontactos() {
+    }*/
+   /* private fun setFragmentcontactos() {
         val b2 = Bundle()
         val f = ContactosFragment()
         f.arguments = b2
@@ -333,7 +412,7 @@ class InterfazKerkly : AppCompatActivity() {
             Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
         }
 
-    }
+    }*/
 
     private fun setFragmentPresupuesto() {
         val args = Bundle()
@@ -350,11 +429,11 @@ class InterfazKerkly : AppCompatActivity() {
         args.putString("correoKerly", correoKerkly)
         args.putString("direccionkerkly", direccionKerly)
         //println("------> direccion kerkly $direccionKerly ")
-        val f = PresupuestosPreviewFragment()
+      /*  val f = PresupuestosPreviewFragment()
         f.arguments = args
         var fm = supportFragmentManager.beginTransaction().apply {
             replace(R.id.nav_host_fragment_content_interfaz_kerkly,f).commit()
-        }
+        }*/
     }
 
     private fun setFragmentNotificaciones() {
@@ -447,7 +526,7 @@ class InterfazKerkly : AppCompatActivity() {
                                                         val usuarios: usuariosSqlite
                                                         usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
                                                         dataManager.verificarSiElUsarioExiste(this@InterfazKerkly,ImageViewPerfil,txt_nombre,txt_correo, photoByteArray,usuarios,telefono.toString(),nombre.toString(),ap,am,correo)
-                                                        setFragmentHome()
+
                                                     }
                                                 })
                                             //obtenerToken
@@ -473,6 +552,8 @@ class InterfazKerkly : AppCompatActivity() {
                                                     setProgressDialog.dialog!!.dismiss()
                                                 }
                                             })
+
+                                            navegarAHome()
                                         }else{
                                             setProgressDialog.dialog!!.dismiss()
                                             // Toast.makeText(applicationContext,"no es correo", Toast.LENGTH_SHORT).show()
@@ -579,7 +660,7 @@ class InterfazKerkly : AppCompatActivity() {
 
         builder.setPositiveButton("Sí") { _, _ ->
             // Si el usuario selecciona "Sí", cierra la aplicación
-            finish()
+            finishAffinity()
         }
 
         builder.setNegativeButton("No") { dialog, _ ->
@@ -641,6 +722,9 @@ class InterfazKerkly : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 //        metodoSalir()
+        // Verifica si los procesos ya se han ejecutado al volver a la actividad
+        if (!procesosEjecutados) {
+            // Ejecuta tus procesos una vez
         currentUser = mAuth!!.currentUser
         val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
@@ -700,7 +784,7 @@ class InterfazKerkly : AppCompatActivity() {
                                             val usuarios: usuariosSqlite
                                             usuarios = usuariosSqlite(telefono,photoByteArray, nombre!!,ap,am,correo)
                                             dataManager.verificarSiElUsarioExiste(this@InterfazKerkly,ImageViewPerfil,txt_nombre,txt_correo, photoByteArray,usuarios,telefono.toString(),nombre.toString(),ap,am,correo)
-                                            setFragmentHome()
+
                                         }
                                     })
 
@@ -723,6 +807,8 @@ class InterfazKerkly : AppCompatActivity() {
                                     }
                                 })
 
+                                navegarAHome()
+
                             }else{
                                 //Toast.makeText(this@InterfazKerkly, "este correo ${currentUser!!.email} no pertenece a esta cuenta", Toast.LENGTH_SHORT).show()
                                 cerrarSesion()
@@ -741,6 +827,10 @@ class InterfazKerkly : AppCompatActivity() {
             Toast.makeText(this@InterfazKerkly, "No hay conexion a Internet", Toast.LENGTH_LONG)
                 .show()
             setProgressDialog.dialog!!.dismiss()
+        }
+
+            // Marca la variable como true para indicar que los procesos se han ejecutado
+            procesosEjecutados = true
         }
 
     }

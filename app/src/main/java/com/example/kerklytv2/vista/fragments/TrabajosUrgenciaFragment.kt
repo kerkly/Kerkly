@@ -54,7 +54,7 @@ class TrabajosUrgenciaFragment : Fragment() {
         recycler = v.findViewById(R.id.recycler_trabajos_urgencia_rw)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = LinearLayoutManager(context)
-        numeroTelefono = arguments?.getString("numNR").toString()
+        numeroTelefono = arguments?.getString("telefonoKerkly").toString()
         curp = arguments?.getString("Curp").toString()
 
         img = v.findViewById(R.id.img_servicio_urgente)

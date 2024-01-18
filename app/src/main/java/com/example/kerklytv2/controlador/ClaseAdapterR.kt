@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.LoadMoreListener
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.PresupuestourgentesDatosCliente
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 class ClaseAdapterR(val datset: ArrayList<PresupuestourgentesDatosCliente>) :
@@ -45,7 +46,8 @@ class ClaseAdapterR(val datset: ArrayList<PresupuestourgentesDatosCliente>) :
             viewHolder.txtTelefono.text = datset[position].telefonoCliente.toString()
 
         viewHolder.txtnombreCompletoCliente.text =datset[position].Nombre +" " +datset[position].Apellido_Paterno+ " "+ datset[position].Apellido_Materno
-        viewHolder.txtFecha.text = datset[position].fechaPresupuesto.toString()
+        val fechaOriginal =  formatearFecha(datset[position].fechaPresupuesto.toString())
+        viewHolder.txtFecha.text = fechaOriginal
         viewHolder.txtProblema.text = datset[position].problema.toString()
 
 
@@ -54,6 +56,25 @@ class ClaseAdapterR(val datset: ArrayList<PresupuestourgentesDatosCliente>) :
             isLoading = true
             loadMoreListener.onLoadMore()
             println("Scroll detectado - position: $position, datset.size: ${datset.size}")
+        }
+    }
+
+    fun formatearFecha(fechaOriginal: String): String {
+        try {
+            // Formato de la fecha y hora devuelto por el servidor
+            val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+            // Parsear la fecha y hora original
+            val fechaParseada = formatoOriginal.parse(fechaOriginal)
+
+            // Nuevo formato deseado
+            val nuevoFormato = SimpleDateFormat("h:mm a 'del' EEEE d 'de' MMMM yyyy", Locale.getDefault())
+
+            // Formatear la fecha y hora parseada en el nuevo formato
+            return nuevoFormato.format(fechaParseada!!)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return fechaOriginal // En caso de error, devolver la fecha original sin formato
         }
     }
 

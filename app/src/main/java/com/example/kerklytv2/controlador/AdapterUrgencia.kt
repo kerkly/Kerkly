@@ -1,18 +1,15 @@
 package com.example.kerklytv2.controlador
 
-import android.app.Activity
 import android.os.Bundle
-import android.text.TextUtils.replace
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.TrabajoUrgencia
-import com.example.kerklytv2.vista.fragments.ContactosFragment
+import com.example.kerklytv2.ui.gallery.GalleryFragment
 
 class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
                     RecyclerView.Adapter<AdapterUrgencia.ViewHolder>(), View.OnClickListener {
@@ -56,7 +53,7 @@ class AdapterUrgencia(val datset: ArrayList<TrabajoUrgencia>):
         holder.txt_fecha_urgente.text = datset[position].fechaP
 
         holder.chat_img.setOnClickListener {
-            val f = ContactosFragment()
+            val f = GalleryFragment()
             val b = Bundle()
             val nombre = "${datset[position].Nombre} ${datset[position].Apellido_Paterno} ${datset[position].Apellido_Materno}"
             val folio = datset[position].idPresupuesto

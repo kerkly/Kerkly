@@ -11,6 +11,7 @@ import com.example.kerklytv2.LoadMoreListener
 import com.example.kerklytv2.R
 import com.example.kerklytv2.modelo.serial.Presupuesto
 import com.example.kerklytv2.modelo.serial.PresupuestourgentesDatosCliente
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
@@ -57,7 +58,8 @@ class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
         viewHolder.txtFolio.text = datset[position].idPresupuesto.toString()
         viewHolder.txtTelefono.text = datset[position].telefonoCliente
         viewHolder.txtProblema.text = datset[position].problema
-        viewHolder.txtFecha.text = datset[position].fechaP
+        val fechaHora =  formatearFecha(datset[position].fechaP)
+        viewHolder.txtFecha.text = fechaHora
         val nombre = datset[position].Nombre
         val apeP = datset[position].Apellido_Paterno
         val apeM = datset[position].Apellido_Materno
@@ -153,6 +155,25 @@ class AdapterPresupuesto(val datset: ArrayList<Presupuesto>) :
             }
         }
     }
+    fun formatearFecha(fechaOriginal: String): String {
+        try {
+            // Formato de la fecha y hora devuelto por el servidor
+            val formatoOriginal = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+            // Parsear la fecha y hora original
+            val fechaParseada = formatoOriginal.parse(fechaOriginal)
+
+            // Nuevo formato deseado
+            val nuevoFormato = SimpleDateFormat("h:mm a 'del' EEEE d 'de' MMMM yyyy", Locale.getDefault())
+
+            // Formatear la fecha y hora parseada en el nuevo formato
+            return nuevoFormato.format(fechaParseada!!)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return fechaOriginal // En caso de error, devolver la fecha original sin formato
+        }
+    }
+
 
     fun showOriginalList() {
         //println("adapter borrado tamaño de ${datasetFilteredOriginal.size}")

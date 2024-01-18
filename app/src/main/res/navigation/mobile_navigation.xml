@@ -12,19 +12,15 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/ContactosFragment"
-        android:name="com.example.kerklytv2.vista.fragments.ContactosFragment"
+        android:id="@+id/nav_gallery"
+        android:name="com.example.kerklytv2.ui.gallery.GalleryFragment"
         android:label="ContactosFragment"
-        tools:layout="@layout/fragment_contactos" />
+        tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.example.kerklytv2.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
-    <fragment
-        android:id="@+id/trabajosPendientesFragment"
-        android:name="com.example.kerklytv2.vista.fragments.TrabajosPendientesFragment"
-        android:label="fragment_trabajos_pendientes"
-        tools:layout="@layout/fragment_trabajos_pendientes" />
+
 </navigation>

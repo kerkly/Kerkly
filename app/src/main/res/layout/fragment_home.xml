@@ -7,13 +7,70 @@
     android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="265dp"
-        android:layout_height="363dp"
-        android:src="@drawable/new_dise_o_"
-        android:layout_gravity="center"
-        android:layout_marginTop="200dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/solicitudes"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/solicitudes"
+            android:gravity="center"
+            android:textAppearance="@style/solicitudes"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:orientation="vertical">
+            <View
+                android:id="@+id/new_dise_o_"
+                android:layout_width="133dp"
+                android:layout_height="137dp"
+                android:layout_gravity="center"
+                android:background="@drawable/new_dise_o_"
+                />
+
+            <TextView
+                android:id="@+id/ir_a_mis_so"
+                android:layout_width="211dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/ir_a_mis_so"
+                android:textAppearance="@style/ir_a_mis_so"
+                android:layout_gravity="center"
+                />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boton_normalPresupuesto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:text="@string/servicio"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boton_urgenciaPresupuesto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:text="@string/servicioUrgente"
+                />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boton_serviciosClientesNR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:text="@string/servicioClienteNR"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

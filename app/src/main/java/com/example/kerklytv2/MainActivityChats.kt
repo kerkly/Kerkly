@@ -131,7 +131,7 @@ class MainActivityChats : AppCompatActivity() {
         fotoKerkly = b.getString("fotoKerkly").toString()
        // showMensaje("cliente $uidCliente kerkly $uidKerkly")
         println("recibido uidCliente  $uidCliente uidKerkly $uidKerkly")
-        //println("nombrec ${nombrecliente} k $nombreCompletoKerkly telk $telefonoKerkly tel c ${telefonoCliente} cliente $uidCliente kerkly $uidKerkly  noti $Noti")
+        println("nombrec ${nombrecliente} k $nombreCompletoKerkly telk $telefonoKerkly tel c ${telefonoCliente} cliente $uidCliente kerkly $uidKerkly  noti $Noti")
 
         nombre_txt.text = nombrecliente
         val photoUrl = Uri.parse(fotoCliente)

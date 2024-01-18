@@ -7,9 +7,9 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_home">Ordenes Pendientes</string>
+    <string name="menu_gallery">Clientes</string>
+    <string name="menu_slideshow">Trabajos Pendientes</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -24,7 +24,7 @@
     <string name="title_activity_solicitar_servicio">SolicitarServicio</string>
 
     <string name="bienvenido">¡Bienvenido!</string>
-    <string name="servicio">Servicios</string>
+    <string name="servicio">Presupuestar</string>
     <string name="escribirProblematica">Escriba su problemática</string>
     <string name="direccion">Dirección</string>
     <string name="servicio_express">Servicio Expréss</string>

@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KerklyTV2">
         <activity
+            android:name=".vista.MainActivityMostrarTrabajosPendientes"
+            android:exported="false" />
+        <activity
             android:name=".MainActivityMostrarSolicitud"
             android:exported="false" />
         <activity

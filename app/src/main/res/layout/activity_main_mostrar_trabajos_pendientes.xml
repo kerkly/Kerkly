@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3E6A75"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".vista.MainActivityMostrarTrabajosPendientes">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/agenda"
-        android:textColor="@color/black"
         android:textSize="25sp"
+        android:textStyle="bold"
         android:layout_margin="10dp"
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_trabajoNormal"
+        android:id="@+id/recycler_trabajosP"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         />
 
     <ImageView
-        android:id="@+id/img_servicio_normal"
+        android:id="@+id/img_servicio"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:visibility="gone"
         android:src="@drawable/imagen_lista_vacia" />
 
     <TextView
-        android:id="@+id/txt_servicio_normal"
+        android:id="@+id/txt_servicio"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:text="@string/lista_vacia_trabajosPendientes"
@@ -36,6 +39,8 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:lines="2"
+        android:visibility="gone"
         android:textSize="20sp"
         />
+
 </LinearLayout>
